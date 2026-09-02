@@ -1,0 +1,82 @@
+/* ============================================================
+   Estilos que Tailwind (utilitario) no cubre bien: tipografías,
+   la forma de "ticket" de cocina, transiciones de la hoja de
+   pedido y accesibilidad de foco/movimiento reducido.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Karla:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+:root{
+  --ink:#1B140F;
+  --canvas:#FBF6EC;
+  --hairline:#E7DAC0;
+  --hairline-strong:#CBB98D;
+  --ember:#C8401D;
+  --mustard:#EFB13A;
+  --surface:#FFFDF7;
+  --muted:#7A6C57;
+}
+
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{background:var(--canvas);color:var(--ink)}
+img,svg{display:block;max-width:100%}
+
+/* mostaza para el foco general — el rojo/ember queda reservado para
+   errores de validación, así no se confunden un campo enfocado con
+   uno inválido (ver #detalle-error en la hoja de pedido) */
+:focus-visible{outline:3px solid var(--mustard);outline-offset:3px;border-radius:4px}
+
+/* ---------- barra de secciones sin scrollbar visible ---------- */
+#pistas{scrollbar-width:none}
+#pistas::-webkit-scrollbar{display:none}
+.carril-recom{scrollbar-width:none}
+.carril-recom::-webkit-scrollbar{display:none}
+
+/* ---------- animación de entrada del recomendador ---------- */
+@keyframes recom-entrada{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.recom-entrada{animation:recom-entrada .35s cubic-bezier(.2,.8,.3,1) both}
+
+/* ---------- estado "abierto": ticket perforado, sin punto brillante ---------- */
+.chip-ticket{
+  position:relative;
+  border-left:2px dashed var(--ink);
+  padding-left:10px;
+}
+
+/* ---------- botón con sombra tipo carta de menú, sin exagerar ---------- */
+.boton-solido{
+  box-shadow:3px 3px 0 rgba(27,20,15,.9);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.boton-solido:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(27,20,15,.9)}
+.boton-solido:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(27,20,15,.9)}
+
+/* ---------- comanda: papel de ticket con borde perforado ---------- */
+.comanda{position:relative}
+.comanda::before{
+  content:"";position:absolute;left:-1px;right:-1px;top:-7px;height:12px;
+  background:radial-gradient(circle at 6px 6px, var(--canvas) 5.2px, transparent 5.6px) repeat-x;
+  background-size:12px 12px;
+}
+
+
+/* ---------- barra de pedido (escritorio): entra/sale desde abajo,
+   y se aparta mientras la hoja de pedido está abierta para no
+   solaparse con ella ---------- */
+#barra{transform:translateY(110%);transition:transform .22s ease}
+#barra[data-visible="si"]:not([data-oculta="si"]){transform:translateY(0)}
+
+/* ---------- velo + hoja de pedido ---------- */
+#velo{opacity:0;pointer-events:none;transition:opacity .2s ease}
+#velo[data-abierto="si"]{opacity:1;pointer-events:auto}
+
+#hoja{transform:translateY(102%);transition:transform .26s cubic-bezier(.2,.7,.3,1)}
+#hoja[data-abierto="si"]{transform:translateY(0)}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}

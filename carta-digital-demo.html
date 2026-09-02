@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Burger Co. — Carta digital</title>
+<meta name="description" content="Carta digital con pedido por WhatsApp. Demostración.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/styles.css">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: "#1B140F",
+          canvas: "#FBF6EC",
+          surface: "#FFFDF7",
+          hairline: "#E7DAC0",
+          "hairline-strong": "#CBB98D",
+          ember: "#C8401D",
+          mustard: "#EFB13A",
+          muted: "#7A6C57"
+        },
+        fontFamily: {
+          display: ['"Big Shoulders Display"', '"Arial Narrow"', "sans-serif"],
+          body: ["Karla", "system-ui", "sans-serif"],
+          mono: ['"DM Mono"', "ui-monospace", "monospace"]
+        }
+      }
+    }
+  };
+</script>
+</head>
+<body class="font-body text-[16px] leading-relaxed text-ink sm:pb-24">
+
+<!-- ====== CABECERA ====== -->
+<header class="sticky top-0 z-40 border-b-2 border-ink bg-canvas">
+  <div class="mx-auto flex h-16 max-w-6xl items-center gap-3 px-5 sm:px-6">
+    <a href="#inicio" class="flex items-center gap-2.5">
+      <img src="assets/images/logo-burger-co.png" alt="" aria-hidden="true" width="34" height="34" class="h-[34px] w-[34px] shrink-0 object-contain">
+      <span class="leading-tight">
+        <span id="marca-nombre" class="block font-display text-xl font-black uppercase tracking-wide"></span>
+        <span id="marca-bajada" class="block font-mono text-[9px] uppercase tracking-[0.22em] text-muted"></span>
+      </span>
+    </a>
+    <div class="chip-ticket ml-auto hidden items-center rounded-r-sm bg-surface px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-ink sm:flex">
+      <span id="estado-horario"></span>
+    </div>
+  </div>
+</header>
+
+<!-- ====== PORTADA ====== -->
+<section id="inicio" class="relative flex min-h-[86vh] flex-col justify-end overflow-hidden border-b-2 border-ink sm:min-h-[640px]">
+  <img id="hero-imagen" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover">
+  <div class="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/55 to-ink/10"></div>
+
+  <div class="mx-auto w-full max-w-6xl px-5 pb-10 pt-16 sm:px-6 sm:pb-16">
+    <p class="mb-3 font-mono text-xs uppercase tracking-[0.24em] text-mustard">Escanea · elige · pide</p>
+    <h1 class="font-display text-[16vw] font-black uppercase leading-[0.82] text-canvas sm:text-7xl md:text-8xl">
+      A la plancha<br><span class="text-ember">siempre</span>
+    </h1>
+    <p class="mt-4 max-w-md text-[17px] text-canvas/90">Carne fresca del día, pan tostado en mantequilla y papas cortadas a mano. Arma tu pedido acá y llega listo a la cocina.</p>
+
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="#hamburguesas" class="boton-solido inline-flex items-center gap-2 rounded-full border-2 border-ink bg-ink px-6 py-3 font-bold text-canvas">Ver la carta</a>
+      <a href="#combos" class="boton-solido inline-flex items-center gap-2 rounded-full border-2 border-ink bg-canvas px-6 py-3 font-bold text-ink">Combos para compartir</a>
+    </div>
+
+    <p class="mt-5 flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs text-canvas/80">
+      <span id="dato-delivery"></span>
+      <span>Yape · Plin · efectivo</span>
+      <span id="dato-horario"></span>
+    </p>
+  </div>
+</section>
+
+<!-- ====== ¿NO SABES QUÉ PEDIR? ====== -->
+<section class="border-b-2 border-ink bg-surface">
+  <div class="mx-auto max-w-6xl px-5 py-8 sm:px-6">
+    <div id="recom-cuerpo"></div>
+  </div>
+</section>
+
+<!-- ====== NAVEGACIÓN DE SECCIONES ====== -->
+<nav aria-label="Secciones de la carta" class="sticky top-16 z-30 border-b-2 border-ink bg-canvas">
+  <div id="pistas" class="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-5 py-3 sm:px-6"></div>
+</nav>
+
+<main id="carta" class="pb-6"></main>
+
+<!-- ====== PIE ====== -->
+<footer class="mt-12 border-t-2 border-ink bg-ink text-canvas">
+  <div class="mx-auto grid max-w-6xl gap-8 px-5 py-10 sm:grid-cols-3 sm:px-6">
+    <div>
+      <span id="footer-nombre" class="font-display text-xl font-black uppercase text-canvas"></span>
+      <p id="footer-direccion" class="mt-2 text-sm text-canvas/70"></p>
+      <p id="footer-telefono" class="text-sm text-canvas/70"></p>
+    </div>
+    <div>
+      <h4 class="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-mustard">Horario</h4>
+      <p id="footer-horario" class="text-sm text-canvas/70"></p>
+    </div>
+    <div>
+      <h4 class="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-mustard">Delivery</h4>
+      <p class="text-sm text-canvas/70">Centro: <span id="footer-delivery-centro"></span></p>
+      <p class="text-sm text-canvas/70">Otras zonas: <span id="footer-delivery-otras"></span></p>
+    </div>
+  </div>
+  <div class="mx-auto max-w-6xl px-5 pb-8 sm:px-6">
+    <p class="border-t border-canvas/20 pt-4 font-mono text-[11px] leading-relaxed text-canvas/50">Demostración. Marca, precios, dirección y número son de ejemplo y se reemplazan por los del restaurante. Imágenes propias alojadas localmente.</p>
+  </div>
+</footer>
+
+<!-- ====== BARRA DE PEDIDO (solo escritorio) ======
+     En escritorio sobra ancho para mostrar cantidad + total sin robarle
+     espacio a nada — más visibilidad durante la compra que un ícono solo. ====== -->
+<div id="barra" data-visible="no" class="fixed inset-x-0 bottom-0 z-50 hidden border-t-2 border-ink bg-ink text-canvas sm:block">
+  <div class="mx-auto flex h-20 max-w-6xl items-center gap-4 px-6">
+    <div class="flex flex-col leading-tight">
+      <small id="barra-items" class="font-mono text-[11px] uppercase tracking-wider text-canvas/70">0 productos</small>
+      <strong id="barra-total" class="font-mono text-3xl font-bold text-mustard">S/ 0.00</strong>
+    </div>
+    <button type="button" id="barra-abrir" class="boton-solido ml-auto rounded-full border-2 border-ink bg-mustard px-6 py-3 font-bold text-ink">Ver mi pedido</button>
+  </div>
+</div>
+
+<!-- ====== ÍCONO DE PEDIDO (unido al borde derecho, solo mobile) ======
+     En escritorio el mismo pedido se revisa desde la barra inferior. ====== -->
+<aside id="pestana-pedido" data-oculta="no" role="button" tabindex="0" aria-label="Ver mi pedido"
+  class="fixed right-0 z-50 cursor-pointer select-none
+         bottom-[calc(6rem+env(safe-area-inset-bottom))]
+         transition-[transform,opacity] duration-200 ease-out
+         hover:-translate-x-1.5 focus-visible:-translate-x-1.5
+         data-[oculta=si]:translate-x-16 data-[oculta=si]:opacity-0 data-[oculta=si]:pointer-events-none
+         sm:hidden">
+  <div class="relative flex h-14 w-14 items-center justify-center rounded-l-2xl border-2 border-r-0 border-ink bg-ink shadow-[-4px_4px_0_rgba(27,20,15,.22)]">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="text-mustard">
+      <path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/>
+    </svg>
+    <span id="pestana-contador" class="absolute -left-1.5 -top-1.5 hidden min-w-[20px] rounded-full bg-ember px-1 text-center font-mono text-[11px] font-bold leading-5 text-canvas ring-2 ring-canvas">0</span>
+  </div>
+</aside>
+
+<!-- ====== HOJA DE PEDIDO ====== -->
+<div id="velo" data-abierto="no" class="fixed inset-0 z-[60] bg-ink/55"></div>
+<aside id="hoja" data-abierto="no" role="dialog" aria-modal="true" aria-labelledby="titulo-hoja"
+  class="fixed inset-x-0 bottom-0 z-[61] max-h-[88vh] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-[420px] sm:max-h-[80vh]">
+
+  <!-- el recorte con bordes redondeados (overflow-hidden + rounded) vive en
+       este envoltorio interno, separado del que anima con `transform` en
+       #hoja: transform + overflow-hidden + border-radius en el MISMO
+       elemento hace que el contenido con scroll se asome por los bordes
+       (bug de render de Chromium con capas compuestas) -->
+  <div class="flex max-h-[88vh] flex-col overflow-hidden rounded-t-[20px] border-t-2 border-ink bg-canvas sm:max-h-[80vh] sm:rounded-[20px] sm:border-2">
+    <div class="flex shrink-0 items-center gap-3 border-b-2 border-ink bg-canvas px-5 pb-3 pt-4">
+      <h3 id="titulo-hoja" class="font-display text-3xl font-extrabold uppercase leading-none">Tu pedido</h3>
+      <button type="button" id="cerrar-hoja" aria-label="Cerrar el pedido"
+        class="ml-auto grid h-8 w-8 place-items-center rounded-full border-2 border-ink text-lg leading-none hover:bg-hairline">✕</button>
+    </div>
+
+    <div class="min-h-0 flex-1 overflow-y-auto" style="padding-bottom:env(safe-area-inset-bottom)">
+      <div class="px-5 pb-6 pt-4">
+        <div id="renglones"></div>
+
+    <div role="group" aria-label="Cómo lo recibes" class="mt-4 mb-3 flex gap-2">
+      <button type="button" data-modo="Delivery" aria-pressed="true" class="flex-1 rounded-full border-2 border-ink bg-ink px-2 py-2 font-mono text-xs uppercase tracking-wider text-canvas">Delivery</button>
+      <button type="button" data-modo="Recojo en tienda" aria-pressed="false" class="flex-1 rounded-full border-2 border-ink px-2 py-2 font-mono text-xs uppercase tracking-wider">Recojo en tienda</button>
+    </div>
+
+    <input id="detalle" placeholder="Dirección o referencia" autocomplete="off" required aria-required="true" aria-describedby="detalle-error"
+      class="w-full rounded-xl border-2 border-ink bg-surface px-3.5 py-2.5 text-[15px] placeholder:text-hairline-strong">
+    <p id="detalle-error" class="mt-1.5 min-h-[1em] font-mono text-[11px] font-bold text-ember" role="alert"></p>
+    <p id="detalle-hint" class="min-h-[1em] font-mono text-[11px] text-muted"></p>
+
+    <div class="comanda mt-5 mb-4 rounded border-2 border-ink bg-surface px-4 py-5">
+      <h5 class="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Así llega al WhatsApp de la cocina</h5>
+      <pre id="vista-comanda" class="whitespace-pre-wrap font-mono text-xs leading-relaxed text-ink">Todavía no agregas nada.</pre>
+    </div>
+
+    <div class="flex items-baseline gap-2 border-t-2 border-ink pt-3.5">
+      <span class="font-display text-2xl font-extrabold uppercase">Total</span>
+      <strong id="hoja-total" class="ml-auto font-mono text-2xl font-medium text-ember">S/ 0.00</strong>
+    </div>
+
+    <a id="enviar" href="#" aria-disabled="true" target="_blank" rel="noopener"
+      class="mt-3 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-[#128C4B] py-3.5 font-bold text-white aria-disabled:pointer-events-none aria-disabled:opacity-45">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.2 1.2-1.7 1.2-.5 0-.9.2-3-.9s-3.4-3.4-3.5-3.6c-.1-.2-.9-1.2-.9-2.3s.6-1.6.8-1.8c.2-.2.4-.3.6-.3h.4c.2 0 .4 0 .5.4l.8 1.9c.1.2 0 .4-.1.5l-.3.4c-.1.1-.2.3-.1.5.2.3.7 1.1 1.4 1.7.9.8 1.5 1 1.8 1.1.2.1.4 0 .5-.1l.6-.7c.2-.2.3-.2.5-.1l1.8.9c.2.1.3.2.3.3 0 .2 0 .6-.4.9z"/></svg>
+      Enviar por WhatsApp
+    </a>
+        <p class="mt-2.5 text-center font-mono text-[11px] text-muted">No hace falta app ni registro. Se abre el chat con el pedido escrito.</p>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script src="js/data.js"></script>
+<script src="js/carrito.js"></script>
+<script src="js/recomendador.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
