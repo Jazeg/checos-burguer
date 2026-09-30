@@ -1,0 +1,26 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores (.vscode/ se versiona: Codespaces usa esa configuración)
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude Code: configuración local de cada persona
+.claude/settings.local.json
+
+# Dependencias y logs, por si algún día se usa npm
+node_modules/
+npm-debug.log*
+*.log
+
+# Python (servidor local, caché)
+__pycache__/
+*.pyc
+
+# Variables de entorno
+.env
+.env.*

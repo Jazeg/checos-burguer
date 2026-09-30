@@ -5,7 +5,7 @@
    ============================================================ */
 
 const PLATOS = Object.fromEntries(
-  CARTA.flatMap(s => s.platos.map(p => [p.id, { ...p, categoria: s.id }]))
+  [...CARTA, ...CARTA_DESAYUNO].flatMap(s => s.platos.map(p => [p.id, { ...p, categoria: s.id }]))
 );
 const pedido = new Map();
 let modoEntrega = "Delivery";
@@ -25,6 +25,8 @@ function unidadesPedido() {
 }
 
 function sumarAlPedido(id, delta) {
+  actualizarTurno();
+  if (!PLATOS[id] || (delta > 0 && !disponibleAhora(id))) return;
   const actual = pedido.get(id) || 0;
   const nuevo = actual + delta;
   if (nuevo <= 0) pedido.delete(id); else pedido.set(id, nuevo);

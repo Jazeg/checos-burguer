@@ -5,11 +5,12 @@
    teléfono del cliente — nunca sale de ahí.
    ============================================================ */
 
-const RECOM_HISTORIAL_KEY = "bc_historial_pedidos";
-const RECOM_RECIENTES_KEY = "bc_recomendados_recientes";
+const RECOM_HISTORIAL_KEY = "checos_historial_v1";
+const RECOM_RECIENTES_KEY = "checos_recomendados_v1";
 const RECOM_MAX_RECIENTES = 4;
 
-const PLATOS_COMIDA = Object.values(PLATOS).filter(p => p.categoria !== "bebidas");
+const platosVisibles = () => cartaVisible().flatMap(s => s.platos.map(p => PLATOS[p.id]));
+const platosComida = () => platosVisibles().filter(p => p.tipo === "comida");
 
 function leerHistorialPedidos() {
   try { return JSON.parse(localStorage.getItem(RECOM_HISTORIAL_KEY)) || []; }
@@ -18,7 +19,7 @@ function leerHistorialPedidos() {
 
 function registrarPedidoEnHistorial(ids) {
   const historial = leerHistorialPedidos().concat(ids).slice(-40);
-  localStorage.setItem(RECOM_HISTORIAL_KEY, JSON.stringify(historial));
+  try { localStorage.setItem(RECOM_HISTORIAL_KEY, JSON.stringify(historial)); } catch {}
 }
 
 function leerRecomendadosRecientes() {
@@ -28,7 +29,7 @@ function leerRecomendadosRecientes() {
 
 function registrarRecomendados(ids) {
   const recientes = [...ids, ...leerRecomendadosRecientes()].slice(0, RECOM_MAX_RECIENTES);
-  localStorage.setItem(RECOM_RECIENTES_KEY, JSON.stringify(recientes));
+  try { localStorage.setItem(RECOM_RECIENTES_KEY, JSON.stringify(recientes)); } catch {}
 }
 
 /* filtra, pero si el filtro deja la lista vacía, no descarta nada
@@ -66,7 +67,7 @@ function categoriasEnCarrito() {
 function recomendarCasa(personas, saciedad) {
   // las bebidas solo entran a tallar como complemento de algo que ya
   // eligió — abrir la recomendación con "toma una gaseosa" no ayuda
-  let candidatos = pedido.size ? Object.values(PLATOS) : PLATOS_COMIDA;
+  let candidatos = pedido.size ? platosVisibles().filter(p => p.tipo !== "extra") : platosComida();
 
   if (personas === "solo") candidatos = filtrarConRespaldo(candidatos, p => p.personas <= 1);
   else if (personas === "dos") candidatos = filtrarConRespaldo(candidatos, p => p.personas <= 2);
@@ -79,7 +80,7 @@ function recomendarCasa(personas, saciedad) {
   }
 
   candidatos = sinLosDelCarrito(candidatos);
-  candidatos = filtrarConRespaldo(candidatos, p => p.categoria === "bebidas" || p.saciedad === saciedad);
+  candidatos = filtrarConRespaldo(candidatos, p => p.tipo === "bebida" || p.saciedad === saciedad);
 
   const historial = leerHistorialPedidos();
   let elegido;
@@ -111,7 +112,7 @@ function recomendarCasa(personas, saciedad) {
    Devuelve varias opciones (no una sola) para armar el pedido
    directo desde ahí, tipo carril de opciones. */
 function recomendarListaPorGustos(saciedad, picante, cantidad = 3) {
-  let candidatos = sinLosDelCarrito(PLATOS_COMIDA);
+  let candidatos = sinLosDelCarrito(platosComida());
   candidatos = filtrarConRespaldo(candidatos, p => p.saciedad === saciedad);
 
   if (picante === "si") candidatos = filtrarConRespaldo(candidatos, p => p.picante);

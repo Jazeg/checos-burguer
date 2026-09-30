@@ -13,18 +13,19 @@ const claseEtiqueta = t =>
    Se usa tanto en las tarjetas de la carta como en el resultado del
    recomendador, así que el carrito los mantiene sincronizados a todos. */
 function controlAgregar(id) {
+  if (!disponibleAhora(id)) return '<span class="fuera-horario">Fuera de horario</span>';
   const cant = pedido.get(id) || 0;
   const nombre = PLATOS[id]?.nombre || "";
   if (!cant) {
     return `<button type="button" data-agregar="${id}"
-      class="agregar rounded-full border-2 border-ink bg-mustard px-4 py-1.5 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-canvas">
+      class="agregar inline-flex min-h-11 items-center rounded-full border-2 border-ink bg-mustard px-5 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-canvas">
       Agregar
     </button>`;
   }
   return `<div class="flex items-center overflow-hidden rounded-full border-2 border-ink bg-ink text-canvas">
-    <button type="button" data-menos="${id}" aria-label="Quitar uno de ${nombre}" class="h-8 w-8 text-lg hover:bg-white/10">−</button>
+    <button type="button" data-menos="${id}" aria-label="Quitar uno de ${nombre}" class="h-11 w-11 text-lg hover:bg-white/10">−</button>
     <span class="min-w-[22px] text-center font-mono text-sm">${cant}</span>
-    <button type="button" data-mas="${id}" aria-label="Agregar uno de ${nombre}" class="h-8 w-8 text-lg hover:bg-white/10">+</button>
+    <button type="button" data-mas="${id}" aria-label="Agregar uno de ${nombre}" class="h-11 w-11 text-lg hover:bg-white/10">+</button>
   </div>`;
 }
 
@@ -32,27 +33,27 @@ function controlAgregar(id) {
 function pintarCabecera() {
   $("marca-nombre").textContent = NEGOCIO.nombre;
   $("marca-bajada").textContent = NEGOCIO.bajada;
-  $("estado-horario").textContent = "Abierto ahora · " + NEGOCIO.horario.split("·")[1].trim();
-  $("hero-imagen").src = HERO.imagen;
-  $("hero-imagen").alt = HERO.alt;
-  $("dato-delivery").textContent = "Delivery " + NEGOCIO.delivery.tiempo;
-  $("dato-horario").textContent = NEGOCIO.horario;
+  $("estado-horario").textContent = estadoActual.activo ? "Abierto · " + TURNOS[estadoActual.activo].nombre : "Cerrado · abrimos " + horaTexto(TURNOS[estadoActual.siguiente].inicio);
+  $("hero-imagen").src = TURNOS[turnoVisible()].imagen;
+  $("hero-imagen").alt = TURNOS[turnoVisible()].alt;
+  $("dato-delivery").textContent = "Delivery · " + NEGOCIO.delivery.tiempo;
+  $("dato-horario").textContent = horarioTurno(turnoVisible());
 }
 
 function pintarPie() {
   $("footer-nombre").textContent = NEGOCIO.nombre;
   $("footer-direccion").textContent = NEGOCIO.direccion + ".";
   $("footer-telefono").textContent = "Pedidos al " + NEGOCIO.telefonoVisible + ".";
-  $("footer-horario").textContent = NEGOCIO.horario.replace(" · ", " — ");
+  $("footer-horario").textContent = `Todos los días · Desayunos: ${horarioTurno("desayuno")} (provisional). Hamburguesas: ${horarioTurno("cena")}.`;
   $("footer-delivery-centro").textContent = NEGOCIO.delivery.centro;
   $("footer-delivery-otras").textContent = NEGOCIO.delivery.otras;
 }
 
 /* ---------- navegación de secciones ---------- */
 function pintarPistas() {
-  $("pistas").innerHTML = CARTA.map((s, i) => `
+  $("pistas").innerHTML = cartaVisible().map((s, i) => `
     <button type="button" data-ir="${s.id}"
-      class="pista shrink-0 rounded-full border-2 border-ink px-4 py-1.5 font-mono text-xs uppercase tracking-widest transition-colors
+      class="pista inline-flex min-h-11 shrink-0 items-center rounded-full border-2 border-ink px-4 font-mono text-xs uppercase tracking-widest transition-colors
              ${i === 0 ? "bg-ink text-canvas" : "bg-transparent text-ink hover:bg-hairline"}"
       aria-current="${i === 0}">${s.nombre}</button>
   `).join("");
@@ -60,51 +61,82 @@ function pintarPistas() {
 
 /* ---------- tarjeta de plato ---------- */
 function tarjetaPlato(p) {
-  const etiquetas = p.etiquetas
-    ? `<div class="mb-2 flex flex-wrap gap-1.5">${p.etiquetas.map(t => `
-        <span class="rounded-full border-[1.5px] ${claseEtiqueta(t)} px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider">${t}</span>
-      `).join("")}</div>`
-    : "";
-
-  return `
-    <article class="plato group flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-surface transition-transform duration-150 hover:-translate-y-1">
-      <div class="aspect-[4/3] overflow-hidden border-b-2 border-ink bg-hairline">
-        <img src="${p.imagen}" alt="${p.nombre}" loading="lazy"
-             class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
-      </div>
-      <div class="flex flex-1 flex-col p-4">
-        ${etiquetas}
-        <h3 class="font-display text-2xl font-extrabold uppercase leading-none text-ink">${p.nombre}</h3>
-        <p class="mt-1.5 flex-1 text-sm leading-snug text-muted">${p.desc}</p>
-        <div class="mt-3 flex items-center gap-3">
-          <span class="font-mono text-lg font-medium text-ember">${soles(p.precio)}</span>
-          <div class="ml-auto" data-control="${p.id}">${controlAgregar(p.id)}</div>
-        </div>
-      </div>
-    </article>`;
+  return `<article class="menu-product">
+    <button type="button" class="product-image" data-producto="${p.id}" aria-label="Ver detalle de ${p.nombre}">
+      <img src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="480" height="360">
+      ${p.imagen.endsWith(".jpg") ? '<span class="reference-caption">Foto referencial</span>' : ''}
+      <span class="image-more" aria-hidden="true">↗</span>
+    </button>
+    <div class="product-labels">${(p.etiquetas || []).map(t => `<span>${t}</span>`).join('')}</div>
+    <h3><button type="button" data-producto="${p.id}">${p.nombre}</button></h3>
+    <p class="product-description">${p.desc}</p>
+    <div class="product-actions"><span class="product-price">${soles(p.precio)}</span><div data-control="${p.id}">${controlAgregar(p.id)}</div></div>
+  </article>`;
 }
 
-/* ---------- secciones de la carta ---------- */
 function pintarCarta() {
-  $("carta").innerHTML = CARTA.map(s => `
-    <section id="${s.id}" class="scroll-mt-32 px-5 pt-10 sm:px-6">
-      <div class="mx-auto max-w-6xl">
-        <div class="flex items-baseline gap-3">
-          <h2 class="font-display text-4xl font-extrabold uppercase leading-none text-ink sm:text-5xl">${s.nombre}</h2>
-          <span class="font-mono text-xs text-muted">${s.platos.length} opciones</span>
-        </div>
-        <div class="mt-3 mb-6 h-0.5 bg-ink"></div>
-        ${s.nota ? `<p class="-mt-4 mb-6 max-w-md text-sm text-muted">${s.nota}</p>` : ""}
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          ${s.platos.map(tarjetaPlato).join("")}
-        </div>
-      </div>
-    </section>
-  `).join("");
+  const consulta = ($("buscar-carta")?.value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  const secciones = cartaVisible().map(s => ({ ...s, platos: s.platos.filter(p =>
+    `${p.nombre} ${s.nombre}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(consulta)) })).filter(s => s.platos.length);
+  $("busqueda-resultado").textContent = consulta ? `${secciones.reduce((n,s) => n+s.platos.length, 0)} productos encontrados` : '';
+  $("carta").innerHTML = secciones.map((s, i) => `
+    <section id="${s.id}" class="menu-section">
+      <div class="section-heading"><h2>${s.nombre}</h2><span>${String(s.platos.length).padStart(2, '0')} opciones</span></div>
+      ${s.nota ? `<p class="section-note">${s.nota}</p>` : ''}
+      <div class="product-grid">${s.platos.map((p, n) => tarjetaPlato(p) + (!consulta && i === 0 && n === 1 ? promoCarta() : '')).join('')}</div>
+    </section>`).join('') || '<p class="sin-resultados">No encontramos ese producto en esta carta. Prueba otro nombre o cambia de turno.</p>';
+  document.querySelectorAll('[data-ir]').forEach(b => { b.hidden = !secciones.some(s => s.id === b.dataset.ir); });
+}
+
+
+function promoCarta() {
+  const cena = turnoVisible() === 'cena';
+  return `<aside class="menu-promo"><span>${cena ? 'MEJOR EN' : 'ASÍ EMPIEZA'}</span><em>${cena ? 'combo.' : 'tu día.'}</em>
+    <p>${cena ? 'Descubre los 13 combos de la carta de Checo’s.' : 'Un buen pan. Un café calientito. Un momento para ti.'}</p>
+    <a href="#${cena ? 'combos' : 'bebidas-calientes'}">${cena ? 'Descubre los combos' : 'Elige tu bebida'} ↗</a><span class="promo-flower" aria-hidden="true">✳</span></aside>`;
+}
+
+let productoActivo = null;
+function pintarDetalleProducto() {
+  if (!productoActivo) return;
+  const p = PLATOS[productoActivo];
+  const turnos = Object.keys(TURNOS).filter(id => TURNOS[id].carta.some(s => s.platos.some(item => item.id === p.id)));
+  const turno = turnos.includes(turnoVisible()) ? turnoVisible() : turnos[0];
+  $("producto-imagen").src = p.imagen; $("producto-imagen").alt = p.nombre;
+  $("producto-titulo").textContent = p.nombre;
+  $("producto-categoria").textContent = TURNOS[turno].carta.find(s => s.id === p.categoria).nombre;
+  $("producto-descripcion").textContent = p.desc || "Consulta los ingredientes y acompañamientos con Checo’s al pedir.";
+  $("producto-precio").textContent = soles(p.precio);
+  $("producto-horario").textContent = (disponibleAhora(p.id) ? 'Disponible ahora · ' : 'Fuera de horario · ') + turnos.map(id => `${TURNOS[id].nombre}: ${horarioTurno(id)}`).join(' / ');
+  $("producto-control").dataset.control = p.id;
+  $("producto-control").innerHTML = controlAgregar(p.id);
+  $("producto-confirmacion").textContent = pedido.has(p.id) ? `${pedido.get(p.id)} en tu pedido` : '';
+}
+function abrirProducto(id) {
+  productoActivo = id;
+  pintarDetalleProducto();
+  $("producto-dialog").showModal();
+  document.body.style.overflow = 'hidden';
 }
 
 /* ---------- validación del detalle de entrega ---------- */
 let detalleTocado = false;
+
+/* el campo cambia de significado según el modo: en delivery pide dónde
+   llevarlo, en recojo a nombre de quién. Label visible y placeholder van
+   siempre juntos — el placeholder solo, sin label, dejaba el campo sin
+   explicación una vez escrito. */
+const TEXTOS_DETALLE = {
+  "Delivery": { label: "Dirección o referencia", ph: "Ej.: Jr. Comercio 123, puerta verde", autocomplete: "street-address" },
+  "Recojo en tienda": { label: "¿A nombre de quién?", ph: "Ej.: Rosa Quispe", autocomplete: "name" }
+};
+
+function pintarCampoDetalle() {
+  const t = TEXTOS_DETALLE[modoEntrega] || TEXTOS_DETALLE.Delivery;
+  $("detalle-label").textContent = t.label;
+  $("detalle").placeholder = t.ph;
+  $("detalle").autocomplete = t.autocomplete;
+}
 
 function detalleValido() {
   return $("detalle").value.trim().length > 0;
@@ -129,10 +161,12 @@ function pintarValidacionDetalle() {
 /* ---------- hoja de pedido ---------- */
 function pintarPedido() {
   const n = unidadesPedido(), t = totalPedido();
+  $("header-cantidad").textContent = n;
 
   $("pestana-contador").textContent = n;
   $("pestana-contador").classList.toggle("hidden", n === 0);
   $("barra").dataset.visible = n ? "si" : "no";
+  actualizarPestana();
   $("barra-items").textContent = n === 1 ? "1 producto" : n + " productos";
   $("barra-total").textContent = soles(t);
   $("hoja-total").textContent = soles(t);
@@ -141,18 +175,18 @@ function pintarPedido() {
     ? [...pedido].map(([id, cant]) => {
         const p = PLATOS[id];
         return `
-        <div class="flex items-center gap-3 border-b border-dashed border-hairline-strong py-3">
-          <div class="min-w-0">
-            <div class="truncate font-bold text-sm text-ink">${p.nombre}</div>
-            <div class="font-mono text-xs text-muted">${soles(p.precio)} c/u</div>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-dashed border-hairline-strong py-3">
+          <div class="min-w-0 flex-1 basis-40">
+            <div class="font-bold text-sm text-ink">${p.nombre}</div>
+            <div class="font-mono text-xs text-muted">${soles(p.precio)} c/u${disponibleAhora(id) ? "" : " · Fuera de horario"}</div>
           </div>
           <div class="ml-auto flex items-center overflow-hidden rounded-full border-2 border-ink">
-            <button type="button" data-menos="${id}" aria-label="Quitar uno de ${p.nombre}" class="h-8 w-8 text-lg hover:bg-hairline">−</button>
+            <button type="button" data-menos="${id}" aria-label="Quitar uno de ${p.nombre}" class="h-11 w-11 text-lg hover:bg-hairline">−</button>
             <span class="min-w-[26px] text-center font-mono text-sm">${cant}</span>
-            <button type="button" data-mas="${id}" aria-label="Agregar uno de ${p.nombre}" class="h-8 w-8 text-lg hover:bg-hairline">+</button>
+            <button type="button" data-mas="${id}" ${disponibleAhora(id) ? "" : "disabled"} aria-label="Agregar uno de ${p.nombre}" class="h-11 w-11 text-lg hover:bg-hairline">+</button>
           </div>
           <button type="button" data-eliminar="${id}" aria-label="Quitar ${p.nombre} del pedido"
-            class="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-ember/10 hover:text-ember">
+            class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-ember/10 hover:text-ember">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
             </svg>
@@ -161,12 +195,16 @@ function pintarPedido() {
       }).join("")
     : `<p class="py-6 text-center text-sm text-muted">Tu pedido está vacío. Agrega algo de la carta.</p>`;
 
+  pintarDetalleProducto();
   const detalle = $("detalle").value.trim();
   $("vista-comanda").textContent = textoComanda(detalle);
 
   const enviar = $("enviar");
-  enviar.setAttribute("aria-disabled", pedido.size ? "false" : "true");
-  enviar.href = pedido.size ? enlaceWhatsApp(detalle) : "#";
+  const disponibles = pedidoDisponible();
+  $("pedido-aviso").textContent = pedido.size && !disponibles
+    ? 'Hay productos fuera de horario. Retíralos con × para enviar tu pedido. Conservamos tu selección.' : '';
+  enviar.setAttribute("aria-disabled", disponibles ? "false" : "true");
+  enviar.href = disponibles ? enlaceWhatsApp(detalle) : "#";
   pintarValidacionDetalle();
 
   document.querySelectorAll("[data-control]").forEach(cont => {
@@ -177,7 +215,8 @@ function pintarPedido() {
 /* ---------- "¿no sabes qué pedir?" ---------- */
 const estadoRecom = { paso: "inicio", modo: null, personas: null, saciedad: null, picante: null, plato: null, platos: null };
 
-const CHIP = "rounded-full border-2 border-ink px-4 py-2 font-bold text-ink transition-colors hover:bg-mustard active:scale-95";
+const CHIP = "inline-flex min-h-11 items-center rounded-full border-2 border-ink px-4 font-bold text-ink transition-colors hover:bg-mustard active:scale-95";
+const ENLACE = "inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted underline hover:text-ink";
 const PASO_LABEL = { "casa-personas": "Pregunta 1 de 2", "casa-saciedad": "Pregunta 2 de 2", "gustos-saciedad": "Pregunta 1 de 2", "gustos-picante": "Pregunta 2 de 2" };
 
 /* envuelve cada estado del widget en su propia animación de entrada;
@@ -193,18 +232,18 @@ function pasoPreguntas(paso, titulo, chips, dataAttr) {
     <div class="flex flex-wrap gap-2">
       ${chips.map(([valor, texto]) => `<button type="button" data-${dataAttr}="${valor}" class="${CHIP}">${texto}</button>`).join("")}
     </div>
-    <button type="button" data-recom-reset class="mt-4 font-mono text-xs uppercase tracking-wider text-muted underline hover:text-ink">Cancelar</button>`);
+    <button type="button" data-recom-reset class="mt-2 ${ENLACE}">Cancelar</button>`);
 }
 
 /* tarjeta compacta para el carril de opciones del quiz por gustos */
 function tarjetaRecomendada(p, i) {
   return `
-    <article class="recom-entrada w-56 shrink-0 snap-start overflow-hidden rounded-2xl border-2 border-ink bg-canvas" style="animation-delay:${i * 90}ms">
+    <article class="recom-entrada w-[17rem] shrink-0 snap-start overflow-hidden rounded-2xl border-2 border-ink bg-canvas sm:w-56" style="animation-delay:${i * 90}ms">
       <img src="${p.imagen}" alt="${p.nombre}" class="h-32 w-full border-b-2 border-ink object-cover">
       <div class="p-3.5">
         <h4 class="font-display text-xl font-extrabold uppercase leading-none text-ink">${p.nombre}</h4>
         <p class="mt-1 line-clamp-2 text-xs leading-snug text-muted">${p.desc}</p>
-        <div class="mt-2.5 flex items-center gap-2">
+        <div class="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-2 pr-14 sm:pr-0">
           <span class="font-mono text-sm font-medium text-ember">${soles(p.precio)}</span>
           <div class="ml-auto" data-control="${p.id}">${controlAgregar(p.id)}</div>
         </div>
@@ -227,7 +266,7 @@ function pintarRecomendador() {
           <button type="button" data-recom-gustos class="rounded-full border-2 border-ink px-5 py-2.5 font-bold text-ink hover:bg-hairline">Prefiero elegir por gustos</button>
         </div>
       </div>
-      <p class="mt-3 font-mono text-[11px] text-muted">Guardamos tus gustos y tu dirección solo en este teléfono. Nada se envía a un servidor.</p>`);
+      <p class="mt-3 font-mono text-xs text-muted">Guardamos tus gustos y tu dirección solo en este teléfono. Nada se envía a un servidor.</p>`);
     return;
   }
 
@@ -255,7 +294,7 @@ function pintarRecomendador() {
   if (estadoRecom.paso === "resultado" && estadoRecom.modo === "casa") {
     const plato = estadoRecom.plato;
     if (!plato) {
-      cuerpo.innerHTML = envolverRecom(`<p class="text-sm text-muted">Por ahora no queda nada nuevo por recomendarte. <button type="button" data-recom-reset class="underline">Volver a intentar</button></p>`);
+      cuerpo.innerHTML = envolverRecom(`<p class="text-sm text-muted">Por ahora no queda nada nuevo por recomendarte. <button type="button" data-recom-reset class="${ENLACE}">Volver a intentar</button></p>`);
       return;
     }
     cuerpo.innerHTML = envolverRecom(`
@@ -265,11 +304,11 @@ function pintarRecomendador() {
           <p class="font-mono text-xs uppercase tracking-[0.2em] text-ember">La casa recomienda</p>
           <h3 class="font-display text-2xl font-extrabold uppercase leading-none text-ink">${plato.nombre}</h3>
           <p class="mt-1 text-sm text-muted">${plato.desc}</p>
-          <div class="mt-3 flex flex-wrap items-center gap-3">
+          <div class="mt-3 flex flex-wrap items-center gap-3 pr-14 sm:pr-0">
             <span class="font-mono text-lg font-medium text-ember">${soles(plato.precio)}</span>
             <div data-control="${plato.id}">${controlAgregar(plato.id)}</div>
-            <button type="button" data-recom-otra class="font-mono text-xs uppercase tracking-wider text-muted underline hover:text-ink">Prefiero otra</button>
-            <button type="button" data-recom-reset class="font-mono text-xs uppercase tracking-wider text-muted underline hover:text-ink">Empezar de nuevo</button>
+            <button type="button" data-recom-otra class="${ENLACE}">Prefiero otra</button>
+            <button type="button" data-recom-reset class="${ENLACE}">Empezar de nuevo</button>
           </div>
         </div>
       </div>`);
@@ -279,7 +318,7 @@ function pintarRecomendador() {
   if (estadoRecom.paso === "resultado" && estadoRecom.modo === "gustos") {
     const platos = estadoRecom.platos || [];
     if (!platos.length) {
-      cuerpo.innerHTML = envolverRecom(`<p class="text-sm text-muted">Por ahora no queda nada nuevo con ese filtro. <button type="button" data-recom-reset class="underline">Volver a intentar</button></p>`);
+      cuerpo.innerHTML = envolverRecom(`<p class="text-sm text-muted">Por ahora no queda nada nuevo con ese filtro. <button type="button" data-recom-reset class="${ENLACE}">Volver a intentar</button></p>`);
       return;
     }
     cuerpo.innerHTML = envolverRecom(`
@@ -288,8 +327,8 @@ function pintarRecomendador() {
         ${platos.map(tarjetaRecomendada).join("")}
       </div>
       <div class="mt-4 flex flex-wrap gap-4">
-        <button type="button" data-recom-otra class="font-mono text-xs uppercase tracking-wider text-muted underline hover:text-ink">Ver otras opciones</button>
-        <button type="button" data-recom-reset class="font-mono text-xs uppercase tracking-wider text-muted underline hover:text-ink">Empezar de nuevo</button>
+        <button type="button" data-recom-otra class="${ENLACE}">Ver otras opciones</button>
+        <button type="button" data-recom-reset class="${ENLACE}">Empezar de nuevo</button>
       </div>`);
     return;
   }
@@ -308,12 +347,12 @@ function siguienteRecomendacion() {
 /* ---------- recordar dirección/nombre para la próxima vez ---------- */
 function restaurarContacto() {
   let guardado;
-  try { guardado = JSON.parse(localStorage.getItem("bc_contacto")); } catch { guardado = null; }
+  try { guardado = JSON.parse(localStorage.getItem("checos_contacto_v1")); } catch { guardado = null; }
   if (!guardado) return;
 
   modoEntrega = guardado.modo === "Recojo en tienda" ? "Recojo en tienda" : "Delivery";
   $("detalle").value = guardado.detalle || "";
-  $("detalle").placeholder = modoEntrega === "Delivery" ? "Dirección o referencia" : "¿A nombre de quién?";
+  pintarCampoDetalle();
   $("detalle-hint").textContent = "Usamos los datos de tu último pedido — puedes cambiarlos.";
 
   document.querySelectorAll("[data-modo]").forEach(o => {
@@ -325,31 +364,47 @@ function restaurarContacto() {
 }
 
 function guardarContacto(detalle) {
-  localStorage.setItem("bc_contacto", JSON.stringify({ modo: modoEntrega, detalle }));
+  try { localStorage.setItem("checos_contacto_v1", JSON.stringify({ modo: modoEntrega, detalle })); } catch { /* El pedido funciona sin almacenamiento. */ }
 }
 
 /* ---------- interacciones ---------- */
+/* la pestaña se esconde si la hoja está abierta (se solaparían) o si el
+   pedido está vacío (no hay nada que abrir y en móvil se monta encima de
+   los controles de las tarjetas) */
+function actualizarPestana() {
+  const estorba = $("hoja").dataset.abierto === "si" || unidadesPedido() === 0;
+  $("pestana-pedido").dataset.oculta = estorba ? "si" : "no";
+  $("pestana-pedido").tabIndex = estorba ? -1 : 0;
+  $("barra").inert = estorba;
+}
+
+let focoAntesPedido;
 function abrirHoja(v) {
+  if (v) focoAntesPedido = document.activeElement;
+  $("hoja").inert = !v;
+  $("site-shell").inert = v;
   $("hoja").dataset.abierto = v ? "si" : "no";
   $("velo").dataset.abierto = v ? "si" : "no";
-  $("pestana-pedido").dataset.oculta = v ? "si" : "no";
+  actualizarPestana();
   $("barra").dataset.oculta = v ? "si" : "no";
   document.body.style.overflow = v ? "hidden" : "";
   if (v) $("cerrar-hoja").focus();
+  else if (focoAntesPedido?.isConnected && !focoAntesPedido.closest('dialog')) focoAntesPedido.focus();
+  else $("header-pedido").focus();
 }
 
 function iniciar() {
-  pintarCabecera();
+  actualizarTurno(true);
   pintarPie();
-  pintarPistas();
-  pintarCarta();
-  pintarRecomendador();
   restaurarContacto();
   pintarPedido();
 
   document.addEventListener("click", e => {
     const b = e.target.closest("button, [data-ir]");
     if (!b) return;
+    if (b.dataset.producto) abrirProducto(b.dataset.producto);
+    if (b.dataset.turno) { turnoManual = b.dataset.turno; actualizarTurno(true); }
+    if (b.id === 'turno-auto') { turnoManual = null; actualizarTurno(true); }
     if (b.dataset.agregar) sumarAlPedido(b.dataset.agregar, 1);
     if (b.dataset.mas) sumarAlPedido(b.dataset.mas, 1);
     if (b.dataset.menos) sumarAlPedido(b.dataset.menos, -1);
@@ -375,7 +430,8 @@ function iniciar() {
   });
 
   $("enviar").addEventListener("click", e => {
-    if (!pedido.size) return;
+    actualizarTurno();
+    if (!pedidoDisponible()) { e.preventDefault(); return; }
 
     if (!detalleValido()) {
       e.preventDefault();
@@ -390,6 +446,7 @@ function iniciar() {
     registrarPedidoEnHistorial([...pedido.keys()]);
   });
 
+  $("buscar-carta").addEventListener('input', () => { pintarCarta(); observarCarta(); });
   $("detalle").addEventListener("input", pintarPedido);
   $("detalle").addEventListener("blur", () => { detalleTocado = true; pintarValidacionDetalle(); });
 
@@ -402,22 +459,61 @@ function iniciar() {
         o.classList.toggle("bg-ink", activo);
         o.classList.toggle("text-canvas", activo);
       });
-      $("detalle").placeholder = modoEntrega === "Delivery" ? "Dirección o referencia" : "¿A nombre de quién?";
+      pintarCampoDetalle();
       pintarPedido();
     });
+  });
+
+  /* el teclado virtual no cambia innerHeight, solo visualViewport: la
+     diferencia entre ambos es lo que el teclado tapa. Ver --teclado en
+     styles.css. */
+  const vv = window.visualViewport;
+  if (vv) {
+    const medirTeclado = () => {
+      const tapado = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      document.documentElement.style.setProperty("--teclado", Math.round(tapado) + "px");
+    };
+    vv.addEventListener("resize", medirTeclado);
+    vv.addEventListener("scroll", medirTeclado);
+    medirTeclado();
+  }
+
+  $("detalle").addEventListener("focus", () => {
+    setTimeout(() => $("detalle").scrollIntoView({ block: "center", behavior: "smooth" }), 250);
   });
 
   $("pestana-pedido").addEventListener("click", () => abrirHoja(true));
   $("pestana-pedido").addEventListener("keydown", e => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirHoja(true); }
   });
+  $("hoja").addEventListener('keydown', e => {
+    if (e.key !== 'Tab') return;
+    const controls = [...$("hoja").querySelectorAll('button:not([disabled]), input, a[href]:not([aria-disabled="true"])')].filter(el => el.getClientRects().length);
+    const first = controls[0], last = controls[controls.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  $("header-pedido").addEventListener('click', () => abrirHoja(true));
+  $("producto-cerrar").addEventListener('click', () => $("producto-dialog").close());
+  $("producto-dialog").addEventListener('close', () => { document.body.style.overflow = $("hoja").dataset.abierto === "si" ? "hidden" : ""; productoActivo = null; });
+  $("producto-dialog").addEventListener('click', e => { if (e.target === $("producto-dialog")) $("producto-dialog").close(); });
+  $("producto-pedido").addEventListener('click', () => { $("producto-dialog").close(); abrirHoja(true); });
   $("barra-abrir").addEventListener("click", () => abrirHoja(true));
   $("cerrar-hoja").addEventListener("click", () => abrirHoja(false));
   $("velo").addEventListener("click", () => abrirHoja(false));
-  document.addEventListener("keydown", e => { if (e.key === "Escape") abrirHoja(false); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && $("hoja").dataset.abierto === "si") abrirHoja(false); });
 
+  setInterval(actualizarTurno, 1000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) actualizarTurno(); });
+  window.addEventListener('focus', () => actualizarTurno());
+  window.addEventListener('pageshow', () => actualizarTurno());
+}
+
+let observadorCarta;
+function observarCarta() {
+  observadorCarta?.disconnect();
   const pistas = () => [...document.querySelectorAll(".pista")];
-  const observador = new IntersectionObserver(entradas => {
+  observadorCarta = new IntersectionObserver(entradas => {
     entradas.forEach(en => {
       if (!en.isIntersecting) return;
       pistas().forEach(p => {
@@ -429,11 +525,44 @@ function iniciar() {
         p.classList.toggle("text-ink", !activa);
         p.classList.toggle("hover:bg-hairline", !activa);
       });
-      pistas().find(p => p.dataset.ir === en.target.id)
-        ?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      const active = pistas().find(p => p.dataset.ir === en.target.id);
+      if (active && window.innerWidth < 1000) $("pistas").scrollTo({ left: active.offsetLeft - 20, behavior: 'smooth' });
     });
   }, { rootMargin: "-160px 0px -65% 0px" });
-  CARTA.forEach(s => observador.observe($(s.id)));
+  cartaVisible().forEach(s => { if ($(s.id)) observadorCarta.observe($(s.id)); });
+}
+
+function actualizarTurno(forzar = false) {
+  const siguiente = estadoHorario();
+  const cambio = siguiente.activo !== estadoActual.activo;
+  if (!forzar && !cambio) return;
+  estadoActual = siguiente;
+  if (cambio) {
+    turnoManual = null;
+    $("aviso-turno").textContent = 'Cambió el horario de atención. Actualizamos la carta y conservamos tu pedido para que lo revises.';
+  }
+  const id = turnoVisible(), turno = TURNOS[id];
+  document.body.dataset.turno = id;
+  pintarCabecera();
+  $("hero-estado").textContent = !estadoActual.activo
+    ? `Cerrado · abrimos a las ${horaTexto(TURNOS[estadoActual.siguiente].inicio)}`
+    : estadoActual.activo === id ? `${turno.nombre} · disponible ahora` : 'Explora la carta · fuera de horario';
+  $("hero-titulo").innerHTML = turno.titulo;
+  $("hero-descripcion").textContent = turno.descripcion;
+  $("hero-carta").textContent = `Ver ${turno.nombre.toLowerCase()}`;
+  $("hero-carta").href = '#' + turno.carta[0].id;
+  $("hero-secundario").textContent = id === 'cena' ? 'Descubre los combos' : 'Algo para acompañar';
+  $("hero-secundario").href = id === 'cena' ? '#combos' : '#bebidas-calientes';
+  $("marca-bajada").textContent = 'Desayunos & hamburguesas';
+  for (const key of Object.keys(TURNOS)) $("horas-" + key).textContent = horarioTurno(key);
+  document.querySelectorAll('[data-turno]').forEach(b => b.setAttribute('aria-pressed', b.dataset.turno === id));
+  $("turno-auto").hidden = !turnoManual;
+  $("turno-estado").textContent = !estadoActual.activo
+    ? `Estamos descansando. Abrimos a las ${horaTexto(TURNOS[estadoActual.siguiente].inicio)}. Puedes explorar la carta.`
+    : estadoActual.activo === id ? `Disponible ahora · ${turno.nombre} hasta las ${horaTexto(turno.fin)}.`
+    : `Estás explorando ${turno.nombre.toLowerCase()}. Disponible de ${horarioTurno(id)}. Ahora servimos ${TURNOS[estadoActual.activo].nombre.toLowerCase()}.`;
+  estadoRecom.paso = 'inicio'; estadoRecom.plato = estadoRecom.platos = null;
+  pintarPistas(); pintarCarta(); pintarRecomendador(); pintarPedido(); observarCarta();
 }
 
 document.addEventListener("DOMContentLoaded", iniciar);
