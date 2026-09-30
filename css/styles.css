@@ -33,7 +33,7 @@ img,svg{display:block;max-width:100%}button,a{-webkit-tap-highlight-color:transp
 .turno-interior{max-width:1124px;margin:auto;padding:24px 0 18px;display:grid;grid-template-columns:1fr 1.3fr;gap:12px 32px;align-items:center}
 .turno-eyebrow{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
 .turno-heading h2{font:400 28px var(--serif);margin-top:3px}
-.turno-selector{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--hairline-strong);border-radius:50px;padding:4px;gap:4px}
+.turno-selector{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--hairline-strong);border-radius:50px;padding:4px;gap:4px}
 .turno-selector button{padding:10px 14px;text-align:center;border-radius:40px;min-height:62px;transition:background .2s}
 .turno-selector button[aria-pressed=true]{background:var(--ember);color:var(--canvas)}
 .turno-selector span{display:block;font-weight:800;font-size:13px}
@@ -42,6 +42,7 @@ img,svg{display:block;max-width:100%}button,a{-webkit-tap-highlight-color:transp
 #turno-auto{font-size:11px;font-weight:700;text-decoration:underline;min-height:44px;color:var(--ember)}
 .turno-demo{grid-column:1/-1;font-size:9px;color:var(--muted)}
 .aviso-turno:not(:empty){background:var(--mustard);padding:15px 30px;font-size:13px;text-align:center}
+@media(max-width:639px){.turno-selector{border-radius:22px}.turno-selector button{border-radius:18px}}
 .menu-layout{display:grid;grid-template-columns:180px minmax(0,1fr);gap:36px;padding:48px;max-width:1320px;margin:auto}
 .category-sticky{position:sticky;top:30px}.category-label{color:var(--muted);font-size:9px;margin-bottom:14px}
 #pistas{display:flex;flex-direction:column;gap:2px;scrollbar-width:none}#pistas::-webkit-scrollbar{display:none}
@@ -93,6 +94,8 @@ img,svg{display:block;max-width:100%}button,a{-webkit-tap-highlight-color:transp
 /* Ambientes de Checo’s: el marco también cambia con la carta visible. */
 body{--frame:#DF310B;background:var(--frame);transition:background-color .4s ease,color .4s ease}
 body[data-turno=desayuno]{--frame:#DFCFB1;--canvas:#FFF9EE;--surface:#FFFDF6;--ink:#493929;--muted:#726048;--ember:#775036;--mustard:#C7AD69;--hairline:#E4D8BF;--hairline-strong:#C5B48D}
+/* Almuerzo: paleta provisional (mostaza de mediodía y terracota) hasta tener guía de estilo. */
+body[data-turno=almuerzo]{--frame:#EBB54A;--canvas:#FFF6E4;--surface:#FFFBF2;--ink:#4A2C14;--muted:#7A5634;--ember:#A8480F;--mustard:#F2C25B;--hairline:#EDD9B4;--hairline-strong:#D2AE72}
 .site-shell,.turno-selector button,.pill-button,.menu-promo,.brand-seal,#hero-titulo,#hoja>div,#producto-dialog{transition:background-color .4s ease,color .4s ease,border-color .4s ease}
 #marca-nombre{font-size:32px;line-height:.95;max-width:122px;letter-spacing:-.03em}
 .brand-seal{border-color:var(--ember)}
@@ -104,7 +107,7 @@ body[data-turno=desayuno] .brand-top,body[data-turno=desayuno] #marca-bajada{col
 .sin-resultados{padding:35px 0;font-size:14px;color:var(--muted)}
 .category-sticky{max-height:calc(100dvh - 55px);overflow-y:auto;scrollbar-width:thin}
 @keyframes cambio-carta{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-body[data-turno=desayuno] #carta{animation:cambio-carta .35s ease}body[data-turno=cena] #carta{animation:cambio-carta .35s ease}
+body[data-turno=desayuno] #carta,body[data-turno=almuerzo] #carta{animation:cambio-carta .35s ease}body[data-turno=cena] #carta{animation:cambio-carta .35s ease}
 @media(max-width:999px){.category-sticky{max-height:none;overflow:visible}}
 @media(max-width:639px){#marca-nombre{font-size:25px;max-width:88px}.menu-search{padding:0 20px;margin-top:20px;gap:8px}.menu-search label{font-size:11px}.menu-search input{width:100%;flex-basis:100%;font-size:12px}.reference-caption{font-size:7px;padding:3px 5px;bottom:8px;left:6px}.image-more{bottom:auto;top:12px}}
 @media(prefers-reduced-motion:reduce){body,.site-shell,.turno-selector button,.pill-button,.menu-promo,.brand-seal,#hero-titulo,#hoja>div,#producto-dialog{transition:none}#carta{animation:none!important}}

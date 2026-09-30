@@ -1,15 +1,27 @@
 /* Horarios diarios en la zona del restaurante; el cierre es exclusivo.
-   Desayunos: horario y catálogo provisionales para esta demostración. */
+   Desayunos y almuerzos: horario y catálogo provisionales para esta demostración. */
 const TURNOS = {
-  desayuno: { nombre: 'Desayunos', inicio: 7 * 60, fin: 11 * 60,
+  desayuno: { nombre: 'Desayunos', inicio: 7 * 60, fin: 11 * 60, provisional: true,
     titulo: 'Empieza rico.<br><span>Sin apuro.</span>',
     descripcion: 'Pan recién preparado, algo calientito y una buena razón para empezar el día.',
     imagen: 'assets/images/desayuno.svg', alt: 'Ilustración de un desayuno con café, pan y huevo',
+    secundario: { texto: 'Algo para acompañar', enlace: 'bebidas-calientes' },
+    promo: { antes: 'ASÍ EMPIEZA', destacado: 'tu día.', texto: 'Un buen pan. Un café calientito. Un momento para ti.', enlace: 'bebidas-calientes', cta: 'Elige tu bebida' },
     carta: CARTA_DESAYUNO },
+  almuerzo: { nombre: 'Almuerzos', inicio: 11 * 60, fin: 15 * 60, provisional: true,
+    titulo: 'Hora de almorzar.<br><span>Como en casa.</span>',
+    descripcion: 'Un plato servido al momento y un jugo bien helado para seguir con la tarde.',
+    imagen: 'assets/images/carta-checos.svg', alt: 'Recurso tipográfico de la carta de Checo’s',
+    secundario: { texto: 'Algo para acompañar', enlace: 'jugos' },
+    promo: { antes: 'HOY HAY', destacado: 'menú.', texto: 'Un plato de la casa. Un jugo helado. Una pausa bien ganada.', enlace: 'jugos', cta: 'Elige tu jugo' },
+    carta: CARTA_ALMUERZO },
   cena: { nombre: 'Hamburguesas', inicio: 17 * 60, fin: 40,
     titulo: 'A la plancha.<br><span>Hasta tarde.</span>',
     descripcion: 'Tu hamburguesa favorita, papas crocantes y todos los antojos para cerrar bien el día.',
-    imagen: HERO.imagen, alt: HERO.alt, carta: CARTA }
+    imagen: HERO.imagen, alt: HERO.alt,
+    secundario: { texto: 'Descubre los combos', enlace: 'combos' },
+    promo: { antes: 'MEJOR EN', destacado: 'combo.', texto: 'Descubre los 13 combos de la carta de Checo’s.', enlace: 'combos', cta: 'Descubre los combos' },
+    carta: CARTA }
 };
 const ZONA_NEGOCIO = 'America/Lima';
 const relojNegocio = new Intl.DateTimeFormat('es-PE', {

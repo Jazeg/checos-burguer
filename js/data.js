@@ -1257,3 +1257,45 @@ const CARTA_DESAYUNO = [{
     }
   ]
 }, ...CARTA.filter(s => ['bebidas-calientes', 'jugos', 'jugos-leche'].includes(s.id))];
+
+const CARTA_ALMUERZO = [{
+  "id": "almuerzos",
+  "nombre": "Almuerzos",
+  "tipo": "comida",
+  "nota": "Carta provisional: estos almuerzos no aparecen en el PDF. Productos y precios de ejemplo.",
+  "platos": [
+    {
+      "id": "al1",
+      "nombre": "Menú del día",
+      "precio": 12,
+      "desc": "Propuesta de ejemplo; pendiente de confirmar.",
+      "imagen": "assets/images/carta-checos.svg",
+      "fuente": "Demo · no figura en el PDF",
+      "tipo": "comida",
+      "imagenReferencial": true,
+      "demo": true
+    },
+    {
+      "id": "al2",
+      "nombre": "Plato a la carta",
+      "precio": 15,
+      "desc": "Propuesta de ejemplo; pendiente de confirmar.",
+      "imagen": "assets/images/carta-checos.svg",
+      "fuente": "Demo · no figura en el PDF",
+      "tipo": "comida",
+      "imagenReferencial": true,
+      "demo": true
+    },
+    {
+      "id": "al3",
+      "nombre": "Almuerzo de la casa",
+      "precio": 18,
+      "desc": "Propuesta de ejemplo; pendiente de confirmar.",
+      "imagen": "assets/images/carta-checos.svg",
+      "fuente": "Demo · no figura en el PDF",
+      "tipo": "comida",
+      "imagenReferencial": true,
+      "demo": true
+    }
+  ]
+}, ...CARTA.filter(s => ['jugos', 'jugos-leche', 'bebidas'].includes(s.id))];

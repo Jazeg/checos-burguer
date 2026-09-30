@@ -15,10 +15,11 @@ Publicado con GitHub Pages desde la raíz de `main`, sin build: lo que está en 
 La zona del restaurante es `America/Lima`, independientemente de la zona del visitante.
 
 - Desayunos: 07:00 inclusive a 11:00 exclusive.
+- Almuerzos: 11:00 inclusive a 15:00 exclusive.
 - Hamburguesas: 17:00 inclusive a 00:40 exclusive del día siguiente.
-- Cerrado: 00:40–07:00 y 11:00–17:00. Se muestra la próxima carta, su apertura y productos para consultar sin permitir pedidos.
+- Cerrado: 00:40–07:00 y 15:00–17:00. Se muestra la próxima carta, su apertura y productos para consultar sin permitir pedidos.
 
-Configurar intervalos en `js/horarios.js` (`TURNOS`, minutos desde medianoche). Los textos de horario se generan desde esa configuración. Catálogo, precios y datos comerciales: `js/data.js`. La migración de 110 productos, la procedencia y los datos pendientes están documentados en `MIGRACION.md`. WhatsApp temporal autorizado: 947 788 574. Los desayunos y su ilustración son de ejemplo, pendientes de sustituir por datos aprobados.
+Configurar intervalos en `js/horarios.js` (`TURNOS`, minutos desde medianoche). Los textos de horario se generan desde esa configuración. Catálogo, precios y datos comerciales: `js/data.js`. La migración de 110 productos, la procedencia y los datos pendientes están documentados en `MIGRACION.md`. WhatsApp temporal autorizado: 947 788 574. Los desayunos, los almuerzos y sus ilustraciones son de ejemplo, pendientes de sustituir por datos aprobados.
 
 La portada, categorías y recomendaciones siguen la carta seleccionada. El selector permite explorar el otro menú; «Volver al horario actual» restablece la selección automática. Cada cambio de servicio devuelve la vista al horario actual. La página comprueba el reloj cada segundo y al volver a la pestaña. Se vuelve a validar al agregar y al enviar.
 

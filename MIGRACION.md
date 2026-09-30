@@ -18,6 +18,7 @@ Fuente: PLATOS.pdf, seis páginas aportadas por el cliente. Revisión visual, no
 ## Horarios y apariencia
 
 07:00–11:00 desayunos: marco arena, fondo crema, texto café, acentos oliva.
+11:00–15:00 almuerzos: marco mostaza, fondo crema, acento terracota. Paleta provisional hasta tener guía de estilo. Tres platos de ejemplo (`al1`–`al3`, no figuran en el PDF) más jugos, jugos con leche y bebidas frías de la carta.
 17:00–00:40 cena: marco rojo anaranjado y carta crema.
 Zona America/Lima, cierre exclusivo. Transiciones de color de 400 ms; se desactivan con movimiento reducido. La vista previa de otro turno cambia el aspecto, nunca la disponibilidad real.
 

@@ -3,7 +3,7 @@
 ## Qué es
 Carta digital de Checo's Burger. Se abre desde el celular, en la mesa,
 con la mano ocupada. Prioridad: leer precios y armar el pedido rápido.
-Dos cartas según la hora: desayunos y hamburguesas. El pedido sale por
+Tres cartas según la hora: desayunos, almuerzos y hamburguesas. El pedido sale por
 WhatsApp. Mockup navegable, sin backend.
 
 ## Stack
@@ -34,6 +34,7 @@ Reglas:
 
 ## Horarios predeterminados (America/Lima, cierre exclusivo)
 - Desayunos: 07:00–11:00
+- Almuerzos: 11:00–15:00
 - Hamburguesas: 17:00–00:40
 
 ## Correr

@@ -44,7 +44,7 @@ function pintarPie() {
   $("footer-nombre").textContent = NEGOCIO.nombre;
   $("footer-direccion").textContent = NEGOCIO.direccion + ".";
   $("footer-telefono").textContent = "Pedidos al " + NEGOCIO.telefonoVisible + ".";
-  $("footer-horario").textContent = `Todos los días · Desayunos: ${horarioTurno("desayuno")} (provisional). Hamburguesas: ${horarioTurno("cena")}.`;
+  $("footer-horario").textContent = "Todos los días · " + Object.values(TURNOS).map(t => `${t.nombre}: ${horaTexto(t.inicio)} – ${horaTexto(t.fin)}${t.provisional ? " (provisional)" : ""}`).join(". ");
   $("footer-delivery-centro").textContent = NEGOCIO.delivery.centro;
   $("footer-delivery-otras").textContent = NEGOCIO.delivery.otras;
 }
@@ -90,10 +90,10 @@ function pintarCarta() {
 
 
 function promoCarta() {
-  const cena = turnoVisible() === 'cena';
-  return `<aside class="menu-promo"><span>${cena ? 'MEJOR EN' : 'ASÍ EMPIEZA'}</span><em>${cena ? 'combo.' : 'tu día.'}</em>
-    <p>${cena ? 'Descubre los 13 combos de la carta de Checo’s.' : 'Un buen pan. Un café calientito. Un momento para ti.'}</p>
-    <a href="#${cena ? 'combos' : 'bebidas-calientes'}">${cena ? 'Descubre los combos' : 'Elige tu bebida'} ↗</a><span class="promo-flower" aria-hidden="true">✳</span></aside>`;
+  const promo = TURNOS[turnoVisible()].promo;
+  return `<aside class="menu-promo"><span>${promo.antes}</span><em>${promo.destacado}</em>
+    <p>${promo.texto}</p>
+    <a href="#${promo.enlace}">${promo.cta} ↗</a><span class="promo-flower" aria-hidden="true">✳</span></aside>`;
 }
 
 let productoActivo = null;
@@ -551,8 +551,8 @@ function actualizarTurno(forzar = false) {
   $("hero-descripcion").textContent = turno.descripcion;
   $("hero-carta").textContent = `Ver ${turno.nombre.toLowerCase()}`;
   $("hero-carta").href = '#' + turno.carta[0].id;
-  $("hero-secundario").textContent = id === 'cena' ? 'Descubre los combos' : 'Algo para acompañar';
-  $("hero-secundario").href = id === 'cena' ? '#combos' : '#bebidas-calientes';
+  $("hero-secundario").textContent = turno.secundario.texto;
+  $("hero-secundario").href = '#' + turno.secundario.enlace;
   $("marca-bajada").textContent = 'Desayunos & hamburguesas';
   for (const key of Object.keys(TURNOS)) $("horas-" + key).textContent = horarioTurno(key);
   document.querySelectorAll('[data-turno]').forEach(b => b.setAttribute('aria-pressed', b.dataset.turno === id));

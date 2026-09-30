@@ -5,7 +5,7 @@
    ============================================================ */
 
 const PLATOS = Object.fromEntries(
-  [...CARTA, ...CARTA_DESAYUNO].flatMap(s => s.platos.map(p => [p.id, { ...p, categoria: s.id }]))
+  [...CARTA, ...CARTA_DESAYUNO, ...CARTA_ALMUERZO].flatMap(s => s.platos.map(p => [p.id, { ...p, categoria: s.id }]))
 );
 const pedido = new Map();
 let modoEntrega = "Delivery";
