@@ -8,7 +8,7 @@ python3 -m http.server 8093 --bind 127.0.0.1
 
 Abrir http://127.0.0.1:8093.
 
-En GitHub Codespaces no hace falta nada: `.devcontainer/` levanta el servidor en el puerto 8093 al abrir el espacio y muestra la vista previa.
+Publicado con GitHub Pages desde la raíz de `main`, sin build: lo que está en el repo es lo que se sirve. Por eso `css/tailwind.css` se versiona. Si se regenera, hay que hacer commit del resultado.
 
 ## Horarios diarios
 

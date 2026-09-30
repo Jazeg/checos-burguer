@@ -24,7 +24,7 @@ js/recomendador.js    lógica de sugerencias
 js/app.js             render y wiring de eventos
 tests/                node --test tests/horarios.test.cjs
 assets/images/        fotos de producto en kebab-case
-.devcontainer/        configuración de GitHub Codespaces
+.nojekyll             GitHub Pages sirve los archivos tal cual, sin Jekyll
 
 Reglas:
 - Precios y nombres SOLO en data.js. Nada hardcodeado en el HTML.
@@ -38,7 +38,8 @@ Reglas:
 
 ## Correr
 Local: python3 -m http.server 8093
-Codespaces: el servidor arranca solo en el puerto 8093.
+Publicación: GitHub Pages desde la raíz de main. Rutas siempre relativas
+(assets/..., nunca /assets/...) y con mayúsculas exactas: Pages distingue.
 
 ## Visual
 Antes de tocar CSS, lee ~/.claude/skills/mockup/estilos/checos-burger.md.
