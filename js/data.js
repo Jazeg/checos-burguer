@@ -1,12 +1,12 @@
 /* Carta de Checo’s Burger, transcrita de PLATOS.pdf.
    Ver MIGRACION.md para decisiones, datos pendientes y procedencia.
-   Fotos de la carta de hamburguesas en assets/cena/; el resto usa el recurso tipográfico. */
+   Fotos de la carta de hamburguesas en assets/cena/<id de sección>/; el resto usa el recurso tipográfico. */
 const NEGOCIO = {
  nombre: "Checo’s Burger", bajada: "Desayunos & hamburguesas",
  direccion: "Dirección por confirmar", telefonoVisible: "947 788 574", whatsapp: "51947788574",
  delivery: { centro: "Por confirmar", otras: "Por confirmar", tiempo: "Tiempo por confirmar" }
 };
-const HERO = { imagen: "assets/cena/Hamburguesa de casa.webp", alt: "Hamburguesa de casa de Checo’s" };
+const HERO = { imagen: "assets/cena/hamburguesas/Hamburguesa de casa.webp", alt: "Hamburguesa de casa de Checo’s" };
 
 const CARTA = [
   {
@@ -21,7 +21,7 @@ const CARTA = [
         "precio": 8,
         "desc": "",
         "subgrupo": "Hamburguesa de casa",
-        "imagen": "assets/cena/Hamburguesa de casa.webp",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa de casa.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
         "imagenReferencial": false
@@ -43,10 +43,10 @@ const CARTA = [
         "precio": 9,
         "desc": "",
         "subgrupo": "Hamburguesa de casa",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hambuguesa de casa hawaiana.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "hamburguesas-5",
@@ -65,10 +65,10 @@ const CARTA = [
         "precio": 11,
         "desc": "",
         "subgrupo": "Hamburguesa de casa",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hmaburgesa royal de casa con tocino.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "hamburguesas-4",
@@ -76,7 +76,7 @@ const CARTA = [
         "precio": 11,
         "desc": "",
         "subgrupo": "Hamburguesa de casa",
-        "imagen": "assets/cena/Hamburguesa de casa doble carne.webp",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa de casa doble carne.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
         "imagenReferencial": false
@@ -87,10 +87,10 @@ const CARTA = [
         "precio": 11,
         "desc": "",
         "subgrupo": "Hamburguesa de casa",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hmaburgesa chesse burger doble queso.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "sandwiches-1",
@@ -98,7 +98,7 @@ const CARTA = [
         "precio": 8,
         "desc": "",
         "subgrupo": "Filete de pollo",
-        "imagen": "assets/cena/Filete de pollo.webp",
+        "imagen": "assets/cena/hamburguesas/Filete de pollo.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
         "imagenReferencial": false
@@ -109,7 +109,7 @@ const CARTA = [
         "precio": 9,
         "desc": "",
         "subgrupo": "Filete de pollo",
-        "imagen": "assets/cena/Filete de pollo Royal.webp",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa filete de pollo royal.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
         "imagenReferencial": false
@@ -153,10 +153,10 @@ const CARTA = [
         "precio": 8,
         "desc": "",
         "subgrupo": "Pollo deshilachado",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa de pollo deshilachado.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "sandwiches-7",
@@ -164,10 +164,10 @@ const CARTA = [
         "precio": 9,
         "desc": "",
         "subgrupo": "Pollo deshilachado",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hmaburguesa con pollo deshilachado.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "sandwiches-8",
@@ -175,10 +175,10 @@ const CARTA = [
         "precio": 9,
         "desc": "",
         "subgrupo": "Pollo deshilachado",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa con pollo deshilachado hawaiano.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "sandwiches-9",
@@ -197,7 +197,7 @@ const CARTA = [
         "precio": 8,
         "desc": "",
         "subgrupo": "Chorizo",
-        "imagen": "assets/cena/Hamburguesa con chorizo.webp",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa con chorizo.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
         "imagenReferencial": false
@@ -329,7 +329,7 @@ const CARTA = [
         "nombre": "Salchipapa simple",
         "precio": 8,
         "desc": "",
-        "imagen": "assets/cena/Salchipapa Simple.webp",
+        "imagen": "assets/cena/salchipapas/Salchipapa Simple.webp",
         "fuente": "PLATOS.pdf · página 2",
         "tipo": "comida",
         "imagenReferencial": false
@@ -339,17 +339,17 @@ const CARTA = [
         "nombre": "Salchipapa a lo pobre",
         "precio": 9.5,
         "desc": "",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/salchipapas/Salchipapa a lo pobre.webp",
         "fuente": "PLATOS.pdf · página 2",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "salchipapas-3",
         "nombre": "Salchipapa con filete de pollo",
         "precio": 11,
         "desc": "",
-        "imagen": "assets/cena/Salchipapa con filete de pollo.webp",
+        "imagen": "assets/cena/salchipapas/Salchipapa con filete de pollo.webp",
         "fuente": "PLATOS.pdf · página 2",
         "tipo": "comida",
         "imagenReferencial": false
@@ -359,7 +359,7 @@ const CARTA = [
         "nombre": "Salchipapa con chorizo",
         "precio": 11,
         "desc": "",
-        "imagen": "assets/cena/Salchipapa con Chorizo.webp",
+        "imagen": "assets/cena/salchipapas/Salchipapa con Chorizo.webp",
         "fuente": "PLATOS.pdf · página 2",
         "tipo": "comida",
         "imagenReferencial": false
@@ -369,7 +369,7 @@ const CARTA = [
         "nombre": "Salchipapa con hamburguesa",
         "precio": 11,
         "desc": "",
-        "imagen": "assets/cena/Salchipapa con hamburguesa.webp",
+        "imagen": "assets/cena/salchipapas/Salchipapa con hamburguesa.webp",
         "fuente": "PLATOS.pdf · página 2",
         "tipo": "comida",
         "imagenReferencial": false
@@ -379,7 +379,7 @@ const CARTA = [
         "nombre": "Salchipapa con deshilachado",
         "precio": 11,
         "desc": "",
-        "imagen": "assets/cena/Salchipapa con pollo deshilachado.webp",
+        "imagen": "assets/cena/salchipapas/Salchipapa con pollo deshilachado.webp",
         "fuente": "PLATOS.pdf · página 2",
         "tipo": "comida",
         "imagenReferencial": false
@@ -389,7 +389,7 @@ const CARTA = [
         "nombre": "Salchipapa especial",
         "precio": 14,
         "desc": "",
-        "imagen": "assets/cena/Salchipapa Especial.webp",
+        "imagen": "assets/cena/salchipapas/Salchipapa Especial.webp",
         "fuente": "PLATOS.pdf · página 2",
         "tipo": "comida",
         "imagenReferencial": false
@@ -409,10 +409,10 @@ const CARTA = [
         "nombre": "Salchibroaster alita",
         "precio": 10.5,
         "desc": "",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/salchipapas/Salchipapa con alita.webp",
         "fuente": "PLATOS.pdf · página 2",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "salchipapas-11",

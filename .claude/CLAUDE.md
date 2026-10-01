@@ -28,7 +28,8 @@ js/app.js             arranque, eventos y cambio de turno
 tests/                node --test tests/horarios.test.cjs
 assets/desayuno/      imágenes de la carta de desayunos
 assets/almuerzo/      imágenes de la carta de almuerzos (vacía por ahora)
-assets/cena/          fotos de la carta de hamburguesas, .webp
+assets/cena/          fotos de la carta de hamburguesas, .webp, en una
+                      subcarpeta por sección (hamburguesas/, salchipapas/...)
 assets/comun/         carta-checos.svg: relleno para productos sin foto,
                       compartido por los tres turnos
 originales/           PNG/JPG originales del cliente. En .gitignore: no se publica
@@ -41,11 +42,23 @@ Reglas:
   Si uno crece, se divide por responsabilidad en otro <script>, sin build.
   Orden de carga en index.html: data, horarios, carrito, recomendador,
   carta, hoja, recomendador-vista, app.
-- Imágenes por turno: assets/<desayuno|almuerzo|cena>/<Nombre>.webp, con el
-  nombre tal como lo entrega el cliente (espacios y mayúsculas incluidos).
+- Imágenes por turno y sección:
+  assets/<desayuno|almuerzo|cena>/<seccion>/<Nombre>.webp.
+  <seccion> es el id de la sección en data.js (hamburguesas, salchipapas,
+  club-sandwiches...): minúsculas, sin tildes ni espacios. La carpeta se crea
+  cuando entra la primera foto de esa sección, no antes.
+  Va según la sección donde está el plato hoy, no según su id: los
+  sandwiches-N de Filete, Deshilachado y Chorizo van en hamburguesas/. Si un
+  plato cambia de sección, su foto se mueve de carpeta (sin renombrarla) y se
+  actualiza la ruta en data.js.
+  <Nombre> va tal como lo entrega el cliente (espacios, mayúsculas y erratas
+  incluidos).
+  Las secciones compartidas (jugos, jugos-leche, bebidas, bebidas-calientes)
+  van en assets/comun/<seccion>/, no dentro de un turno.
   Sin foto: assets/comun/carta-checos.svg. Nada de fotos de referencia o stock.
 - Toda foto nueva se publica en .webp, máximo 800 px de lado, calidad 80
-  (unos 50–80 KB). El original va a originales/<turno>/.
+  (unos 50–80 KB). El original va a originales/<turno>/<seccion>/, la
+  misma estructura que assets/.
 
 ## Carta de hamburguesas (cena)
 Fuente: la lista de datos del cliente, precios en soles. Orden de secciones:
