@@ -64,7 +64,6 @@ function tarjetaPlato(p) {
   return `<article class="menu-product">
     <button type="button" class="product-image" data-producto="${p.id}" aria-label="Ver detalle de ${p.nombre}">
       <img src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="480" height="360">
-      ${p.imagen.endsWith(".jpg") ? '<span class="reference-caption">Foto referencial</span>' : ''}
       <span class="image-more" aria-hidden="true">↗</span>
     </button>
     <div class="product-labels">${(p.etiquetas || []).map(t => `<span>${t}</span>`).join('')}</div>

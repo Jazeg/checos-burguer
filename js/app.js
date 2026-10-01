@@ -140,7 +140,6 @@ function actualizarTurno(forzar = false) {
   $("hero-carta").href = '#' + turno.carta[0].id;
   $("hero-secundario").textContent = turno.secundario.texto;
   $("hero-secundario").href = '#' + turno.secundario.enlace;
-  $("marca-bajada").textContent = 'Desayunos & hamburguesas';
   for (const key of Object.keys(TURNOS)) $("horas-" + key).textContent = horarioTurno(key);
   document.querySelectorAll('[data-turno]').forEach(b => b.setAttribute('aria-pressed', b.dataset.turno === id));
   $("turno-auto").hidden = !turnoManual;
