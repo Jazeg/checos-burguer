@@ -25,3 +25,6 @@ __pycache__/
 # Variables de entorno
 .env
 .env.*
+
+# Originales de fotos (pesados). Se publica solo la versión .webp de assets/
+originales/

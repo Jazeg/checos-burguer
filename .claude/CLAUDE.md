@@ -20,17 +20,48 @@ tailwind.config.js    paleta y fuentes de las utilidades
 js/data.js            catálogo: productos, precios, categorías. Fuente única.
 js/horarios.js        turnos (TURNOS) y zona horaria del negocio
 js/carrito.js         estado del pedido
-js/recomendador.js    lógica de sugerencias
-js/app.js             render y wiring de eventos
+js/recomendador.js    lógica de sugerencias (sin DOM)
+js/carta.js           render de la carta: categorías, tarjetas, subgrupos, ficha
+js/hoja.js            hoja de pedido, datos de entrega, contacto guardado
+js/recomendador-vista.js  pasos y resultados de "¿No sabes qué pedir?"
+js/app.js             arranque, eventos y cambio de turno
 tests/                node --test tests/horarios.test.cjs
-assets/images/        fotos de producto en kebab-case
+assets/desayuno/      imágenes de la carta de desayunos
+assets/almuerzo/      imágenes de la carta de almuerzos (vacía por ahora)
+assets/cena/          fotos de la carta de hamburguesas, .webp
+assets/comun/         carta-checos.svg: relleno para productos sin foto,
+                      compartido por los tres turnos
+originales/           PNG/JPG originales del cliente. En .gitignore: no se publica
 .nojekyll             GitHub Pages sirve los archivos tal cual, sin Jekyll
 
 Reglas:
 - Precios y nombres SOLO en data.js. Nada hardcodeado en el HTML.
 - Horarios SOLO en TURNOS de horarios.js, en minutos desde medianoche.
-- app.js no pasa de 400 líneas.
-- Rutas de imagen: assets/images/<slug>.jpg, mismo slug que en data.js.
+- Ningún archivo JS pasa de ~600 líneas (data.js aparte: es catálogo).
+  Si uno crece, se divide por responsabilidad en otro <script>, sin build.
+  Orden de carga en index.html: data, horarios, carrito, recomendador,
+  carta, hoja, recomendador-vista, app.
+- Imágenes por turno: assets/<desayuno|almuerzo|cena>/<Nombre>.webp, con el
+  nombre tal como lo entrega el cliente (espacios y mayúsculas incluidos).
+  Sin foto: assets/comun/carta-checos.svg. Nada de fotos de referencia o stock.
+- Toda foto nueva se publica en .webp, máximo 800 px de lado, calidad 80
+  (unos 50–80 KB). El original va a originales/<turno>/.
+
+## Carta de hamburguesas (cena)
+Fuente: la lista de datos del cliente, precios en soles. Orden de secciones:
+Hamburguesas, Broaster, Salchipapas, Club sándwiches, Enchiladas con queso,
+Alitas BBQ, Jugos, Jugos con leche, Bebidas frías, Bebidas calientes,
+Extras, Combos.
+- Hamburguesas lleva subgrupos (campo `subgrupo` de cada plato): Hamburguesa
+  de casa, Filete de pollo, Pollo deshilachado, Chorizo y Pollo crispy.
+  Se muestran como subtítulo (.subgroup-heading) dentro de la sección, en el
+  orden de data.js. Cualquier sección puede usar `subgrupo`.
+- Los ids de plato no cambian aunque cambie su sección (los de Filete,
+  Deshilachado y Chorizo siguen siendo sandwiches-N).
+- Los ítems marcados [PENDIENTE] no se publican: van en COMBOS_PENDIENTES,
+  fuera de CARTA, hasta que el cliente los confirme. Hoy: combos 4, 9, 10 y 13.
+- Jugos, Jugos con leche, Bebidas frías y Bebidas calientes se comparten con
+  desayunos y almuerzos: se editan una sola vez en CARTA.
 
 ## Horarios predeterminados (America/Lima, cierre exclusivo)
 - Desayunos: 07:00–11:00

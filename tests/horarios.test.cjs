@@ -43,14 +43,20 @@ test('Precios transcritos y total del pedido', () => {
   assert.equal(run('PLATOS["hamburguesas-1"].precio'), 8);
   assert.equal(run('PLATOS["hamburguesas-2"].precio'), 9);
   assert.equal(run('PLATOS["bebidas-calientes-1"].precio'), 3);
-  assert.equal(run('PLATOS["combos-10"].precio'), 15);
-  assert.equal(run('PLATOS["combos-13"].precio'), 18);
+  assert.equal(run('PLATOS["combos-1"].precio'), 13.5);
+  assert.equal(run('PLATOS["sandwiches-1"].categoria'), 'hamburguesas');
   run('pedido.clear(); pedido.set("hamburguesas-1", 2); pedido.set("extras-2", 1)');
   assert.equal(run('totalPedido()'), 17.5);
   assert.match(run('textoComanda("Prueba")'), /Checo’s Burger/);
   assert.match(run('enlaceWhatsApp("Prueba")'), /wa.me\/51947788574/);
   run('pedido.clear()');
 });
+test('Los combos pendientes no se publican', () => {
+  assert.equal(run('COMBOS_PENDIENTES.map(p => p.id).join()'), 'combos-4,combos-9,combos-10,combos-13');
+  assert.equal(run('COMBOS_PENDIENTES.some(p => PLATOS[p.id])'), false);
+  assert.equal(run('CARTA.find(s => s.id === "combos").platos.length'), 9);
+});
+
 test('Almuerzos solo al mediodía, con jugos y bebidas frías compartidos', () => {
   assert.equal(run("disponibleAhora('al1', new Date('2026-09-30T12:00:00-05:00'))"), true);
   for (const h of ['08:00:00', '16:00:00', '18:00:00']) assert.equal(run(`disponibleAhora('al1', new Date('2026-09-30T${h}-05:00'))`), false);
