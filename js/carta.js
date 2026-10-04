@@ -12,6 +12,8 @@ const claseEtiqueta = t =>
 
 const attr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 const precioTexto = p => p.tamanos ? "Desde " + soles(Math.min(...p.tamanos.map(t => t.precio))) : soles(p.precio);
+const imagenPlato = p => turnoVisible() === "desayuno" && typeof FOTOS_BEBIDAS_AM !== "undefined"
+  ? FOTOS_BEBIDAS_AM[p.id] || p.imagen : p.imagen;
 const CLASE_AGREGAR = "agregar inline-flex min-h-11 items-center rounded-full border-2 border-ink bg-mustard px-5 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-canvas";
 
 /* catálogo ejecutivo: cantidad escrita a mano. data-zona distingue el
@@ -79,7 +81,7 @@ function pintarPistas() {
 function tarjetaPlato(p) {
   return `<article class="menu-product">
     <button type="button" class="product-image" data-producto="${p.id}" aria-label="Ver detalle de ${p.nombre}">
-      <img src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="480" height="360">
+      <img src="${imagenPlato(p)}" alt="${p.nombre}" loading="lazy" width="480" height="360">
       <span class="image-more" aria-hidden="true">↗</span>
     </button>
     <div class="product-labels">${(p.etiquetas || []).map(t => `<span>${t}</span>`).join('')}</div>
@@ -133,7 +135,7 @@ function pintarDetalleProducto(completo = false) {
   const p = PLATOS[productoActivo];
   const turnos = Object.keys(TURNOS).filter(id => TURNOS[id].carta.some(s => s.platos.some(item => item.id === p.id)));
   const turno = turnos.includes(turnoVisible()) ? turnoVisible() : turnos[0];
-  $("producto-imagen").src = p.imagen; $("producto-imagen").alt = p.nombre;
+  $("producto-imagen").src = imagenPlato(p); $("producto-imagen").alt = p.nombre;
   $("producto-titulo").textContent = p.nombre;
   $("producto-categoria").textContent = TURNOS[turno].carta.find(s => s.id === p.categoria).nombre;
   $("producto-descripcion").textContent = p.desc || "Consulta los ingredientes y acompañamientos con Checo’s al pedir.";

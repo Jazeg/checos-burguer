@@ -4,13 +4,17 @@
    la mañana no se cruce con el de la noche; nombre y foto siguen saliendo
    de CARTA. */
 const TAMANOS_JUGO_AM = [{ nombre: "Vaso 250 ml", precio: 3 }, { nombre: "Medio litro", precio: 6 }];
-const SIN_FOTO = "assets/comun/carta-checos.svg";
+const FOTOS_BEBIDAS_AM = {
+  "am-jugos-6": "assets/desayuno/productos/jugos-mango.jpg",
+  "am-jugos-leche-8": "assets/desayuno/productos/jugos-leche-pina.jpg",
+  "bebidas-calientes-2": "assets/desayuno/productos/cafe-leche.jpg"
+};
 const OPCIONES_HAMBURGUESA_AM = [
   { nombre: "Papas", valores: ["Papas fritas", "Papas al hilo"] },
   { nombre: "Acompañante", valores: ["Queso", "Jamón"] }
 ];
 const platoAm = (id, nombre, precio, extra = {}) =>
-  ({ id: "am-" + id, nombre, precio, desc: "", imagen: SIN_FOTO, tipo: "comida", imagenReferencial: true, ...extra });
+  ({ id: "am-" + id, nombre, precio, desc: "", imagen: `assets/desayuno/productos/${id}.jpg`, tipo: "comida", imagenReferencial: true, ...extra });
 const jugoAm = p => ({ ...p, id: "am-" + p.id, precio: TAMANOS_JUGO_AM[0].precio, tamanos: TAMANOS_JUGO_AM });
 const seccionNoche = id => CARTA.find(s => s.id === id);
 const NOTA_JUGOS_AM = "Vaso de 250 ml a S/ 3 o medio litro a S/ 6.";
@@ -52,5 +56,13 @@ const CARTA_DESAYUNO = [
   },
   { id: "jugos-leche-am", nombre: "Jugos con leche", tipo: "bebida", nota: NOTA_JUGOS_AM,
     platos: seccionNoche("jugos-leche").platos.map(jugoAm) },
-  seccionNoche("bebidas-calientes")
+  {
+    ...seccionNoche("bebidas-calientes"),
+    platos: [
+      ...seccionNoche("bebidas-calientes").platos.slice(0, 2),
+      platoAm("infusion-te", "Té", 2.5, { tipo: "bebida", desc: "Vaso de 250 ml." }),
+      platoAm("infusion-anis", "Anís", 2.5, { tipo: "bebida", desc: "Vaso de 250 ml." }),
+      platoAm("infusion-manzanilla", "Manzanilla", 2.5, { tipo: "bebida", desc: "Vaso de 250 ml." })
+    ]
+  }
 ];

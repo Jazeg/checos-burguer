@@ -31,12 +31,21 @@ test('Recomendaciones limitadas a la carta visible, incluso con historial y carr
   assert.equal(run("recomendarListaPorGustos('normal', 'no').some(p => p.id.startsWith('am'))"), false);
 });
 test('Catálogo con identificadores únicos y recursos existentes', () => {
-  /* las secciones compartidas aparecen en las dos cartas: se cuentan una vez */
-  const ids = run('[...new Set([...CARTA, ...CARTA_DESAYUNO])].flatMap(s => s.platos.map(p => p.id))');
+  /* Café y café con leche son los mismos productos en ambas cartas. */
+  const ids = run('[...new Set([...CARTA, ...CARTA_DESAYUNO].flatMap(s => s.platos))].map(p => p.id)');
   assert.equal(ids.length, new Set(ids).size);
   assert.equal(run('[...CARTA, ...CARTA_DESAYUNO].flatMap(s => s.platos).every(p => PLATOS[p.id].precio === p.precio)'), true);
   const imgs = run('[...CARTA, ...CARTA_DESAYUNO].flatMap(s => s.platos.map(p => p.imagen))');
   for (const img of imgs) assert.ok(fs.existsSync(path.join(__dirname, '..', img)), img);
+});
+
+test('Las infusiones del desayuno son tres productos independientes', () => {
+  assert.equal(run('CARTA_DESAYUNO.find(s => s.id === "bebidas-calientes").platos.map(p => p.nombre).join()'), 'Café,Café con leche,Té,Anís,Manzanilla');
+  assert.equal(run('CARTA.find(s => s.id === "bebidas-calientes").platos.at(-1).nombre'), 'Té, anís, manzanilla');
+  for (const id of ['am-infusion-te', 'am-infusion-anis', 'am-infusion-manzanilla']) {
+    assert.equal(run(`PLATOS["${id}"].precio`), 2.5);
+    assert.equal(run(`PLATOS["${id}"].tipo`), 'bebida');
+  }
 });
 
 test('Precios transcritos y total del pedido', () => {
