@@ -1,5 +1,5 @@
 /* ============================================================
-   Memoria del pedido en este teléfono: el carrito en curso
+   Memoria del pedido en este dispositivo: el carrito en curso
    sobrevive a una recarga o a cerrar la página por error, la
    página vuelve a la sección donde estaba y cada pedido enviado
    queda en "Mis pedidos" para repetirlo o borrarlo. Todo vive en localStorage

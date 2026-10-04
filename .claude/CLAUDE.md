@@ -140,7 +140,7 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
 - Desayuno: todos los jugos (los de la noche incluidos) en vaso 250 ml S/ 3
   o medio litro S/ 6. Los de la noche se reutilizan con id am-<id>.
 - Cada línea del pedido es plato + elección; otra elección, otra línea.
-- Memoria en el teléfono (localStorage, público y ejecutivo por separado):
+- Memoria en el dispositivo (localStorage, público y ejecutivo por separado):
   el carrito en curso se guarda en cada cambio y se restaura al volver
   (12 h; en el ejecutivo también lo programado); la sección donde estaba
   (2 h); al enviar por WhatsApp el carrito se limpia y el pedido pasa a

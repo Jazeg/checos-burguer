@@ -1,6 +1,6 @@
 /* ============================================================
    "Mis pedidos": historial de pedidos enviados desde este
-   teléfono, en un modal. Cada uno se puede pedir de nuevo (se
+   dispositivo, en un modal. Cada uno se puede pedir de nuevo (se
    suma al carrito) o eliminar, con confirmación dentro del modal.
    El acceso vive en la barra de categorías y solo aparece si hay
    pedidos. Depende de memoria.js y hoja.js.
@@ -57,7 +57,7 @@ function pintarMisPedidos() {
             <button type="button" data-borrar-cancelar class="pedido-cancelar">Cancelar</button></div>
         </div>`
       : `<button type="button" data-borrar-guardado="todo" class="pedidos-borrar-todo pedido-eliminar">Borrar todo el historial</button>`)
-    : `<p class="pedidos-vacio">Aún no tienes pedidos enviados desde este teléfono. Cuando envíes uno por WhatsApp, aparecerá aquí.</p>`;
+    : `<p class="pedidos-vacio">Aún no tienes pedidos enviados desde este dispositivo. Cuando envíes uno por WhatsApp, aparecerá aquí.</p>`;
   pintarAccesoPedidos();
 }
 

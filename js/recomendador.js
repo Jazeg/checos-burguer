@@ -2,7 +2,7 @@
    Motor de recomendación: "Deja que decida la casa" y el
    mini-quiz por gustos. Solo lógica, sin tocar el DOM (eso lo
    hace app.js). Todo el historial vive en localStorage, en el
-   teléfono del cliente — nunca sale de ahí.
+   dispositivo del cliente — nunca sale de ahí.
    ============================================================ */
 
 const RECOM_HISTORIAL_KEY = "checos_historial_v1";

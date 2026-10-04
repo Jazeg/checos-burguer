@@ -57,7 +57,7 @@ function pintarRecomendador() {
           <button type="button" data-recom-gustos class="rounded-full border-2 border-ink px-5 py-2.5 font-bold text-ink hover:bg-hairline">Prefiero elegir por gustos</button>
         </div>
       </div>
-      <p class="mt-3 font-mono text-xs text-muted">Guardamos tus gustos y tu dirección solo en este teléfono. Nada se envía a un servidor.</p>`);
+      <p class="mt-3 font-mono text-xs text-muted">Guardamos tus gustos y tu dirección solo en este dispositivo. Nada se envía a un servidor.</p>`);
     return;
   }
 
