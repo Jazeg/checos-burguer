@@ -4,7 +4,7 @@ const vm = require('node:vm');
 const fs = require('node:fs');
 const path = require('node:path');
 const ctx = vm.createContext({ Intl, Date, Map, localStorage: { getItem: () => null, setItem: () => {} }, pintarPedido() {}, actualizarTurno() {} });
-for (const file of ['data', 'desayunos', 'horarios', 'carrito', 'recomendador']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/' + file + '.js'), 'utf8'), ctx);
+for (const file of ['data', 'desayunos', 'horarios', 'carrito', 'recomendador', 'entrega']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/' + file + '.js'), 'utf8'), ctx);
 const run = code => vm.runInContext(code, ctx);
 for (const [hora, esperado] of [['00:00:00','cena'], ['00:40:00','cena'], ['01:39:59','cena'], ['01:40:00',null], ['06:59:59',null], ['07:00:00','desayuno'], ['10:59:59','desayuno'], ['11:00:00',null], ['14:59:59',null], ['15:00:00',null], ['16:59:59',null], ['17:00:00','cena'], ['23:59:59','cena']]) {
   test('Lima ' + hora, () => assert.equal(run(`estadoHorario(new Date('2026-09-30T${hora}-05:00')).activo`), esperado));
@@ -151,8 +151,33 @@ test('Ejecutivo: pedido anticipado fuera de horario y fecha en la comanda', () =
   run('pedido.clear(); pedido.set(claveLinea("am-pan-huevo"), nuevaLinea("am-pan-huevo", {}, 150))');
   assert.equal(run("pedidoAnticipado(new Date('2026-09-30T08:00:00-05:00'))"), false);
   assert.equal(run("pedidoAnticipado(new Date('2026-09-30T21:00:00-05:00'))"), true);
-  assert.match(run('textoComanda("Municipalidad", "2026-10-05T07:30")'), /Para: lunes, 5 de octubre/);
-  assert.match(run('textoComanda("Municipalidad")'), /Para: lo antes posible/);
+  assert.match(run('textoComanda("Municipalidad", { texto: "mañana lunes 5 de octubre, 7:30 a. m.", evento: "Reunión de gerencia" })'), /^\*Pedido anticipado[^]*Para: mañana lunes 5 de octubre, 7:30 a\. m\.\nEvento: Reunión de gerencia/);
+  assert.doesNotMatch(run('textoComanda("Municipalidad", { texto: "hoy", evento: "" })'), /Evento:/);
+  assert.doesNotMatch(run('textoComanda("Municipalidad")'), /Para:/);
   run('pedido.clear()');
   assert.doesNotMatch(publico('textoComanda("x")'), /Para:/);
+});
+
+test('Pedido programado: fecha y hora opcional, prellenado según lo pedido', () => {
+  const tarde = "new Date('2026-09-30T14:00:00-05:00')";
+  assert.equal(run(`isoDia(1, ${tarde})`), '2026-10-01');
+  assert.equal(run(`textoEntrega('2026-09-30', '', ${tarde})`).replace('setiembre', 'septiembre'), 'hoy miércoles 30 de septiembre');
+  assert.equal(run(`textoEntrega('2026-10-01', '', ${tarde})`), 'mañana jueves 1 de octubre');
+  assert.equal(run(`textoEntrega('2026-10-04', '08:30', ${tarde})`), 'domingo 4 de octubre, 8:30 a. m.');
+  assert.equal(run(`textoEntrega('2026-12-24', '20:00', ${tarde})`), 'jueves 24 de diciembre, 8:00 p. m.');
+  run('pedido.clear(); pedido.set(claveLinea("am-pan-huevo"), nuevaLinea("am-pan-huevo", {}, 50))');
+  assert.equal(run(`diaSugerido(${tarde})`), 1);
+  assert.equal(run("diaSugerido(new Date('2026-09-30T08:00:00-05:00'))"), 0);
+  run('pedido.set(claveLinea("hamburguesas-1"), nuevaLinea("hamburguesas-1"))');
+  assert.equal(run(`diaSugerido(${tarde})`), 0);
+  run('pedido.clear()');
+});
+
+test('Cena: sugiere gaseosa personal y lleva a bebidas, salvo en combos', () => {
+  for (const id of ['hamburguesas-1', 'sandwiches-6', 'broaster-1', 'salchipapas-1', 'club-sandwiches-1', 'enchiladas-1', 'alitas-1']) {
+    assert.equal(run(`PLATOS["${id}"].sugerencia`), 'bebidas-4', id);
+    assert.equal(run(`PLATOS["${id}"].acompanamientos`), 'bebidas', id);
+  }
+  assert.equal(run('PLATOS["combos-1"].sugerencia'), null);
+  assert.equal(run('PLATOS["bebidas-4"].nombre'), 'Gaseosa personal');
 });

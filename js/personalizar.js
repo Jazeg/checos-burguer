@@ -50,7 +50,7 @@ function bloqueSugerencia(p) {
   const todos = p.acompanamientos ? `<button type="button" data-ver-seccion="${p.acompanamientos}" class="sugerencia-todos">Ver todos los acompañamientos ↗</button>` : "";
   return `<div class="sugerencia"><p><span>¿Lo acompañas?</span> ${tamano ? tamano.nombre + " de jugo de " + s.nombre.toLowerCase() : s.nombre}
       · <strong>${soles(tamano ? tamano.precio : s.precio)}</strong> <em data-sugerencia-cant></em></p>
-    <button type="button" data-sugerencia="${s.id}" class="agregar">Agregar</button>${todos}</div>`;
+    ${disponibleAhora(s.id) ? `<button type="button" data-sugerencia="${s.id}" class="agregar">Agregar</button>` : ""}${todos}</div>`;
 }
 
 function controlEleccion(p) {
@@ -58,10 +58,22 @@ function controlEleccion(p) {
     ? `<input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="cantidad-input" data-config-cantidad value="${eleccion.cant}" aria-label="Cantidad de ${attr(p.nombre)}">`
     : stepper(p.nombre, "data-config-menos", "data-config-mas", `<span data-config-valor>${eleccion.cant}</span>`, false);
   return `<div class="config-pedido">${cantidad}<button type="button" data-config-agregar class="agregar config-agregar"></button></div>
+    <p class="config-destino" data-config-destino hidden></p>
+    <div class="config-confirmar" data-salir-confirmar hidden role="alertdialog" aria-labelledby="confirmar-salir">
+      <p id="confirmar-salir">Aún no agregaste ${p.nombre}. ¿Seguro que quieres salir sin agregarlo?</p>
+      <div><button type="button" data-seguir-eligiendo class="agregar config-agregar">Seguir eligiendo</button>
+        <button type="button" data-salir-sin-agregar class="config-elegir">Salir sin agregar</button></div>
+    </div>
+    <div class="config-confirmar" data-config-confirmar hidden role="alertdialog" aria-labelledby="confirmar-cremas">
+      <p id="confirmar-cremas">¿Seguro que lo quieres sin cremas?</p>
+      <div><button type="button" data-sin-cremas class="agregar config-agregar">Sí, sin cremas</button>
+        <button type="button" data-elegir-cremas class="config-elegir">Elegir cremas</button></div>
+    </div>
     <p class="config-falta" role="status"></p><span class="fuera-horario" data-config-fuera hidden>Fuera de horario</span>`;
 }
 
 function pintarEleccion(p) {
+  salidaPendiente = destinoTrasAgregar = null;
   $("producto-opciones").innerHTML = formularioEleccion(p);
   $("producto-control").innerHTML = controlEleccion(p);
   const cant = cantidadPlato(p.id);
@@ -70,9 +82,11 @@ function pintarEleccion(p) {
 }
 
 function refrescarEleccion(p = PLATOS[productoActivo]) {
+  if (!p || !eleccion) return;
   const control = $("producto-control"), falta = faltantes(p), disponible = disponibleAhora(p.id);
   const boton = control.querySelector("[data-config-agregar]");
   if (!boton) return;
+  if (Object.keys(eleccion.cremas).length) confirmarSinCremas(false);
   boton.hidden = !disponible;
   control.querySelector("[data-config-fuera]").hidden = disponible;
   boton.disabled = falta.length > 0;
@@ -105,29 +119,94 @@ function cambiarEleccion(input) {
 }
 
 function cambiarCrema(crema, delta) {
+  if (!productoActivo) return;
   const n = Math.min(MAX_PORCIONES_CREMA, Math.max(0, (eleccion.cremas[crema] || 0) + delta));
   if (n) eleccion.cremas[crema] = n; else delete eleccion.cremas[crema];
   refrescarEleccion();
 }
 
-/* cierra la ficha y lleva a la sección con todo lo que acompaña */
-function verSeccion(id) {
+/* ---------- salir de la ficha sin agregar ----------
+   Ir a una sugerencia sin haber agregado el plato siempre pregunta; cerrar
+   (✕, Esc, clic fuera, "Revisar mi pedido") solo si ya se eligió algo. Así
+   quien solo mira la foto no se topa con la pregunta. */
+let salidaPendiente = null;
+/* destino que el cliente quiso antes de agregar ("Seguir eligiendo"):
+   se le lleva ahí apenas agrega el plato */
+let destinoTrasAgregar = null;
+const textoDestino = d => d.seccion ? "Al agregarlo te llevamos a los acompañamientos." : d.pedido ? "Al agregarlo te mostramos tu pedido." : "";
+const eleccionTocada = () => !!(eleccion && (eleccion.tamano || Object.keys(eleccion.opciones).length || Object.keys(eleccion.cremas).length || eleccion.cant !== 1));
+
+/* el evento "close" llega después y devuelve el scroll a la página: si
+   eso ocurre a mitad del desplazamiento suave, lo corta. Se devuelve aquí,
+   antes de bajar. */
+function salirDeFicha(destino) {
   $("producto-dialog").close();
-  $(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.body.style.overflow = $("hoja").dataset.abierto === "si" ? "hidden" : "";
+  if (destino.seccion) $(destino.seccion)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (destino.pedido) abrirHoja(true);
+}
+
+function intentarSalir(destino = {}) {
+  const p = PLATOS[productoActivo];
+  const preguntar = personalizable(p) && disponibleAhora(p.id) && (destino.seccion || eleccionTocada());
+  if (!preguntar) return salirDeFicha(destino);
+  salidaPendiente = destino;
+  confirmarSinCremas(false);
+  const caja = $("producto-control").querySelector("[data-salir-confirmar]");
+  caja.hidden = false;
+  $("producto-control").querySelector(".config-pedido").hidden = true;
+  caja.scrollIntoView({ behavior: "smooth", block: "center" });
+  caja.querySelector("[data-seguir-eligiendo]").focus({ preventScroll: true });
+}
+
+function cancelarSalida() {
+  const control = $("producto-control"), caja = control.querySelector("[data-salir-confirmar]");
+  if (salidaPendiente && textoDestino(salidaPendiente)) {
+    destinoTrasAgregar = salidaPendiente;
+    const nota = control.querySelector("[data-config-destino]");
+    nota.textContent = textoDestino(destinoTrasAgregar);
+    nota.hidden = false;
+  }
+  salidaPendiente = null;
+  if (!caja || caja.hidden) return;
+  caja.hidden = true;
+  control.querySelector(".config-pedido").hidden = false;
+  control.querySelector("[data-config-agregar]").focus();
+}
+
+function confirmarSalida() { const destino = salidaPendiente || {}; salidaPendiente = null; salirDeFicha(destino); }
+
+/* plato con cremas y ninguna elegida: se pregunta antes de agregar, sin
+   bloquear la página como un confirm() del navegador */
+function confirmarSinCremas(mostrar) {
+  const control = $("producto-control"), caja = control.querySelector("[data-config-confirmar]");
+  if (!caja || caja.hidden === !mostrar) return;
+  caja.hidden = !mostrar;
+  control.querySelector(".config-pedido").hidden = mostrar;
+  if (mostrar) caja.querySelector("[data-sin-cremas]").focus();
+}
+
+function irACremas() {
+  confirmarSinCremas(false);
+  const grupo = $("producto-opciones").querySelector("[data-crema-fila]");
+  grupo?.closest("fieldset").scrollIntoView({ behavior: "smooth", block: "center" });
+  grupo?.querySelector("[data-crema-mas]").focus({ preventScroll: true });
 }
 
 /* las opciones van en el orden del plato y las cremas en el de la lista,
    así la misma elección siempre cae en la misma línea del pedido */
-function agregarEleccion() {
+function agregarEleccion(sinCremas = false) {
   const p = PLATOS[productoActivo];
   if (!p || faltantes(p).length) return;
+  if (p.cremas && !sinCremas && !Object.keys(eleccion.cremas).length) { cancelarSalida(); confirmarSinCremas(true); return; }
   const opciones = Object.fromEntries((p.opciones || []).map(g => [g.nombre, eleccion.opciones[g.nombre]]));
   const cremas = Object.fromEntries((p.cremas || []).filter(c => eleccion.cremas[c]).map(c => [c, eleccion.cremas[c]]));
   const cant = eleccion.cant;
   if (!agregarAlPedido(p.id, { tamano: eleccion.tamano, opciones, cremas }, cant)) return;
-  eleccion.cant = 1;
-  refrescarEleccion(p);
-  $("producto-confirmacion").textContent = `Agregaste ${cant}. Llevas ${cantidadPlato(p.id)} en tu pedido.`;
+  const destino = destinoTrasAgregar || {};
+  destinoTrasAgregar = null;
+  salirDeFicha(destino);
+  avisar(`Agregado correctamente · ${cant} × ${p.nombre}`);
 }
 
 function agregarSugerencia(id) {

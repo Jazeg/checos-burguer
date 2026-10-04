@@ -42,36 +42,6 @@ function pintarValidacionDetalle() {
   $("detalle-hint").classList.toggle("hidden", mostrarError);
 }
 
-/* ---------- fecha de entrega (solo catálogo ejecutivo) ----------
-   Vacía significa "lo antes posible". Es obligatoria si el pedido trae
-   algo fuera de su horario: la cocina necesita saber para cuándo. */
-let entregaTocada = false;
-const entregaValor = () => $("entrega-fecha")?.value || "";
-const ahoraLocal = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
-
-function errorEntrega() {
-  if (!$("entrega-fecha")) return "";
-  const v = entregaValor();
-  if (!v) return pedidoAnticipado() ? "Indícanos la fecha y hora de entrega." : "";
-  return new Date(v) <= new Date() ? "Elige una fecha y hora que aún no hayan pasado." : "";
-}
-const entregaValida = () => !errorEntrega();
-
-function pintarValidacionEntrega() {
-  const input = $("entrega-fecha");
-  if (!input) return;
-  input.min = ahoraLocal();
-  const error = entregaTocada ? errorEntrega() : "";
-  input.classList.toggle("border-ember", !!error);
-  input.classList.toggle("border-ink", !error);
-  input.setAttribute("aria-invalid", error ? "true" : "false");
-  input.required = pedidoAnticipado();
-  $("entrega-error").textContent = error;
-  $("entrega-hint").textContent = error ? "" : pedidoAnticipado()
-    ? "Tu pedido incluye productos fuera de su horario: sale como pedido anticipado."
-    : "Déjalo vacío si lo quieres lo antes posible.";
-}
-
 /* ---------- hoja de pedido ---------- */
 /* la cantidad escrita a mano repinta todo en cada tecla: se recuerda qué
    campo tenía el foco y dónde iba el cursor para devolvérselos */
@@ -124,21 +94,31 @@ function pintarPedido() {
 
   pintarDetalleProducto();
   const detalle = $("detalle").value.trim();
-  $("vista-comanda").textContent = textoComanda(detalle, entregaValor());
+  const fecha = SIN_HORARIO ? (pintarEntrega(), datosEntrega()) : null;
+  $("vista-comanda").textContent = textoComanda(detalle, fecha);
 
   const enviar = $("enviar");
   const disponibles = pedidoDisponible();
   $("pedido-aviso").textContent = pedido.size && !disponibles
     ? 'Hay productos fuera de horario. Retíralos con × para enviar tu pedido. Conservamos tu selección.' : '';
   enviar.setAttribute("aria-disabled", disponibles ? "false" : "true");
-  enviar.href = disponibles ? enlaceWhatsApp(detalle, entregaValor()) : "#";
+  enviar.href = disponibles ? enlaceWhatsApp(detalle, fecha) : "#";
   pintarValidacionDetalle();
-  pintarValidacionEntrega();
 
   document.querySelectorAll("[data-control]").forEach(cont => {
     cont.innerHTML = controlAgregar(cont.dataset.control, cont.dataset.zona);
   });
   devolverFoco(foco);
+}
+
+/* ---------- aviso breve tras agregar desde la ficha ---------- */
+let temporizadorAviso;
+function avisar(texto) {
+  const aviso = $("aviso-agregado");
+  aviso.textContent = texto;
+  aviso.dataset.visible = "si";
+  clearTimeout(temporizadorAviso);
+  temporizadorAviso = setTimeout(() => { aviso.dataset.visible = "no"; }, 2600);
 }
 
 /* ---------- modo de entrega y recojo en tienda ---------- */

@@ -25,10 +25,17 @@ function iniciar() {
     if ("configMas" in b.dataset) { eleccion.cant = Math.min(MAX_CANTIDAD, eleccion.cant + 1); refrescarEleccion(); }
     if ("configMenos" in b.dataset) { eleccion.cant = Math.max(1, eleccion.cant - 1); refrescarEleccion(); }
     if ("configAgregar" in b.dataset) agregarEleccion();
+    if ("sinCremas" in b.dataset) agregarEleccion(true);
+    if ("elegirCremas" in b.dataset) irACremas();
     if (b.dataset.sugerencia) agregarSugerencia(b.dataset.sugerencia);
     if (b.dataset.cremaMas) cambiarCrema(b.dataset.cremaMas, 1);
     if (b.dataset.cremaMenos) cambiarCrema(b.dataset.cremaMenos, -1);
-    if (b.dataset.verSeccion) verSeccion(b.dataset.verSeccion);
+    if (b.dataset.verSeccion) intentarSalir({ seccion: b.dataset.verSeccion });
+    if ("seguirEligiendo" in b.dataset) cancelarSalida();
+    if ("salirSinAgregar" in b.dataset) confirmarSalida();
+    if (b.dataset.entregaDia) elegirDia(b.dataset.entregaDia);
+    if ("entregaOtra" in b.dataset) mostrarOtraFecha();
+    if (b.id === "programar-toggle") alternarProgramar();
     if (b.dataset.ir) $(b.dataset.ir).scrollIntoView({ behavior: "smooth", block: "start" });
 
     if ("recomCasa" in b.dataset) { estadoRecom.modo = "casa"; estadoRecom.paso = "casa-personas"; pintarRecomendador(); }
@@ -73,13 +80,7 @@ function iniciar() {
     actualizarTurno();
     if (!pedidoDisponible()) { e.preventDefault(); return; }
     if (modoEntrega === "Recojo en tienda" && !recojoDisponible()) { e.preventDefault(); pintarRecojo(true); return; }
-    if (!entregaValida()) {
-      e.preventDefault();
-      entregaTocada = true;
-      pintarValidacionEntrega();
-      $("entrega-fecha").focus();
-      return;
-    }
+    if (SIN_HORARIO && !entregaValida()) { e.preventDefault(); $("programar").scrollIntoView({ block: "center", behavior: "smooth" }); return; }
 
     if (!detalleValido()) {
       e.preventDefault();
@@ -96,8 +97,7 @@ function iniciar() {
 
   $("buscar-carta").addEventListener('input', () => { pintarCarta(); observarCarta(); });
   $("detalle").addEventListener("input", pintarPedido);
-  $("entrega-fecha")?.addEventListener("input", pintarPedido);
-  $("entrega-fecha")?.addEventListener("blur", () => { entregaTocada = true; pintarValidacionEntrega(); });
+  $("programar-panel")?.addEventListener("input", e => cambiarEntrega(e.target));
   $("detalle").addEventListener("blur", () => { detalleTocado = true; pintarValidacionDetalle(); });
 
   document.querySelectorAll("[data-modo]").forEach(b => b.addEventListener("click", () => elegirModo(b.dataset.modo)));
@@ -132,10 +132,18 @@ function iniciar() {
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
   $("header-pedido").addEventListener('click', () => abrirHoja(true));
-  $("producto-cerrar").addEventListener('click', () => $("producto-dialog").close());
+  $("producto-cerrar").addEventListener('click', () => intentarSalir());
+  /* Esc también pasa por la pregunta de salida. Se intercepta en keydown:
+     sin un clic previo, Chrome cierra el diálogo sin disparar "cancel". */
+  $("producto-dialog").addEventListener('keydown', e => {
+    if (e.key !== "Escape") return;
+    e.preventDefault();
+    if (salidaPendiente) cancelarSalida(); else intentarSalir();
+  });
+  $("producto-dialog").addEventListener('cancel', e => { e.preventDefault(); intentarSalir(); });
   $("producto-dialog").addEventListener('close', () => { document.body.style.overflow = $("hoja").dataset.abierto === "si" ? "hidden" : ""; productoActivo = null; });
-  $("producto-dialog").addEventListener('click', e => { if (e.target === $("producto-dialog")) $("producto-dialog").close(); });
-  $("producto-pedido").addEventListener('click', () => { $("producto-dialog").close(); abrirHoja(true); });
+  $("producto-dialog").addEventListener('click', e => { if (e.target === $("producto-dialog")) intentarSalir(); });
+  $("producto-pedido").addEventListener('click', () => intentarSalir({ pedido: true }));
   $("barra-abrir").addEventListener("click", () => abrirHoja(true));
   $("cerrar-hoja").addEventListener("click", () => abrirHoja(false));
   $("velo").addEventListener("click", () => abrirHoja(false));

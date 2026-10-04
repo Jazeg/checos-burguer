@@ -149,3 +149,35 @@ body[data-turno=desayuno] #carta{animation:cambio-carta .35s ease}body[data-turn
 .linea-detalle{font-size:12px;line-height:1.5;color:var(--ink);margin:2px 0}
 .recojo-aviso:not(:empty){margin:-4px 0 12px;font-size:12px;line-height:1.5;color:var(--ember);font-weight:700}
 @media(max-width:639px){.cremas-lista{grid-template-columns:minmax(0,1fr)}.config-pedido{width:100%}#producto-control{display:block}#producto-control .config-agregar{flex:1;justify-content:center}}
+/* Pedido programado (catálogo ejecutivo): plegable encima del total; fechas como hojas de calendario. */
+.programar{margin:0 0 16px;border:1px dashed var(--hairline-strong);border-radius:16px;background:var(--surface)}
+.programar-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:56px;padding:12px 16px;text-align:left}
+.programar-toggle strong{display:block;font-size:14px;font-weight:800;line-height:1.3}
+.programar-toggle small{display:block;margin-top:3px;font-size:12px;line-height:1.4;color:var(--muted)}
+.programar-toggle[aria-expanded=true] small{color:var(--ember);font-weight:700}
+.programar-toggle[aria-disabled=true]{cursor:default}
+.programar-icono{flex-shrink:0;display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--ink);border-radius:50%;font-size:18px;line-height:1}
+.programar-toggle[aria-disabled=true] .programar-icono{visibility:hidden}
+.programar-panel{display:grid;gap:8px;padding:0 16px 16px}
+.programar-titulo{display:block;margin-top:8px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.programar-titulo small{font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)}
+.programar-campo{width:100%;min-height:46px;padding:10px 14px;border:2px solid var(--ink);border-radius:12px;background:var(--canvas);font:500 16px var(--body)}
+.programar-error:not(:empty){font-size:12px;font-weight:700;color:var(--ember)}
+.dia-otra strong{font-family:var(--body);font-weight:500}
+.entrega-dias{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.dia-chip{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 4px 9px;border:1px solid var(--hairline-strong);border-radius:16px;background:var(--canvas);transition:background .2s,color .2s,border-color .2s}
+.dia-chip small{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.dia-chip strong{font:400 26px/1.05 var(--serif)}
+.dia-chip span{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.dia-chip[aria-pressed=true]{background:var(--ember);border-color:var(--ember);color:var(--canvas)}
+.dia-chip[aria-pressed=true] small,.dia-chip[aria-pressed=true] span{color:var(--canvas)}
+/* Confirmación "sin cremas" dentro de la ficha y aviso tras agregar. */
+.config-confirmar{padding:14px 16px;border:1px solid var(--ember);border-radius:16px;background:var(--canvas)}
+.config-confirmar p{font-size:14px;font-weight:800;margin-bottom:10px}
+.config-confirmar div{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.config-elegir{min-height:44px;font-size:12px;font-weight:700;text-decoration:underline;color:var(--ember)}
+.aviso-agregado{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));z-index:70;max-width:calc(100% - 32px);width:max-content;padding:13px 20px;border-radius:40px;background:var(--ink);color:var(--canvas);font-size:13px;font-weight:700;box-shadow:0 10px 30px #17171733;transform:translate(-50%,0);transition:opacity .25s ease,transform .25s ease;pointer-events:none}
+.aviso-agregado::before{content:"✓";color:var(--mustard);margin-right:8px}
+.aviso-agregado[data-visible=no]{opacity:0;transform:translate(-50%,12px)}
+@media(min-width:640px){.aviso-agregado{bottom:104px}}
+.config-destino{margin-top:8px;font-size:12px;font-weight:700;color:var(--green-dark)}

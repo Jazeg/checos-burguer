@@ -110,6 +110,8 @@
   </div>
 </aside>
 
+<div id="aviso-agregado" class="aviso-agregado" data-visible="no" role="status" aria-live="polite"></div>
+
 <!-- ====== HOJA DE PEDIDO ====== -->
 <div id="velo" data-abierto="no" class="fixed inset-0 z-[60] bg-ink/55"></div>
 <aside id="hoja" inert data-abierto="no" role="dialog" aria-modal="true" aria-labelledby="titulo-hoja"
@@ -139,15 +141,28 @@
     <p id="detalle-error" class="mt-1.5 min-h-[1em] font-mono text-xs font-bold text-ember" role="alert"></p>
     <p id="detalle-hint" class="min-h-[1em] font-mono text-xs text-muted"></p>
 
-    <label for="entrega-fecha" class="mb-1.5 mt-3 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted">¿Para cuándo?</label>
-    <input id="entrega-fecha" type="datetime-local" aria-describedby="entrega-error entrega-hint"
-      class="w-full rounded-xl border-2 border-ink bg-surface px-3.5 py-3 text-base">
-    <p id="entrega-error" class="mt-1.5 min-h-[1em] font-mono text-xs font-bold text-ember" role="alert"></p>
-    <p id="entrega-hint" class="min-h-[1em] font-mono text-xs text-muted"></p>
-
     <div class="comanda mt-5 mb-4 rounded border-2 border-ink bg-surface px-4 py-5">
       <p class="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Así llega al WhatsApp de la cocina</p>
       <pre id="vista-comanda" class="whitespace-pre-wrap font-mono text-xs leading-relaxed text-ink">Todavía no agregas nada.</pre>
+    </div>
+
+    <!-- Pedido programado: por defecto es para hoy. Se abre a pedido del
+         cliente, o solo si hoy ya no se sirve lo que eligió. -->
+    <div id="programar" class="programar">
+      <button type="button" id="programar-toggle" class="programar-toggle" aria-expanded="false" aria-controls="programar-panel">
+        <span><strong>¿Es para una fecha específica o un evento?</strong><small id="programar-resumen"></small></span>
+        <span id="programar-icono" class="programar-icono" aria-hidden="true">+</span>
+      </button>
+      <div id="programar-panel" class="programar-panel" hidden>
+        <p class="programar-titulo">Fecha</p>
+        <div id="entrega-dias" class="entrega-dias" role="group" aria-label="Fecha de entrega"></div>
+        <input type="date" id="entrega-otra-fecha" class="programar-campo" aria-label="Otra fecha de entrega" hidden>
+        <label for="entrega-hora" class="programar-titulo">Hora <small>opcional</small></label>
+        <input type="time" id="entrega-hora" class="programar-campo" step="900">
+        <label for="entrega-evento" class="programar-titulo">Evento o indicaciones <small>opcional</small></label>
+        <input type="text" id="entrega-evento" class="programar-campo" maxlength="120" autocomplete="off" placeholder="Ej.: Reunión de gerencia, 40 personas">
+        <p id="entrega-error" class="programar-error" role="alert"></p>
+      </div>
     </div>
 
     <div class="flex items-baseline gap-2 border-t-2 border-ink pt-3.5">
@@ -187,6 +202,7 @@
 <script src="js/carta.js"></script>
 <script src="js/personalizar.js"></script>
 <script src="js/hoja.js"></script>
+<script src="js/entrega.js"></script>
 <script src="js/recomendador-vista.js"></script>
 <script src="js/app.js"></script>
 </body>

@@ -112,24 +112,21 @@ function detalleLinea(l) {
   return partes.join(" · ");
 }
 
-/* entrega: valor de un <input type="datetime-local">, en la hora del equipo */
-const fechaEntregaTexto = entrega => new Date(entrega).toLocaleString("es-PE",
-  { weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit" });
-
-function textoComanda(detalle, entrega = "") {
+/* entrega (solo ejecutivo, si se programó): { texto, evento } de entrega.js */
+function textoComanda(detalle, entrega = null) {
   if (!pedido.size) return "Todavía no agregas nada.";
-  const lineas = [`*${pedidoAnticipado() ? "Pedido anticipado" : "Pedido"} — ${NEGOCIO.nombre}*`, ...(ES_CORPORATIVO ? ["Catálogo corporativo"] : []), ""];
+  const lineas = [`*${pedidoAnticipado() || entrega ? "Pedido anticipado" : "Pedido"} — ${NEGOCIO.nombre}*`, ...(ES_CORPORATIVO ? ["Catálogo corporativo"] : []), ""];
   pedido.forEach(l => {
     lineas.push(`${l.cant} × ${PLATOS[l.id].nombre} — ${soles(precioLinea(l) * l.cant)}`);
     const extra = detalleLinea(l);
     if (extra) lineas.push(`   ${extra}`);
   });
   lineas.push("", `Total: ${soles(totalPedido())}`, `Entrega: ${modoEntrega}`);
-  if (SIN_HORARIO) lineas.push(`Para: ${entrega ? fechaEntregaTexto(entrega) : "lo antes posible"}`);
+  if (entrega) lineas.push(`Para: ${entrega.texto}`, ...(entrega.evento ? [`Evento: ${entrega.evento}`] : []));
   if (detalle) lineas.push(`${modoEntrega === "Delivery" ? "Dirección" : "Nombre"}: ${detalle}`);
   return lineas.join("\n");
 }
 
-function enlaceWhatsApp(detalle, entrega = "") {
+function enlaceWhatsApp(detalle, entrega = null) {
   return `https://wa.me/${NEGOCIO.whatsapp}?text=${encodeURIComponent(textoComanda(detalle, entrega))}`;
 }

@@ -25,6 +25,7 @@ js/recomendador.js    lógica de sugerencias (sin DOM)
 js/carta.js           render de la carta: categorías, tarjetas, subgrupos, ficha
 js/personalizar.js    ficha con elección: tamaño, opciones, cremas, cantidad
 js/hoja.js            hoja de pedido, datos de entrega, contacto guardado
+js/entrega.js         pedido programado: fecha, hora y evento (solo corporativo)
 js/recomendador-vista.js  pasos y resultados de "¿No sabes qué pedir?"
 js/app.js             arranque, eventos y cambio de turno
 tests/                node --test tests/horarios.test.cjs
@@ -45,7 +46,8 @@ Reglas:
   Si uno crece, se divide por responsabilidad en otro <script>, sin build.
   Orden de carga en index.html: data, horarios, carrito, recomendador,
   carta, personalizar, hoja, recomendador-vista, app. El catálogo
-  corporativo carga además desayunos justo después de data.
+  corporativo carga además desayunos justo después de data y entrega
+  justo después de hoja.
 - Imágenes por turno y sección:
   assets/<desayuno|almuerzo|cena>/<seccion>/<Nombre>.webp.
   <seccion> es el id de la sección en data.js (hamburguesas, salchipapas,
@@ -106,9 +108,21 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
   Catálogo corporativo (catalogo-corporativo/, enlace o QR propio): desayuno
   ejecutivo y hamburguesas, cantidad escrita a mano (pedidos de 100 o más).
 - El ejecutivo pide a cualquier hora (SIN_HORARIO en horarios.js) y sin el
-  corte de recojo. Si algo está fuera de su turno, sale como "Pedido
-  anticipado" y la fecha y hora de entrega ("¿Para cuándo?") es obligatoria;
-  si no, es opcional ("lo antes posible"). La carta pública sí respeta TURNOS.
+  corte de recojo. Por defecto el pedido es para hoy y no se muestra
+  fecha. Encima del total, "¿Es para una fecha específica o un evento?"
+  abre fecha (hoy + 6 en fichas, u otra fecha), hora opcional y evento
+  opcional; solo entonces la comanda lleva "Para:" y "Evento:". Se abre solo,
+  con mañana, si hoy ya terminó el turno de lo pedido. Programado o fuera de
+  su turno sale como "Pedido anticipado". La carta pública sí respeta TURNOS.
+- Ficha con elección: al agregar se cierra y aparece el aviso "Agregado
+  correctamente". Si el plato lleva cremas y no se eligió ninguna, primero
+  pregunta "¿Seguro que lo quieres sin cremas?" dentro de la ficha.
+- Salir de la ficha sin agregar el plato: ir a una sugerencia ("Ver todos
+  los acompañamientos") siempre pregunta "¿Seguro que quieres salir sin
+  agregarlo?"; cerrar (✕, Esc, clic fuera, "Revisar mi pedido") solo si ya
+  se eligió algo. Platos simples no preguntan. Si responde "Seguir
+  eligiendo", la ficha recuerda a dónde quería ir y lo lleva ahí al agregar. Las confirmaciones van dentro
+  de la ficha, nunca con confirm() del navegador.
 - Cremas: todas las que el cliente quiera aunque pida una unidad, con un
   contador por crema. La primera porción de cada una es gratis; cada porción
   extra de esa crema suma S/ 0.50 por unidad (CREMA_EXTRA, tope
@@ -117,6 +131,10 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
   y aceituna, en hamburguesas, broaster, salchipapas, club sándwiches,
   enchiladas, alitas y combos. Desayuno: solo mostaza y ají. Nunca en jugos,
   bebidas ni extras. Se activan con el campo `cremas` de la sección.
+- Sugerencias en la ficha: campo "sugerencia" (id de plato) y
+  "acompanamientos" (id de sección) en la sección. Desayuno: jugo de naranja
+  y Jugos. Cena (pública y ejecutiva): Gaseosa personal y Bebidas frías, en
+  todo lo que lleva cremas salvo combos, que ya incluyen gaseosa.
 - Desayuno: todos los jugos (los de la noche incluidos) en vaso 250 ml S/ 3
   o medio litro S/ 6. Los de la noche se reutilizan con id am-<id>.
 - Cada línea del pedido es plato + elección; otra elección, otra línea.

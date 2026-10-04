@@ -9,7 +9,10 @@ const NEGOCIO = {
 /* Cremas: el cliente elige todas las que quiera, aunque pida una sola
    unidad. La primera porción de cada crema es gratis; cada porción extra de
    esa misma crema suma CREMA_EXTRA por unidad, hasta MAX_PORCIONES_CREMA.
-   Cada sección indica qué lista usa con su campo "cremas". */
+   Cada sección indica qué lista usa con su campo "cremas".
+   "sugerencia" (id de un plato) se ofrece en la ficha con un clic y
+   "acompanamientos" (id de una sección) es a dónde lleva "Ver todos los
+   acompañamientos". Los combos no sugieren bebida: ya la incluyen. */
 const CREMAS = {
   noche: ["Mayonesa", "Ketchup", "Mostaza", "Ají", "Salsa tártara", "Guacatay", "Salsa wolf", "Aceituna"],
   desayuno: ["Mostaza", "Ají"]
@@ -22,6 +25,8 @@ const CARTA = [
   {
     "id": "hamburguesas",
     "cremas": "noche",
+    "sugerencia": "bebidas-4",
+    "acompanamientos": "bebidas",
     "nombre": "Hamburguesas",
     "tipo": "comida",
     "nota": "De casa, filete de pollo, pollo deshilachado, chorizo o crispy.",
@@ -284,6 +289,8 @@ const CARTA = [
   {
     "id": "broaster",
     "cremas": "noche",
+    "sugerencia": "bebidas-4",
+    "acompanamientos": "bebidas",
     "nombre": "Broaster",
     "tipo": "comida",
     "nota": "",
@@ -333,6 +340,8 @@ const CARTA = [
   {
     "id": "salchipapas",
     "cremas": "noche",
+    "sugerencia": "bebidas-4",
+    "acompanamientos": "bebidas",
     "nombre": "Salchipapas",
     "tipo": "comida",
     "nota": "",
@@ -452,6 +461,8 @@ const CARTA = [
   {
     "id": "club-sandwiches",
     "cremas": "noche",
+    "sugerencia": "bebidas-4",
+    "acompanamientos": "bebidas",
     "nombre": "Club sándwiches",
     "tipo": "comida",
     "nota": "",
@@ -491,6 +502,8 @@ const CARTA = [
   {
     "id": "enchiladas",
     "cremas": "noche",
+    "sugerencia": "bebidas-4",
+    "acompanamientos": "bebidas",
     "nombre": "Enchiladas con queso",
     "tipo": "comida",
     "nota": "",
@@ -600,6 +613,8 @@ const CARTA = [
   {
     "id": "alitas",
     "cremas": "noche",
+    "sugerencia": "bebidas-4",
+    "acompanamientos": "bebidas",
     "nombre": "Alitas BBQ",
     "tipo": "comida",
     "nota": "",
