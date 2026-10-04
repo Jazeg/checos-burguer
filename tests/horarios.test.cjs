@@ -181,3 +181,59 @@ test('Cena: sugiere gaseosa personal y lleva a bebidas, salvo en combos', () => 
   assert.equal(run('PLATOS["combos-1"].sugerencia'), null);
   assert.equal(run('PLATOS["bebidas-4"].nombre'), 'Gaseosa personal');
 });
+
+test('Memoria: borrador, último pedido y líneas que ya no existen', () => {
+  const datos = new Map();
+  const almacen = { getItem: k => datos.has(k) ? datos.get(k) : null, setItem: (k, v) => datos.set(k, String(v)), removeItem: k => datos.delete(k) };
+  const m = vm.createContext({ Intl, Date, Map, localStorage: almacen, pintarPedido() {}, actualizarTurno() {} });
+  for (const file of ['data', 'horarios', 'carrito', 'memoria']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/' + file + '.js'), 'utf8'), m);
+  const ex = code => vm.runInContext(code, m);
+  assert.equal(ex('claveLinea("hamburguesas-1", { tamano: null })'), ex('claveLinea("hamburguesas-1")'));
+  assert.equal(ex(`lineasValidas([
+    { id: "hamburguesas-1", cant: 2, cremas: { Mayonesa: 2 } },
+    { id: "no-existe", cant: 1 },
+    { id: "hamburguesas-1", cant: 1, cremas: { Wasabi: 1 } },
+    { id: "jugos-1", cant: 0 }
+  ]).length`), 1);
+  ex('pedido.set(claveLinea("hamburguesas-1", { cremas: { Mayonesa: 2 } }), nuevaLinea("hamburguesas-1", { cremas: { Mayonesa: 2 } }, 3)); pedido.set(claveLinea("bebidas-4"), nuevaLinea("bebidas-4", {}, 2))');
+  ex('guardarBorrador(); pedido.clear(); restaurarBorrador()');
+  assert.equal(ex('unidadesPedido()'), 5);
+  assert.equal(ex('totalPedido()'), 3 * 8.5 + 2 * 2);
+  assert.equal(ex('pedido.get(claveLinea("bebidas-4")).cant'), 2);
+  ex('guardarPedidoEnviado({ lineas: lineasParaGuardar(), total: totalPedido(), modo: "Delivery" }); pedido.clear(); guardarBorrador()');
+  assert.equal(datos.has('checos_borrador_v1_pub'), false);
+  assert.equal(ex('ultimoPedido().lineas.length'), 2);
+  ex('cargarLineas(ultimoPedido().lineas)');
+  assert.equal(ex('unidadesPedido()'), 5);
+  /* "Pedir de nuevo" suma, no reemplaza */
+  assert.equal(ex('sumarLineas(ultimoPedido().lineas)'), 2);
+  assert.equal(ex('unidadesPedido()'), 10);
+  datos.set('checos_borrador_v1_pub', JSON.stringify({ lineas: [{ id: "hamburguesas-1", cant: 1 }], guardado: Date.now() - 13 * 36e5 }));
+  ex('pedido.clear(); restaurarBorrador()');
+  assert.equal(ex('pedido.size'), 0, 'un borrador de más de 12 horas no se restaura');
+  datos.set('checos_pedidos_v1_pub', '{roto');
+  assert.equal(ex('ultimoPedido()'), null);
+});
+
+test('Mis pedidos: orden, eliminar, borrar todo, tope y formato anterior', () => {
+  const datos = new Map();
+  const almacen = { getItem: k => datos.has(k) ? datos.get(k) : null, setItem: (k, v) => datos.set(k, String(v)), removeItem: k => datos.delete(k) };
+  const m = vm.createContext({ Intl, Date, Map, localStorage: almacen });
+  for (const file of ['data', 'horarios', 'carrito', 'memoria']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/' + file + '.js'), 'utf8'), m);
+  const ex = code => vm.runInContext(code, m);
+  /* un "último pedido" del formato anterior se conserva como primer pedido */
+  datos.set('checos_ultimo_v1_pub', JSON.stringify({ lineas: [{ id: 'hamburguesas-1', cant: 1 }], guardado: Date.now() - 36e5 }));
+  assert.equal(ex('pedidosGuardados().length'), 1);
+  ex('guardarPedidoEnviado({ lineas: [{ id: "bebidas-4", cant: 2 }], total: 4 })');
+  assert.equal(datos.has('checos_ultimo_v1_pub'), false);
+  assert.equal(ex('pedidosGuardados().map(p => p.lineas[0].id).join()'), 'bebidas-4,hamburguesas-1');
+  ex('eliminarPedidoGuardado(pedidosGuardados()[0].id)');
+  assert.equal(ex('pedidosGuardados().map(p => p.lineas[0].id).join()'), 'hamburguesas-1');
+  for (let i = 0; i < 25; i++) ex('guardarPedidoEnviado({ lineas: [{ id: "bebidas-4", cant: 1 }] })');
+  assert.equal(ex('pedidosGuardados().length'), 20);
+  assert.equal(ex('new Set(pedidosGuardados().map(p => p.id)).size'), 20, 'ids únicos aunque se guarden en el mismo milisegundo');
+  datos.set('checos_pedidos_v1_pub', JSON.stringify({ pedidos: [{ id: 'viejo', enviado: Date.now() - 91 * 864e5, lineas: [{ id: 'bebidas-4', cant: 1 }] }] }));
+  assert.equal(ex('pedidosGuardados().length'), 0, 'más de 90 días no se muestra');
+  ex('guardarPedidoEnviado({ lineas: [{ id: "bebidas-4", cant: 1 }] }); borrarPedidosGuardados()');
+  assert.equal(ex('pedidosGuardados().length'), 0);
+});

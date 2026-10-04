@@ -48,7 +48,9 @@
 <div class="menu-search"><label for="buscar-carta">Encuentra tu antojo</label><input id="buscar-carta" type="search" placeholder="Busca desayuno, hamburguesa, combo…" autocomplete="off"><p id="busqueda-resultado" role="status" aria-live="polite"></p></div>
 <div class="menu-layout">
   <nav class="category-nav" aria-label="Secciones de la carta">
-    <div class="category-sticky"><p class="eyebrow category-label">Nuestra carta</p><div id="pistas"></div>
+    <div class="category-sticky">
+      <button type="button" id="abrir-mis-pedidos" class="mis-pedidos-boton" hidden>Mis pedidos <span id="mis-pedidos-cantidad"></span></button>
+      <p class="eyebrow category-label">Nuestra carta</p><div id="pistas"></div>
       <div class="sidebar-note"><span>De nuestra cocina,<br>con mucho</span><em>antojo.</em><p>Elige tus favoritos.<br>Nos vemos en WhatsApp.</p></div>
     </div>
   </nav>
@@ -181,6 +183,17 @@
   </div>
 </aside>
 
+<!-- ====== MIS PEDIDOS: historial guardado en este teléfono ====== -->
+<dialog id="pedidos-dialog" aria-labelledby="pedidos-titulo">
+  <button type="button" id="pedidos-cerrar" class="dialog-close" aria-label="Cerrar mis pedidos">✕</button>
+  <div class="pedidos-cuerpo">
+    <p class="eyebrow">Historial</p>
+    <h2 id="pedidos-titulo">Mis pedidos</h2>
+    <p class="pedidos-nota">Los pedidos que enviaste por WhatsApp desde este teléfono. Se guardan solo aquí, hasta 90 días.</p>
+    <div id="pedidos-lista"></div>
+  </div>
+</dialog>
+
 <dialog id="producto-dialog" aria-labelledby="producto-titulo">
   <button type="button" id="producto-cerrar" class="dialog-close" aria-label="Cerrar detalle">✕</button>
   <div class="product-detail">
@@ -204,6 +217,8 @@
 <script src="js/hoja.js"></script>
 <script src="js/entrega.js"></script>
 <script src="js/recomendador-vista.js"></script>
+<script src="js/memoria.js"></script>
+<script src="js/historial.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

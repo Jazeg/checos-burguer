@@ -23,7 +23,7 @@ Configurar intervalos en `js/horarios.js` (`TURNOS`, minutos desde medianoche). 
 
 La portada, categorías y recomendaciones siguen la carta seleccionada. El selector permite explorar el otro menú; «Volver al horario actual» restablece la selección automática. Cada cambio de servicio devuelve la vista al horario actual. La página comprueba el reloj cada segundo y al volver a la pestaña. Se vuelve a validar al agregar y al enviar.
 
-El carrito se conserva durante un cambio de turno. Los artículos no disponibles se señalan y deben retirarse para habilitar WhatsApp. Nunca se envía automáticamente el pedido. La disponibilidad usa el reloj del dispositivo convertido a la zona del negocio; para una tienda con confirmación de pedidos en servidor, esa validación debe repetirse allí con un reloj confiable.
+El carrito se guarda en el teléfono (localStorage) y se recupera si se recarga o cierra la página; al enviar por WhatsApp se limpia y el pedido pasa a «Mis pedidos» (modal en la barra de categorías: pedir de nuevo o eliminar). El carrito se conserva durante un cambio de turno. Los artículos no disponibles se señalan y deben retirarse para habilitar WhatsApp. Nunca se envía automáticamente el pedido. La disponibilidad usa el reloj del dispositivo convertido a la zona del negocio; para una tienda con confirmación de pedidos en servidor, esa validación debe repetirse allí con un reloj confiable.
 
 ## Verificación
 

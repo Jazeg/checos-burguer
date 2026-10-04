@@ -167,6 +167,7 @@ function observarCarta() {
   observadorCarta = new IntersectionObserver(entradas => {
     entradas.forEach(en => {
       if (!en.isIntersecting) return;
+      guardarVista(en.target.id);
       pistas().forEach(p => {
         const activa = p.dataset.ir === en.target.id;
         p.setAttribute("aria-current", activa);

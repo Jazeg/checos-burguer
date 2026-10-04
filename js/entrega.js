@@ -108,3 +108,13 @@ function cambiarEntrega(campo) {
   if (campo.id === "entrega-evento") entrega.evento = campo.value;
   pintarPedido();
 }
+
+/* ---------- memoria (memoria.js) ---------- */
+const ENTREGA_INICIAL = { abierto: false, fecha: null, fechaElegida: false, otraFecha: false, hora: "", evento: "" };
+function restaurarEntrega(guardada) {
+  Object.assign(entrega, ENTREGA_INICIAL, guardada);
+  if (entrega.fecha && diasDesdeHoy(entrega.fecha) < 0) Object.assign(entrega, { fecha: null, fechaElegida: false, otraFecha: false });
+  $("entrega-hora").value = entrega.hora;
+  $("entrega-evento").value = entrega.evento;
+}
+function reiniciarEntrega() { restaurarEntrega({}); }

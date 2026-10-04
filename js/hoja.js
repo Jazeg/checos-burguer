@@ -90,7 +90,7 @@ function pintarPedido() {
           </button>
         </div>`;
       }).join("")
-    : `<p class="py-6 text-center text-sm text-muted">Tu pedido está vacío. Agrega algo de la carta.</p>`;
+    : `<p class="py-6 text-center text-sm text-muted">Tu pedido está vacío. Agrega algo de la carta.</p>${bloqueRepetir()}`;
 
   pintarDetalleProducto();
   const detalle = $("detalle").value.trim();
@@ -109,6 +109,7 @@ function pintarPedido() {
     cont.innerHTML = controlAgregar(cont.dataset.control, cont.dataset.zona);
   });
   devolverFoco(foco);
+  guardarBorrador();
 }
 
 /* ---------- aviso breve tras agregar desde la ficha ---------- */

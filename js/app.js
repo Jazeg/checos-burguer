@@ -4,9 +4,14 @@
    ============================================================ */
 
 function iniciar() {
+  /* lo que quedó de la visita anterior: turno explorado, carrito y sección */
+  const vista = leerVista();
+  if (Object.hasOwn(TURNOS, vista?.turno)) turnoManual = vista.turno;
+  restaurarBorrador();
   actualizarTurno(true);
   pintarPie();
   restaurarContacto();
+  pintarAccesoPedidos();
   pintarRecojo(true);
   pintarPedido();
 
@@ -30,6 +35,12 @@ function iniciar() {
     if (b.dataset.sugerencia) agregarSugerencia(b.dataset.sugerencia);
     if (b.dataset.cremaMas) cambiarCrema(b.dataset.cremaMas, 1);
     if (b.dataset.cremaMenos) cambiarCrema(b.dataset.cremaMenos, -1);
+    if ("repetirPedido" in b.dataset) repetirUltimo();
+    if (b.id === "abrir-mis-pedidos") abrirMisPedidos();
+    if (b.dataset.repetirGuardado) repetirGuardado(b.dataset.repetirGuardado);
+    if (b.dataset.borrarGuardado) pedirBorrado(b.dataset.borrarGuardado);
+    if (b.dataset.borrarConfirmado) confirmarBorrado(b.dataset.borrarConfirmado);
+    if ("borrarCancelar" in b.dataset) cancelarBorrado();
     if (b.dataset.verSeccion) intentarSalir({ seccion: b.dataset.verSeccion });
     if ("seguirEligiendo" in b.dataset) cancelarSalida();
     if ("salirSinAgregar" in b.dataset) confirmarSalida();
@@ -93,6 +104,7 @@ function iniciar() {
     const detalle = $("detalle").value.trim();
     guardarContacto(detalle);
     registrarPedidoEnHistorial([...pedido.values()].map(l => l.id));
+    cerrarPedidoEnviado();
   });
 
   $("buscar-carta").addEventListener('input', () => { pintarCarta(); observarCarta(); });
@@ -144,10 +156,16 @@ function iniciar() {
   $("producto-dialog").addEventListener('close', () => { document.body.style.overflow = $("hoja").dataset.abierto === "si" ? "hidden" : ""; productoActivo = null; });
   $("producto-dialog").addEventListener('click', e => { if (e.target === $("producto-dialog")) intentarSalir(); });
   $("producto-pedido").addEventListener('click', () => intentarSalir({ pedido: true }));
+  $("pedidos-cerrar").addEventListener('click', () => $("pedidos-dialog").close());
+  $("pedidos-dialog").addEventListener('click', e => { if (e.target === $("pedidos-dialog")) $("pedidos-dialog").close(); });
+  $("pedidos-dialog").addEventListener('close', () => { document.body.style.overflow = $("hoja").dataset.abierto === "si" ? "hidden" : ""; });
   $("barra-abrir").addEventListener("click", () => abrirHoja(true));
   $("cerrar-hoja").addEventListener("click", () => abrirHoja(false));
   $("velo").addEventListener("click", () => abrirHoja(false));
   document.addEventListener("keydown", e => { if (e.key === "Escape" && $("hoja").dataset.abierto === "si") abrirHoja(false); });
+
+  window.addEventListener("scroll", vigilarInicio, { passive: true });
+  irAVista(vista);
 
   setInterval(actualizarTurno, 1000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) actualizarTurno(); });

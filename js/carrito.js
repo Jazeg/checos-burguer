@@ -29,8 +29,9 @@ const MAX_CANTIDAD = 9999;
 const soles = n => "S/ " + n.toFixed(2);
 const personalizable = p => !!(p && (p.tamanos || p.opciones || p.cremas));
 
-function claveLinea(id, { tamano = "", opciones = {}, cremas = {} } = {}) {
-  return [id, tamano,
+/* sin tamaño da lo mismo null que "": la línea es la misma */
+function claveLinea(id, { tamano, opciones = {}, cremas = {} } = {}) {
+  return [id, tamano || "",
     ...Object.keys(opciones).sort().map(k => `${k}=${opciones[k]}`),
     ...Object.keys(cremas).sort().map(k => `${k}*${cremas[k]}`)].join("|");
 }

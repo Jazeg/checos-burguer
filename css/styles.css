@@ -83,7 +83,7 @@ img,svg{display:block;max-width:100%}button,a{-webkit-tap-highlight-color:transp
 #hoja{transform:translateY(110%);transition:transform .26s ease}#hoja[data-abierto=si]{transform:translateY(0)}#hoja>div{border:0;border-radius:24px}.comanda{border:1px dashed var(--hairline-strong)}#hoja button,#hoja input{border-width:1px}#titulo-hoja{font:400 32px var(--serif);text-transform:none}#hoja-total{color:var(--ember)}#enviar{border:0;background:#0F7A41}#hoja [data-modo][aria-pressed=true]{background:var(--ember);color:var(--canvas)}
 .pedido-aviso:not(:empty){background:#fbe0cc;padding:12px;border-radius:8px;font-size:12px;margin-bottom:12px}
 #producto-dialog{border:0;border-radius:24px;max-width:1040px;width:calc(100% - 64px);max-height:90dvh;padding:0;background:var(--surface);color:var(--ink);overflow:auto;box-shadow:0 20px 100px #35181430}
-#producto-dialog::backdrop{background:#35181499;backdrop-filter:blur(5px)}.dialog-close{position:absolute;right:16px;top:16px;width:44px;height:44px;border-radius:50%;background:var(--canvas);z-index:1;font-size:18px}
+#producto-dialog::backdrop,#pedidos-dialog::backdrop{background:#35181499;backdrop-filter:blur(5px)}.dialog-close{position:absolute;right:16px;top:16px;width:44px;height:44px;border-radius:50%;background:var(--canvas);z-index:1;font-size:18px}
 .product-detail{display:grid;grid-template-columns:1fr 1.15fr;min-height:560px}.detail-visual{background:var(--canvas);display:flex;flex-direction:column;justify-content:center;padding:40px;gap:30px}.detail-visual img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:180px 180px 24px 24px}.detail-seal{text-align:center;color:var(--ember);font:800 12px/1.7 var(--body);letter-spacing:.05em;text-transform:uppercase}.detail-copy{padding:65px 40px 40px}.detail-copy h2{font:400 48px/1 var(--serif);letter-spacing:-.025em;color:var(--ember);margin:16px 0 24px}#producto-descripcion{font-size:14px;line-height:1.8;margin-bottom:24px}.detail-line{display:flex;gap:20px;justify-content:space-between;padding:17px 0;border-top:1px solid var(--hairline);font-size:12px}.detail-line>span:first-child{font-weight:800;flex-shrink:0}#producto-horario{text-align:right;font-size:11px}#producto-precio{font-size:20px;color:var(--ember)}.detail-note{font-size:11px;line-height:1.7;color:var(--muted);margin:15px 0 24px}#producto-control{display:inline-block}#producto-control .agregar{background:var(--ember);color:var(--canvas);padding:14px 28px;min-height:46px}#producto-confirmacion{min-height:22px;font-size:11px;margin-top:10px;color:var(--muted)}.detail-order{font-size:12px;min-height:44px;text-decoration:underline;font-weight:700}
 @media(min-width:1600px){body{padding-top:40px}.menu-intro{padding-top:40px}}
 @media(max-width:1100px){.site-header{padding:20px 30px;grid-template-columns:1fr 150px 1fr}.header-order{gap:10px}#estado-horario{display:none}.menu-layout{padding:36px 30px;grid-template-columns:150px minmax(0,1fr);gap:25px}.product-grid{gap:25px 16px}.menu-promo{padding:25px 15px;min-height:260px}.menu-product h3{font-size:16px}.product-actions{gap:8px}.menu-intro{padding:20px 30px 35px}.turno-panel{margin:0 30px}.recommendation-section{margin:0 30px 30px}}
@@ -181,3 +181,38 @@ body[data-turno=desayuno] #carta{animation:cambio-carta .35s ease}body[data-turn
 .aviso-agregado[data-visible=no]{opacity:0;transform:translate(-50%,12px)}
 @media(min-width:640px){.aviso-agregado{bottom:104px}}
 .config-destino{margin-top:8px;font-size:12px;font-weight:700;color:var(--green-dark)}
+/* Último pedido, en la hoja vacía. */
+.repetir{margin:4px 0 8px;padding:16px;border:1px dashed var(--hairline-strong);border-radius:16px;background:var(--surface);text-align:left}
+.repetir-titulo{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ember)}
+.repetir-detalle{margin:6px 0 4px;font-size:14px;font-weight:700;line-height:1.45}
+.repetir-meta{margin-bottom:12px;font-size:12px;color:var(--muted)}
+/* Mis pedidos: acceso en la barra de categorías y modal con el historial. */
+.mis-pedidos-boton{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-bottom:22px;padding:8px 16px;border:1px solid var(--ink);border-radius:40px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;transition:background .2s,color .2s}
+.mis-pedidos-boton:hover{background:var(--ink);color:var(--canvas)}
+#mis-pedidos-cantidad{min-width:20px;padding:0 6px;border-radius:20px;background:var(--ember);color:var(--canvas);font-size:11px;line-height:20px;text-align:center}
+#pedidos-dialog{border:0;border-radius:24px;max-width:620px;width:calc(100% - 64px);max-height:90dvh;padding:0;background:var(--surface);color:var(--ink);overflow:auto;box-shadow:0 20px 100px #35181430}
+.pedidos-cuerpo{padding:44px 32px 32px}
+#pedidos-titulo{font:400 42px/1 var(--serif);letter-spacing:-.02em;color:var(--ember);margin:10px 0 10px}
+.pedidos-nota{font-size:13px;line-height:1.6;color:var(--muted);margin-bottom:22px}
+#pedidos-lista{display:grid;gap:14px}
+.pedido-guardado{padding:18px;border:1px solid var(--hairline-strong);border-radius:18px;background:var(--canvas)}
+.pedido-guardado header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px dashed var(--hairline-strong)}
+.pedido-guardado header p{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pedido-guardado header strong{font-size:18px;color:var(--ember)}
+.pedido-guardado ul{display:grid;gap:8px}
+.pedido-guardado li span{display:block;font-size:14px;font-weight:700}
+.pedido-guardado li small{display:block;font-size:12px;color:var(--muted);line-height:1.45}
+.pedido-meta:not(:empty){margin-top:12px;font-size:12px;color:var(--muted);line-height:1.5}
+.pedido-aviso-carta{margin-top:10px;font-size:12px;font-weight:700;color:var(--ember)}
+.pedido-acciones{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin-top:14px}
+.pedido-eliminar{min-height:44px;font-size:12px;font-weight:700;text-decoration:underline;color:var(--muted)}
+.pedido-eliminar:hover{color:var(--ember)}
+.pedido-confirmar{margin-top:14px;padding:14px 16px;border:1px solid var(--ember);border-radius:14px;background:var(--surface)}
+.pedido-confirmar p{font-size:14px;font-weight:800;margin-bottom:10px}
+.pedido-confirmar div{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.pedido-borrar{min-height:44px;padding:8px 18px;border-radius:40px;background:var(--ember);color:var(--canvas);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.pedido-cancelar{min-height:44px;font-size:12px;font-weight:700;text-decoration:underline}
+.pedidos-borrar-todo{justify-self:start}
+.pedidos-vacio{padding:24px;border:1px dashed var(--hairline-strong);border-radius:16px;font-size:14px;line-height:1.6;text-align:center;color:var(--muted)}
+@media(max-width:999px){.category-sticky{display:flex;align-items:center;gap:16px}.mis-pedidos-boton{flex-shrink:0;margin:0;padding:6px 12px;font-size:11px}#pistas{min-width:0}}
+@media(max-width:639px){#pedidos-dialog{width:calc(100% - 24px);max-height:92dvh;border-radius:20px}.pedidos-cuerpo{padding:24px 20px}#pedidos-titulo{font-size:34px}}

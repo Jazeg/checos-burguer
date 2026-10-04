@@ -27,6 +27,8 @@ js/personalizar.js    ficha con elección: tamaño, opciones, cremas, cantidad
 js/hoja.js            hoja de pedido, datos de entrega, contacto guardado
 js/entrega.js         pedido programado: fecha, hora y evento (solo corporativo)
 js/recomendador-vista.js  pasos y resultados de "¿No sabes qué pedir?"
+js/memoria.js         carrito guardado, pedidos enviados y sección donde estaba
+js/historial.js       modal "Mis pedidos": repetir o eliminar pedidos enviados
 js/app.js             arranque, eventos y cambio de turno
 tests/                node --test tests/horarios.test.cjs
 assets/desayuno/      imágenes de la carta de desayunos
@@ -45,7 +47,7 @@ Reglas:
 - Ningún archivo JS pasa de ~600 líneas (data.js aparte: es catálogo).
   Si uno crece, se divide por responsabilidad en otro <script>, sin build.
   Orden de carga en index.html: data, horarios, carrito, recomendador,
-  carta, personalizar, hoja, recomendador-vista, app. El catálogo
+  carta, personalizar, hoja, recomendador-vista, memoria, historial, app. El catálogo
   corporativo carga además desayunos justo después de data y entrega
   justo después de hoja.
 - Imágenes por turno y sección:
@@ -138,3 +140,13 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
 - Desayuno: todos los jugos (los de la noche incluidos) en vaso 250 ml S/ 3
   o medio litro S/ 6. Los de la noche se reutilizan con id am-<id>.
 - Cada línea del pedido es plato + elección; otra elección, otra línea.
+- Memoria en el teléfono (localStorage, público y ejecutivo por separado):
+  el carrito en curso se guarda en cada cambio y se restaura al volver
+  (12 h; en el ejecutivo también lo programado); la sección donde estaba
+  (2 h); al enviar por WhatsApp el carrito se limpia y el pedido pasa a
+  "Mis pedidos" (últimos 20, 90 días). El botón "Mis pedidos" va en la barra
+  de categorías y solo aparece si hay pedidos; el modal permite "Pedir de
+  nuevo" (suma al carrito) y eliminar uno o todos, con confirmación dentro
+  del modal. La hoja vacía ofrece repetir el más reciente. Se guardan ids y
+  elección, nunca precios: al restaurar se recalculan y se descarta lo que
+  ya no está en la carta.
