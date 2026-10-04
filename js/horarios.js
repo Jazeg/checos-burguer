@@ -1,21 +1,18 @@
 /* Horarios diarios en la zona del restaurante; el cierre es exclusivo.
-   Desayunos y almuerzos: horario y catálogo provisionales para esta demostración. */
+   Desayunos corporativos: horario y catálogo provisionales. */
+const ES_CORPORATIVO = typeof CARTA_DESAYUNO !== "undefined";
 const TURNOS = {
+  ...(ES_CORPORATIVO ? {
   desayuno: { nombre: 'Desayunos', inicio: 7 * 60, fin: 11 * 60, provisional: true,
     titulo: 'Empieza rico.<br><span>Sin apuro.</span>',
-    descripcion: 'Pan recién preparado, algo calientito y una buena razón para empezar el día.',
+    descripcion: 'Desayunos para equipos de municipalidades y entidades públicas. Empieza el día con el sabor de Checo’s.',
     imagen: 'assets/desayuno/desayuno.svg', alt: 'Ilustración de un desayuno con café, pan y huevo',
     secundario: { texto: 'Algo para acompañar', enlace: 'bebidas-calientes' },
     promo: { antes: 'ASÍ EMPIEZA', destacado: 'tu día.', texto: 'Un buen pan. Un café calientito. Un momento para ti.', enlace: 'bebidas-calientes', cta: 'Elige tu bebida' },
     carta: CARTA_DESAYUNO },
-  almuerzo: { nombre: 'Almuerzos', inicio: 11 * 60, fin: 15 * 60, provisional: true,
-    titulo: 'Hora de almorzar.<br><span>Como en casa.</span>',
-    descripcion: 'Un plato servido al momento y un jugo bien helado para seguir con la tarde.',
-    imagen: 'assets/comun/carta-checos.svg', alt: 'Recurso tipográfico de la carta de Checo’s',
-    secundario: { texto: 'Algo para acompañar', enlace: 'jugos' },
-    promo: { antes: 'HOY HAY', destacado: 'menú.', texto: 'Un plato de la casa. Un jugo helado. Una pausa bien ganada.', enlace: 'jugos', cta: 'Elige tu jugo' },
-    carta: CARTA_ALMUERZO },
-  cena: { nombre: 'Hamburguesas', inicio: 17 * 60, fin: 40,
+  } : {}),
+  /* El local atiende hasta recojoHasta; después solo sale delivery, hasta fin. */
+  cena: { nombre: 'Hamburguesas', inicio: 17 * 60, fin: 60 + 40, recojoHasta: 60,
     titulo: 'A la plancha.<br><span>Hasta tarde.</span>',
     descripcion: 'Tu hamburguesa favorita, papas crocantes y todos los antojos para cerrar bien el día.',
     imagen: HERO.imagen, alt: HERO.alt,
@@ -48,10 +45,28 @@ function estadoHorario(fecha = new Date()) {
 }
 let turnoManual = null;
 let estadoActual = estadoHorario();
-function turnoVisible() { return turnoManual || estadoActual.activo || estadoActual.siguiente; }
+function turnoVisible() { return (Object.hasOwn(TURNOS, turnoManual) ? turnoManual : null) || estadoActual.activo || estadoActual.siguiente; }
 function cartaVisible() { return TURNOS[turnoVisible()].carta; }
-function disponibleAhora(id, fecha = new Date()) {
+/* El catálogo ejecutivo pide a cualquier hora: lo que está fuera de su
+   turno sale como pedido anticipado, con fecha y hora de entrega. */
+const SIN_HORARIO = ES_CORPORATIVO;
+function enHorario(id, fecha = new Date()) {
   const activo = estadoHorario(fecha).activo;
   return !!activo && TURNOS[activo].carta.some(s => s.platos.some(p => p.id === id));
 }
-function pedidoDisponible() { return pedido.size > 0 && [...pedido.keys()].every(id => disponibleAhora(id)); }
+function disponibleAhora(id, fecha = new Date()) {
+  if (!SIN_HORARIO) return enHorario(id, fecha);
+  return Object.values(TURNOS).some(t => t.carta.some(s => s.platos.some(p => p.id === id)));
+}
+function pedidoDisponible() { return pedido.size > 0 && [...pedido.values()].every(l => disponibleAhora(l.id)); }
+function pedidoAnticipado(fecha = new Date()) { return SIN_HORARIO && [...pedido.values()].some(l => !enHorario(l.id, fecha)); }
+/* Fuera del turno no hay pedidos, así que solo limita dentro de él. El
+   ejecutivo puede programar el recojo, así que no se le limita. */
+function recojoDisponible(fecha = new Date()) {
+  if (SIN_HORARIO) return true;
+  const { activo, minutos } = estadoHorario(fecha);
+  const t = TURNOS[activo];
+  if (!t || t.recojoHasta == null) return true;
+  const desdeInicio = m => (m - t.inicio + 1440) % 1440;
+  return desdeInicio(minutos) < desdeInicio(t.recojoHasta);
+}

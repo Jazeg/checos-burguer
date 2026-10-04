@@ -4,35 +4,51 @@
    ============================================================ */
 
 const $ = id => document.getElementById(id);
+const enlaceSeccion = id => (ES_CORPORATIVO ? "catalogo-corporativo/" : "") + "#" + id;
 const claseEtiqueta = t =>
   t === "Picante" ? "border-ember text-ember" :
   /pedid|ahorr/i.test(t) ? "bg-mustard border-ink" :
   "border-ink";
 
-/* botón "Agregar" o stepper −/+, según si el plato ya está en el carrito.
-   Se usa tanto en las tarjetas de la carta como en el resultado del
-   recomendador, así que el carrito los mantiene sincronizados a todos. */
-function controlAgregar(id) {
-  if (!disponibleAhora(id)) return '<span class="fuera-horario">Fuera de horario</span>';
-  const cant = pedido.get(id) || 0;
-  const nombre = PLATOS[id]?.nombre || "";
-  if (!cant) {
-    return `<button type="button" data-agregar="${id}"
-      class="agregar inline-flex min-h-11 items-center rounded-full border-2 border-ink bg-mustard px-5 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-canvas">
-      Agregar
-    </button>`;
-  }
-  return `<div class="flex items-center overflow-hidden rounded-full border-2 border-ink bg-ink text-canvas">
-    <button type="button" data-menos="${id}" aria-label="Quitar uno de ${nombre}" class="h-11 w-11 text-lg hover:bg-white/10">−</button>
+const attr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+const precioTexto = p => p.tamanos ? "Desde " + soles(Math.min(...p.tamanos.map(t => t.precio))) : soles(p.precio);
+const CLASE_AGREGAR = "agregar inline-flex min-h-11 items-center rounded-full border-2 border-ink bg-mustard px-5 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-canvas";
+
+/* catálogo ejecutivo: cantidad escrita a mano. data-zona distingue el
+   mismo campo en la carta, la ficha y la hoja para devolverle el foco. */
+function campoCantidad(clave, cant, nombre, zona) {
+  return `<input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="cantidad-input"
+    data-cantidad="${attr(clave)}" data-zona="${zona}" value="${cant}" aria-label="Cantidad de ${attr(nombre)}">`;
+}
+
+function stepper(nombre, menos, mas, cant, oscuro = true) {
+  return `<div class="flex items-center overflow-hidden rounded-full border-2 border-ink ${oscuro ? "bg-ink text-canvas" : ""}">
+    <button type="button" ${menos} aria-label="Quitar uno de ${attr(nombre)}" class="h-11 w-11 text-lg ${oscuro ? "hover:bg-white/10" : "hover:bg-hairline"}">−</button>
     <span class="min-w-[22px] text-center font-mono text-sm">${cant}</span>
-    <button type="button" data-mas="${id}" aria-label="Agregar uno de ${nombre}" class="h-11 w-11 text-lg hover:bg-white/10">+</button>
+    <button type="button" ${mas} aria-label="Agregar uno de ${attr(nombre)}" class="h-11 w-11 text-lg ${oscuro ? "hover:bg-white/10" : "hover:bg-hairline"}">+</button>
   </div>`;
+}
+
+/* botón "Agregar" o control de cantidad, según si el plato ya está en el
+   carrito. Se usa tanto en las tarjetas de la carta como en el resultado
+   del recomendador, así que el carrito los mantiene sincronizados a todos.
+   Los platos con algo que elegir abren la ficha en vez de sumar directo. */
+function controlAgregar(id, zona = "carta") {
+  if (!disponibleAhora(id)) return '<span class="fuera-horario">Fuera de horario</span>';
+  const p = PLATOS[id], nombre = p?.nombre || "";
+  if (personalizable(p)) {
+    const cant = cantidadPlato(id);
+    return `<button type="button" data-producto="${id}" class="${CLASE_AGREGAR}">${cant ? "Agregar otro" : "Agregar"}</button>
+      ${cant ? `<span class="en-pedido">${cant} en tu pedido</span>` : ""}`;
+  }
+  const clave = claveLinea(id), cant = pedido.get(clave)?.cant || 0;
+  if (!cant) return `<button type="button" data-agregar="${id}" class="${CLASE_AGREGAR}">Agregar</button>`;
+  if (CANTIDAD_MANUAL) return campoCantidad(clave, cant, nombre, zona);
+  return stepper(nombre, `data-menos="${id}"`, `data-mas="${id}"`, cant);
 }
 
 /* ---------- cabecera / hero ---------- */
 function pintarCabecera() {
-  $("marca-nombre").textContent = NEGOCIO.nombre;
-  $("marca-bajada").textContent = NEGOCIO.bajada;
   $("estado-horario").textContent = estadoActual.activo ? "Abierto · " + TURNOS[estadoActual.activo].nombre : "Cerrado · abrimos " + horaTexto(TURNOS[estadoActual.siguiente].inicio);
   $("hero-imagen").src = TURNOS[turnoVisible()].imagen;
   $("hero-imagen").alt = TURNOS[turnoVisible()].alt;
@@ -44,7 +60,7 @@ function pintarPie() {
   $("footer-nombre").textContent = NEGOCIO.nombre;
   $("footer-direccion").textContent = NEGOCIO.direccion + ".";
   $("footer-telefono").textContent = "Pedidos al " + NEGOCIO.telefonoVisible + ".";
-  $("footer-horario").textContent = "Todos los días · " + Object.values(TURNOS).map(t => `${t.nombre}: ${horaTexto(t.inicio)} – ${horaTexto(t.fin)}${t.provisional ? " (provisional)" : ""}`).join(". ");
+  $("footer-horario").textContent = "Todos los días · " + Object.values(TURNOS).map(t => `${t.nombre}: ${horaTexto(t.inicio)} – ${horaTexto(t.fin)}${t.recojoHasta != null ? ` (recojo en tienda hasta ${horaTexto(t.recojoHasta)}; después, solo delivery)` : ""}${t.provisional ? " (provisional)" : ""}`).join(". ");
   $("footer-delivery-centro").textContent = NEGOCIO.delivery.centro;
   $("footer-delivery-otras").textContent = NEGOCIO.delivery.otras;
 }
@@ -69,7 +85,7 @@ function tarjetaPlato(p) {
     <div class="product-labels">${(p.etiquetas || []).map(t => `<span>${t}</span>`).join('')}</div>
     <h3><button type="button" data-producto="${p.id}">${p.nombre}</button></h3>
     <p class="product-description">${p.desc}</p>
-    <div class="product-actions"><span class="product-price">${soles(p.precio)}</span><div data-control="${p.id}">${controlAgregar(p.id)}</div></div>
+    <div class="product-actions"><span class="product-price">${precioTexto(p)}</span><div data-control="${p.id}" data-zona="carta">${controlAgregar(p.id)}</div></div>
   </article>`;
 }
 
@@ -106,11 +122,13 @@ function promoCarta() {
   const promo = TURNOS[turnoVisible()].promo;
   return `<aside class="menu-promo"><span>${promo.antes}</span><em>${promo.destacado}</em>
     <p>${promo.texto}</p>
-    <a href="#${promo.enlace}">${promo.cta} ↗</a><span class="promo-flower" aria-hidden="true">✳</span></aside>`;
+    <a href="${enlaceSeccion(promo.enlace)}">${promo.cta} ↗</a><span class="promo-flower" aria-hidden="true">✳</span></aside>`;
 }
 
 let productoActivo = null;
-function pintarDetalleProducto() {
+/* completo: al abrir la ficha. Después, cada cambio del carrito solo
+   refresca lo que depende de él, sin rehacer lo que el cliente eligió. */
+function pintarDetalleProducto(completo = false) {
   if (!productoActivo) return;
   const p = PLATOS[productoActivo];
   const turnos = Object.keys(TURNOS).filter(id => TURNOS[id].carta.some(s => s.platos.some(item => item.id === p.id)));
@@ -119,15 +137,25 @@ function pintarDetalleProducto() {
   $("producto-titulo").textContent = p.nombre;
   $("producto-categoria").textContent = TURNOS[turno].carta.find(s => s.id === p.categoria).nombre;
   $("producto-descripcion").textContent = p.desc || "Consulta los ingredientes y acompañamientos con Checo’s al pedir.";
-  $("producto-precio").textContent = soles(p.precio);
-  $("producto-horario").textContent = (disponibleAhora(p.id) ? 'Disponible ahora · ' : 'Fuera de horario · ') + turnos.map(id => `${TURNOS[id].nombre}: ${horarioTurno(id)}`).join(' / ');
+  $("producto-precio").textContent = precioTexto(p);
+  $("producto-horario").textContent = (enHorario(p.id) ? 'Disponible ahora · ' : SIN_HORARIO ? 'Pedido anticipado · ' : 'Fuera de horario · ') + turnos.map(id => `${TURNOS[id].nombre}: ${horarioTurno(id)}`).join(' / ');
+  if (personalizable(p)) {
+    delete $("producto-control").dataset.control;
+    if (completo) pintarEleccion(p); else refrescarEleccion(p);
+    return;
+  }
+  $("producto-opciones").innerHTML = "";
   $("producto-control").dataset.control = p.id;
-  $("producto-control").innerHTML = controlAgregar(p.id);
-  $("producto-confirmacion").textContent = pedido.has(p.id) ? `${pedido.get(p.id)} en tu pedido` : '';
+  $("producto-control").dataset.zona = "ficha";
+  $("producto-control").innerHTML = controlAgregar(p.id, "ficha");
+  const cant = cantidadPlato(p.id);
+  $("producto-confirmacion").textContent = cant ? `${cant} en tu pedido` : '';
 }
 function abrirProducto(id) {
+  if (!PLATOS[id]) return;
   productoActivo = id;
-  pintarDetalleProducto();
+  eleccion = eleccionNueva();
+  pintarDetalleProducto(true);
   $("producto-dialog").showModal();
   document.body.style.overflow = 'hidden';
 }

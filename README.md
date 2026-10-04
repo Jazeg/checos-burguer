@@ -14,12 +14,12 @@ Publicado con GitHub Pages desde la raíz de `main`, sin build: lo que está en 
 
 La zona del restaurante es `America/Lima`, independientemente de la zona del visitante.
 
-- Desayunos: 07:00 inclusive a 11:00 exclusive.
-- Almuerzos: 11:00 inclusive a 15:00 exclusive.
-- Hamburguesas: 17:00 inclusive a 00:40 exclusive del día siguiente.
-- Cerrado: 00:40–07:00 y 15:00–17:00. Se muestra la próxima carta, su apertura y productos para consultar sin permitir pedidos.
+- Desayunos (solo catálogo corporativo): 07:00 inclusive a 11:00 exclusive.
+- Hamburguesas: 17:00 inclusive a 01:40 exclusive del día siguiente (delivery). Recojo en tienda hasta 01:00; después solo delivery.
+- Cerrado (solo carta pública): de 01:40 a 17:00. Se muestra la próxima carta, su apertura y productos para consultar sin permitir pedidos.
+- El catálogo corporativo acepta pedidos a cualquier hora. Lo que está fuera de su horario sale como pedido anticipado y exige fecha y hora de entrega; el corte de recojo no se le aplica.
 
-Configurar intervalos en `js/horarios.js` (`TURNOS`, minutos desde medianoche). Los textos de horario se generan desde esa configuración. Catálogo, precios y datos comerciales: `js/data.js`. La migración de 110 productos, la procedencia y los datos pendientes están documentados en `MIGRACION.md`. WhatsApp temporal autorizado: 947 788 574. Los desayunos, los almuerzos y sus ilustraciones son de ejemplo, pendientes de sustituir por datos aprobados.
+Configurar intervalos en `js/horarios.js` (`TURNOS`, minutos desde medianoche). Los textos de horario se generan desde esa configuración. Catálogo, precios y datos comerciales: `js/data.js`. La migración de 110 productos, la procedencia y los datos pendientes están documentados en `MIGRACION.md`. WhatsApp temporal autorizado: 947 788 574. El desayuno ejecutivo (`js/desayunos.js`) tiene productos y precios del cliente; su horario sigue siendo provisional.
 
 La portada, categorías y recomendaciones siguen la carta seleccionada. El selector permite explorar el otro menú; «Volver al horario actual» restablece la selección automática. Cada cambio de servicio devuelve la vista al horario actual. La página comprueba el reloj cada segundo y al volver a la pestaña. Se vuelve a validar al agregar y al enviar.
 
@@ -35,7 +35,7 @@ Cubre apertura/cierre exactos, medianoche, zona horaria, próxima apertura, disp
 
 ## Interfaz
 
-Identidad visual en crema y rojo, con sello tipográfico propio, fotografías enmarcadas, categorías laterales en escritorio y barra horizontal en móvil. Las tarjetas permiten agregar directamente o abrir una ficha con foto, descripción, precio y disponibilidad. La ficha usa un diálogo nativo; el carrito administra el foco del teclado y bloquea la interacción con el fondo mientras está abierto.
+Identidad visual en rojo, verde, amarillo y negro, con el logo original facilitado, fotografías enmarcadas, categorías laterales en escritorio y barra horizontal en móvil. Las tarjetas permiten agregar directamente o abrir una ficha con foto, descripción, precio y disponibilidad. La ficha usa un diálogo nativo; el carrito administra el foco del teclado y bloquea la interacción con el fondo mientras está abierto.
 
 Paleta y fuentes utilitarias: `tailwind.config.js`. Composición y estilos de componentes: `css/styles.css`. Para regenerar las utilidades tras cambiar clases:
 
@@ -44,3 +44,17 @@ npx tailwindcss@3 -c tailwind.config.js -i css/tailwind-input.css -o css/tailwin
 ```
 
 Verificación visual y funcional realizada en Chromium a 320, 390, 768, 1024 y 1440 px: ficha, carrito, enlace de WhatsApp, cierre con Escape, horarios y navegación sin desbordamiento horizontal.
+
+## Catálogos por público
+
+- `/`: carta pública de hamburguesas/cena, incluso por la mañana. No carga `js/desayunos.js` ni muestra horarios o productos de desayuno.
+- `/catalogo-corporativo/`: desayunos y hamburguesas para equipos de municipalidades y entidades públicas. Incluye `noindex, nofollow` y no se enlaza desde la portada pública.
+- Almuerzos retirados del catálogo, selector y lógica de pedidos.
+
+Se mantiene la cena completa, con sus acompañamientos y bebidas. El desayuno ejecutivo se edita en `js/desayunos.js`. El logo original está en `assets/marca/checos-burger.png`.
+
+Esta separación es por enlace, NO autenticación: cualquiera que reciba la URL corporativa puede abrirla; sus recursos siguen siendo públicos. Para restringir por persona o entidad se necesita un servidor/proveedor de identidad que autorice también la entrega de datos y los pedidos. No usar una contraseña incrustada en JavaScript como protección.
+
+El QR corporativo deberá apuntar a la URL definitiva terminada en `/catalogo-corporativo/` (incluyendo el subdirectorio del proyecto si se publica en GitHub Pages). Generarlo cuando se confirme el dominio evita imprimir un enlace provisional. No se ha publicado ni generado un QR de producción en este cambio.
+
+Las dos entradas HTML comparten CSS y JavaScript. Al modificar el marcado común, actualizar ambas. La entrada corporativa usa `base href="../"` para funcionar también en GitHub Pages; sus anclas conservan la ruta corporativa.

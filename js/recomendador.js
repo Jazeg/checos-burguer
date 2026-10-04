@@ -44,7 +44,7 @@ function sinRecomendadosRecientes(lista) {
 }
 
 function sinLosDelCarrito(lista) {
-  return filtrarConRespaldo(lista, p => !pedido.has(p.id));
+  return filtrarConRespaldo(lista, p => !cantidadPlato(p.id));
 }
 
 function elegirAlAzar(lista) {
@@ -57,7 +57,7 @@ function mezclar(lista) {
 
 function categoriasEnCarrito() {
   const categorias = new Set();
-  pedido.forEach((_, id) => categorias.add(PLATOS[id]?.categoria));
+  pedido.forEach(l => categorias.add(PLATOS[l.id]?.categoria));
   return categorias;
 }
 

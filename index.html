@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Checo’s Burger — Carta digital</title>
-<meta name="description" content="Carta digital con pedido por WhatsApp. Demostración.">
+<meta name="description" content="Hamburguesas y cena de Checo’s Burger. Consulta la carta y haz tu pedido por WhatsApp.">
 
+<link rel="icon" type="image/png" href="assets/marca/checos-burger.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap">
@@ -21,7 +22,7 @@
 <div class="site-shell" id="site-shell">
 <header class="site-header">
   <nav class="header-links" aria-label="Principal"><a href="#carta">La carta</a><a href="#footer">La casa</a></nav>
-  <a class="brand-seal" href="#inicio" aria-label="Checo’s Burger — Inicio"><span class="brand-top">BUENOS DÍAS. BUENAS NOCHES.</span><span id="marca-nombre">Checo’s Burger</span><span id="marca-bajada">Desayunos & hamburguesas</span></a>
+  <a class="brand-seal" href="#inicio" aria-label="Checo’s Burger — Inicio"><img src="assets/marca/checos-burger.png" alt="Checo’s Burger — El poderoso sanguchón" width="628" height="546" fetchpriority="high"></a>
   <div class="header-order"><span id="estado-horario"></span><button type="button" id="header-pedido" class="pill-button">Mi pedido <span id="header-cantidad">0</span></button></div>
 </header>
 <section id="inicio" class="menu-intro">
@@ -34,16 +35,14 @@
 </section>
 <section class="turno-panel" aria-label="Elige tu carta">
   <div class="turno-interior">
-    <div class="turno-heading"><p class="turno-eyebrow">A cada hora, su antojo.</p><h2>Elige tu momento.</h2></div>
+    <div class="turno-heading"><p class="turno-eyebrow">El poderoso sanguchón.</p><h2>Tu noche tiene sabor.</h2></div>
     <div class="turno-selector" role="group" aria-label="Carta por horario">
-      <button type="button" data-turno="desayuno"><span>☀ Desayunos</span><small id="horas-desayuno"></small></button>
-      <button type="button" data-turno="almuerzo"><span>◐ Almuerzos</span><small id="horas-almuerzo"></small></button>
       <button type="button" data-turno="cena"><span>☾ Hamburguesas</span><small id="horas-cena"></small></button>
     </div>
     <div class="turno-info"><p id="turno-estado" role="status" aria-live="polite"></p><button id="turno-auto" type="button" hidden>Volver al horario actual ↗</button></div>  </div>
 </section>
 <div id="aviso-turno" class="aviso-turno" role="status" aria-live="polite"></div>
-<div class="menu-search"><label for="buscar-carta">Encuentra tu antojo</label><input id="buscar-carta" type="search" placeholder="Busca hamburguesa, café, combo…" autocomplete="off"><p id="busqueda-resultado" role="status" aria-live="polite"></p></div>
+<div class="menu-search"><label for="buscar-carta">Encuentra tu antojo</label><input id="buscar-carta" type="search" placeholder="Busca hamburguesa, papas, combo…" autocomplete="off"><p id="busqueda-resultado" role="status" aria-live="polite"></p></div>
 <div class="menu-layout">
   <nav class="category-nav" aria-label="Secciones de la carta">
     <div class="category-sticky"><p class="eyebrow category-label">Nuestra carta</p><div id="pistas"></div>
@@ -72,7 +71,7 @@
     </div>
   </div>
   <div class="mx-auto max-w-6xl px-5 pb-8 sm:px-6">
-    <p class="border-t border-canvas/20 pt-4 font-mono text-xs leading-relaxed text-canvas/50">Carta de Checo’s Burger basada en el menú facilitado. Precios pendientes de ratificación. Desayunos y almuerzos de ejemplo. Contacto temporal de la demo.</p>
+    <p class="border-t border-canvas/20 pt-4 font-mono text-xs leading-relaxed text-canvas/50">Carta de Checo’s Burger basada en el menú facilitado. Precios pendientes de ratificación. Contacto temporal de la demo.</p>
   </div>
 </footer>
 
@@ -129,6 +128,7 @@
       <button type="button" data-modo="Delivery" aria-pressed="true" class="min-h-11 flex-1 rounded-full border-2 border-ink bg-ink px-2 py-2 font-mono text-xs uppercase tracking-wider text-canvas">Delivery</button>
       <button type="button" data-modo="Recojo en tienda" aria-pressed="false" class="min-h-11 flex-1 rounded-full border-2 border-ink px-2 py-2 font-mono text-xs uppercase tracking-wider">Recojo en tienda</button>
     </div>
+    <p id="recojo-aviso" class="recojo-aviso" role="status"></p>
 
     <label id="detalle-label" for="detalle" class="mb-1.5 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Dirección o referencia</label>
     <input id="detalle" placeholder="Ej.: Jr. Comercio 123, puerta verde" autocomplete="street-address" required aria-required="true" aria-describedby="detalle-error"
@@ -165,7 +165,7 @@
       <p id="producto-descripcion"></p><div class="detail-line"><span>Precio por unidad</span><strong id="producto-precio"></strong></div>
       <div class="detail-line"><span>Disponibilidad</span><span id="producto-horario"></span></div>
       <p class="detail-note">Consulta ingredientes e indicaciones especiales en el chat.</p>
-      <div id="producto-control"></div><p id="producto-confirmacion" role="status" aria-live="polite"></p>
+      <div id="producto-opciones" class="opciones"></div><div id="producto-control"></div><p id="producto-confirmacion" role="status" aria-live="polite"></p>
       <button type="button" id="producto-pedido" class="detail-order">Revisar mi pedido →</button>
     </div>
   </div>
@@ -175,6 +175,7 @@
 <script src="js/carrito.js"></script>
 <script src="js/recomendador.js"></script>
 <script src="js/carta.js"></script>
+<script src="js/personalizar.js"></script>
 <script src="js/hoja.js"></script>
 <script src="js/recomendador-vista.js"></script>
 <script src="js/app.js"></script>

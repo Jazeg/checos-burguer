@@ -35,8 +35,8 @@ function tarjetaRecomendada(p, i) {
         <h4 class="font-display text-xl font-extrabold uppercase leading-none text-ink">${p.nombre}</h4>
         <p class="mt-1 line-clamp-2 text-xs leading-snug text-muted">${p.desc}</p>
         <div class="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-2 pr-14 sm:pr-0">
-          <span class="font-mono text-sm font-medium text-ember">${soles(p.precio)}</span>
-          <div class="ml-auto" data-control="${p.id}">${controlAgregar(p.id)}</div>
+          <span class="font-mono text-sm font-medium text-ember">${precioTexto(p)}</span>
+          <div class="ml-auto" data-control="${p.id}" data-zona="recom">${controlAgregar(p.id, "recom")}</div>
         </div>
       </div>
     </article>`;
@@ -96,8 +96,8 @@ function pintarRecomendador() {
           <h3 class="font-display text-2xl font-extrabold uppercase leading-none text-ink">${plato.nombre}</h3>
           <p class="mt-1 text-sm text-muted">${plato.desc}</p>
           <div class="mt-3 flex flex-wrap items-center gap-3 pr-14 sm:pr-0">
-            <span class="font-mono text-lg font-medium text-ember">${soles(plato.precio)}</span>
-            <div data-control="${plato.id}">${controlAgregar(plato.id)}</div>
+            <span class="font-mono text-lg font-medium text-ember">${precioTexto(plato)}</span>
+            <div data-control="${plato.id}" data-zona="recom">${controlAgregar(plato.id, "recom")}</div>
             <button type="button" data-recom-otra class="${ENLACE}">Prefiero otra</button>
             <button type="button" data-recom-reset class="${ENLACE}">Empezar de nuevo</button>
           </div>

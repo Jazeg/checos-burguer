@@ -42,8 +42,53 @@ function pintarValidacionDetalle() {
   $("detalle-hint").classList.toggle("hidden", mostrarError);
 }
 
+/* ---------- fecha de entrega (solo catálogo ejecutivo) ----------
+   Vacía significa "lo antes posible". Es obligatoria si el pedido trae
+   algo fuera de su horario: la cocina necesita saber para cuándo. */
+let entregaTocada = false;
+const entregaValor = () => $("entrega-fecha")?.value || "";
+const ahoraLocal = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
+
+function errorEntrega() {
+  if (!$("entrega-fecha")) return "";
+  const v = entregaValor();
+  if (!v) return pedidoAnticipado() ? "Indícanos la fecha y hora de entrega." : "";
+  return new Date(v) <= new Date() ? "Elige una fecha y hora que aún no hayan pasado." : "";
+}
+const entregaValida = () => !errorEntrega();
+
+function pintarValidacionEntrega() {
+  const input = $("entrega-fecha");
+  if (!input) return;
+  input.min = ahoraLocal();
+  const error = entregaTocada ? errorEntrega() : "";
+  input.classList.toggle("border-ember", !!error);
+  input.classList.toggle("border-ink", !error);
+  input.setAttribute("aria-invalid", error ? "true" : "false");
+  input.required = pedidoAnticipado();
+  $("entrega-error").textContent = error;
+  $("entrega-hint").textContent = error ? "" : pedidoAnticipado()
+    ? "Tu pedido incluye productos fuera de su horario: sale como pedido anticipado."
+    : "Déjalo vacío si lo quieres lo antes posible.";
+}
+
 /* ---------- hoja de pedido ---------- */
+/* la cantidad escrita a mano repinta todo en cada tecla: se recuerda qué
+   campo tenía el foco y dónde iba el cursor para devolvérselos */
+function focoCantidad() {
+  const el = document.activeElement;
+  return el?.dataset?.cantidad != null ? { clave: el.dataset.cantidad, zona: el.dataset.zona, pos: el.selectionStart } : null;
+}
+function devolverFoco(foco) {
+  if (!foco) return;
+  const el = [...document.querySelectorAll("[data-cantidad]")].find(e => e.dataset.cantidad === foco.clave && e.dataset.zona === foco.zona);
+  if (!el) return;
+  el.focus();
+  el.setSelectionRange(foco.pos, foco.pos);
+}
+
 function pintarPedido() {
+  const foco = focoCantidad();
   const n = unidadesPedido(), t = totalPedido();
   $("header-cantidad").textContent = n;
 
@@ -56,20 +101,18 @@ function pintarPedido() {
   $("hoja-total").textContent = soles(t);
 
   $("renglones").innerHTML = pedido.size
-    ? [...pedido].map(([id, cant]) => {
-        const p = PLATOS[id];
+    ? [...pedido].map(([clave, l]) => {
+        const p = PLATOS[l.id], extra = detalleLinea(l), disponible = disponibleAhora(l.id);
         return `
         <div class="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-dashed border-hairline-strong py-3">
           <div class="min-w-0 flex-1 basis-40">
             <div class="font-bold text-sm text-ink">${p.nombre}</div>
-            <div class="font-mono text-xs text-muted">${soles(p.precio)} c/u${disponibleAhora(id) ? "" : " · Fuera de horario"}</div>
+            ${extra ? `<div class="linea-detalle">${extra}</div>` : ""}
+            <div class="font-mono text-xs text-muted">${soles(precioLinea(l))} c/u${!disponible ? " · Fuera de horario" : SIN_HORARIO && !enHorario(l.id) ? " · Anticipado" : ""}</div>
           </div>
-          <div class="ml-auto flex items-center overflow-hidden rounded-full border-2 border-ink">
-            <button type="button" data-menos="${id}" aria-label="Quitar uno de ${p.nombre}" class="h-11 w-11 text-lg hover:bg-hairline">−</button>
-            <span class="min-w-[26px] text-center font-mono text-sm">${cant}</span>
-            <button type="button" data-mas="${id}" ${disponibleAhora(id) ? "" : "disabled"} aria-label="Agregar uno de ${p.nombre}" class="h-11 w-11 text-lg hover:bg-hairline">+</button>
-          </div>
-          <button type="button" data-eliminar="${id}" aria-label="Quitar ${p.nombre} del pedido"
+          <div class="ml-auto">${CANTIDAD_MANUAL ? campoCantidad(clave, l.cant, p.nombre, "hoja")
+            : stepper(p.nombre, `data-linea-menos="${attr(clave)}"`, `data-linea-mas="${attr(clave)}" ${disponible ? "" : "disabled"}`, l.cant, false)}</div>
+          <button type="button" data-eliminar="${attr(clave)}" aria-label="Quitar ${attr(p.nombre)} del pedido"
             class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-ember/10 hover:text-ember">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
@@ -81,19 +124,47 @@ function pintarPedido() {
 
   pintarDetalleProducto();
   const detalle = $("detalle").value.trim();
-  $("vista-comanda").textContent = textoComanda(detalle);
+  $("vista-comanda").textContent = textoComanda(detalle, entregaValor());
 
   const enviar = $("enviar");
   const disponibles = pedidoDisponible();
   $("pedido-aviso").textContent = pedido.size && !disponibles
     ? 'Hay productos fuera de horario. Retíralos con × para enviar tu pedido. Conservamos tu selección.' : '';
   enviar.setAttribute("aria-disabled", disponibles ? "false" : "true");
-  enviar.href = disponibles ? enlaceWhatsApp(detalle) : "#";
+  enviar.href = disponibles ? enlaceWhatsApp(detalle, entregaValor()) : "#";
   pintarValidacionDetalle();
+  pintarValidacionEntrega();
 
   document.querySelectorAll("[data-control]").forEach(cont => {
-    cont.innerHTML = controlAgregar(cont.dataset.control);
+    cont.innerHTML = controlAgregar(cont.dataset.control, cont.dataset.zona);
   });
+  devolverFoco(foco);
+}
+
+/* ---------- modo de entrega y recojo en tienda ---------- */
+function elegirModo(modo) {
+  modoEntrega = modo;
+  document.querySelectorAll("[data-modo]").forEach(o => {
+    const activo = o.dataset.modo === modo;
+    o.setAttribute("aria-pressed", activo);
+    o.classList.toggle("bg-ink", activo);
+    o.classList.toggle("text-canvas", activo);
+  });
+  pintarCampoDetalle();
+  pintarPedido();
+}
+
+/* pasada la hora de recojo del turno solo queda delivery. Corre cada
+   segundo desde actualizarTurno, por eso solo toca el DOM si cambió. */
+let recojoAbierto = null;
+function pintarRecojo(forzar = false) {
+  const abierto = recojoDisponible();
+  if (!forzar && abierto === recojoAbierto) return;
+  recojoAbierto = abierto;
+  document.querySelector('[data-modo="Recojo en tienda"]').disabled = !abierto;
+  const t = TURNOS[estadoHorario().activo];
+  $("recojo-aviso").textContent = abierto ? "" : `El recojo en tienda es hasta ${horaTexto(t.recojoHasta)}. Seguimos con delivery hasta ${horaTexto(t.fin)}`;
+  if (!abierto && modoEntrega === "Recojo en tienda") elegirModo("Delivery");
 }
 
 /* ---------- recordar dirección/nombre para la próxima vez ---------- */
@@ -102,17 +173,9 @@ function restaurarContacto() {
   try { guardado = JSON.parse(localStorage.getItem("checos_contacto_v1")); } catch { guardado = null; }
   if (!guardado) return;
 
-  modoEntrega = guardado.modo === "Recojo en tienda" ? "Recojo en tienda" : "Delivery";
   $("detalle").value = guardado.detalle || "";
-  pintarCampoDetalle();
+  elegirModo(guardado.modo === "Recojo en tienda" ? "Recojo en tienda" : "Delivery");
   $("detalle-hint").textContent = "Usamos los datos de tu último pedido — puedes cambiarlos.";
-
-  document.querySelectorAll("[data-modo]").forEach(o => {
-    const activo = o.dataset.modo === modoEntrega;
-    o.setAttribute("aria-pressed", activo);
-    o.classList.toggle("bg-ink", activo);
-    o.classList.toggle("text-canvas", activo);
-  });
 }
 
 function guardarContacto(detalle) {

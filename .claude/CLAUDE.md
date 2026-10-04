@@ -17,11 +17,13 @@ index.html            una sola página
 css/styles.css        estilos de componentes, tokens en :root al inicio
 css/tailwind.css      utilidades generadas, no editar a mano
 tailwind.config.js    paleta y fuentes de las utilidades
-js/data.js            catálogo: productos, precios, categorías. Fuente única.
+js/data.js            catálogo: productos, precios, categorías, cremas. Fuente única.
+js/desayunos.js       desayuno ejecutivo (solo catálogo corporativo)
 js/horarios.js        turnos (TURNOS) y zona horaria del negocio
 js/carrito.js         estado del pedido
 js/recomendador.js    lógica de sugerencias (sin DOM)
 js/carta.js           render de la carta: categorías, tarjetas, subgrupos, ficha
+js/personalizar.js    ficha con elección: tamaño, opciones, cremas, cantidad
 js/hoja.js            hoja de pedido, datos de entrega, contacto guardado
 js/recomendador-vista.js  pasos y resultados de "¿No sabes qué pedir?"
 js/app.js             arranque, eventos y cambio de turno
@@ -36,12 +38,14 @@ originales/           PNG/JPG originales del cliente. En .gitignore: no se publi
 .nojekyll             GitHub Pages sirve los archivos tal cual, sin Jekyll
 
 Reglas:
-- Precios y nombres SOLO en data.js. Nada hardcodeado en el HTML.
+- Precios y nombres SOLO en data.js (y desayunos.js para el desayuno
+  ejecutivo). Nada hardcodeado en el HTML.
 - Horarios SOLO en TURNOS de horarios.js, en minutos desde medianoche.
 - Ningún archivo JS pasa de ~600 líneas (data.js aparte: es catálogo).
   Si uno crece, se divide por responsabilidad en otro <script>, sin build.
   Orden de carga en index.html: data, horarios, carrito, recomendador,
-  carta, hoja, recomendador-vista, app.
+  carta, personalizar, hoja, recomendador-vista, app. El catálogo
+  corporativo carga además desayunos justo después de data.
 - Imágenes por turno y sección:
   assets/<desayuno|almuerzo|cena>/<seccion>/<Nombre>.webp.
   <seccion> es el id de la sección en data.js (hamburguesas, salchipapas,
@@ -79,7 +83,8 @@ Extras, Combos.
 ## Horarios predeterminados (America/Lima, cierre exclusivo)
 - Desayunos: 07:00–11:00
 - Almuerzos: 11:00–15:00
-- Hamburguesas: 17:00–00:40
+- Hamburguesas: 17:00–01:40 delivery. Local y recojo en tienda hasta 01:00
+  (recojoHasta en TURNOS); después solo delivery.
 
 ## Correr
 Local: python3 -m http.server 8093
@@ -95,3 +100,23 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
 - Cambiar precios o nombres de productos por tu cuenta.
 - Renombrar imágenes.
 - Animaciones de entrada al hacer scroll.
+
+## Reglas de pedido
+- Carta pública (index.html): solo hamburguesas, cantidad con − y +.
+  Catálogo corporativo (catalogo-corporativo/, enlace o QR propio): desayuno
+  ejecutivo y hamburguesas, cantidad escrita a mano (pedidos de 100 o más).
+- El ejecutivo pide a cualquier hora (SIN_HORARIO en horarios.js) y sin el
+  corte de recojo. Si algo está fuera de su turno, sale como "Pedido
+  anticipado" y la fecha y hora de entrega ("¿Para cuándo?") es obligatoria;
+  si no, es opcional ("lo antes posible"). La carta pública sí respeta TURNOS.
+- Cremas: todas las que el cliente quiera aunque pida una unidad, con un
+  contador por crema. La primera porción de cada una es gratis; cada porción
+  extra de esa crema suma S/ 0.50 por unidad (CREMA_EXTRA, tope
+  MAX_PORCIONES_CREMA).
+  Noche: mayonesa, ketchup, mostaza, ají, salsa tártara, guacatay, salsa wolf
+  y aceituna, en hamburguesas, broaster, salchipapas, club sándwiches,
+  enchiladas, alitas y combos. Desayuno: solo mostaza y ají. Nunca en jugos,
+  bebidas ni extras. Se activan con el campo `cremas` de la sección.
+- Desayuno: todos los jugos (los de la noche incluidos) en vaso 250 ml S/ 3
+  o medio litro S/ 6. Los de la noche se reutilizan con id am-<id>.
+- Cada línea del pedido es plato + elección; otra elección, otra línea.
