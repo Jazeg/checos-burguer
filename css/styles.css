@@ -64,7 +64,7 @@ img,svg{display:block;max-width:100%}button,a{-webkit-tap-highlight-color:transp
 .menu-product h3{font:800 18px/1.2 var(--body);letter-spacing:-.03em}.menu-product h3 button{min-height:36px}
 .product-description{font-size:11px;line-height:1.65;color:var(--muted);margin:4px auto 12px;max-width:240px;flex:1}
 .product-actions{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}.product-price{font-size:13px;font-weight:800}
-.agregar{border:1px solid var(--ember);background:transparent;color:var(--ember);min-height:36px;padding:7px 15px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:800}
+.agregar{border:1px solid var(--ember);border-radius:40px;background:transparent;color:var(--ember);min-height:36px;padding:7px 15px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:800}
 .agregar:hover{background:var(--ember);color:var(--canvas)}
 [data-control]>div{background:var(--ember);border:0;color:var(--canvas)}[data-control] button[data-mas],[data-control] button[data-menos]{width:36px;height:36px}
 .fuera-horario{font-size:10px;color:var(--muted);display:inline-block;padding:10px 0}

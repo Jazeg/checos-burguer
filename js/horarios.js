@@ -6,7 +6,7 @@ const TURNOS = {
   desayuno: { nombre: 'Desayunos', inicio: 7 * 60, fin: 11 * 60, provisional: true,
     titulo: 'Empieza rico.<br><span>Sin apuro.</span>',
     descripcion: 'Desayunos para equipos de municipalidades y entidades públicas. Empieza el día con el sabor de Checo’s.',
-    imagen: 'assets/desayuno/desayuno.svg', alt: 'Ilustración de un desayuno con café, pan y huevo',
+    imagen: 'assets/desayuno/productos/pan-huevo.jpg', alt: 'Pan con huevo de Checo’s',
     secundario: { texto: 'Algo para acompañar', enlace: 'bebidas-calientes' },
     promo: { antes: 'ASÍ EMPIEZA', destacado: 'tu día.', texto: 'Un buen pan. Un café calientito. Un momento para ti.', enlace: 'bebidas-calientes', cta: 'Elige tu bebida' },
     carta: CARTA_DESAYUNO },

@@ -8,12 +8,13 @@
    para que la cocina lea cada variante por separado.
    ============================================================ */
 
-/* cremas, sugerencia: el plato puede pisar lo que define su sección
-   (por ejemplo, el caldo no lleva cremas aunque su sección sí). */
+/* cremas, opciones, sugerencia: el plato puede pisar lo que define su
+   sección (por ejemplo, el caldo no lleva cremas aunque su sección sí). */
 const PLATOS = Object.fromEntries(
   Object.values(TURNOS).flatMap(t => t.carta).flatMap(s => s.platos.map(p => [p.id, {
     ...p, categoria: s.id,
     cremas: CREMAS[p.cremas !== undefined ? p.cremas : s.cremas] || null,
+    opciones: (p.opciones !== undefined ? p.opciones : s.opciones) || null,
     sugerencia: p.sugerencia || s.sugerencia || null,
     acompanamientos: p.acompanamientos || s.acompanamientos || null
   }]))

@@ -6,8 +6,7 @@
 const TAMANOS_JUGO_AM = [{ nombre: "Vaso 250 ml", precio: 3 }, { nombre: "Medio litro", precio: 6 }];
 const FOTOS_BEBIDAS_AM = {
   "am-jugos-6": "assets/desayuno/productos/jugos-mango.jpg",
-  "am-jugos-leche-8": "assets/desayuno/productos/jugos-leche-pina.jpg",
-  "bebidas-calientes-2": "assets/desayuno/productos/cafe-leche.jpg"
+  "am-jugos-leche-8": "assets/desayuno/productos/jugos-leche-pina.jpg"
 };
 const OPCIONES_HAMBURGUESA_AM = [
   { nombre: "Papas", valores: ["Papas fritas", "Papas al hilo"] },
@@ -56,13 +55,5 @@ const CARTA_DESAYUNO = [
   },
   { id: "jugos-leche-am", nombre: "Jugos con leche", tipo: "bebida", nota: NOTA_JUGOS_AM,
     platos: seccionNoche("jugos-leche").platos.map(jugoAm) },
-  {
-    ...seccionNoche("bebidas-calientes"),
-    platos: [
-      ...seccionNoche("bebidas-calientes").platos.slice(0, 2),
-      platoAm("infusion-te", "Té", 2.5, { tipo: "bebida", desc: "Vaso de 250 ml." }),
-      platoAm("infusion-anis", "Anís", 2.5, { tipo: "bebida", desc: "Vaso de 250 ml." }),
-      platoAm("infusion-manzanilla", "Manzanilla", 2.5, { tipo: "bebida", desc: "Vaso de 250 ml." })
-    ]
-  }
+  seccionNoche("bebidas-calientes")
 ];

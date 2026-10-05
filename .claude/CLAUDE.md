@@ -133,6 +133,11 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
   y aceituna, en hamburguesas, broaster, salchipapas, club sándwiches,
   enchiladas, alitas y combos. Desayuno: solo mostaza y ají. Nunca en jugos,
   bebidas ni extras. Se activan con el campo `cremas` de la sección.
+- Opciones obligatorias (campo `opciones` de la sección; un plato puede
+  pisarlas): Hamburguesas, con todos sus subgrupos, elige Papas (Papas fritas
+  o Papas al hilo) y Ensalada (Con ensalada o Sin ensalada). Salchipapas y
+  Broaster eligen solo Ensalada. Club sándwiches no elige: van con papas
+  fritas. Sin elegir todas, la ficha no deja agregar.
 - Sugerencias en la ficha: campo "sugerencia" (id de plato) y
   "acompanamientos" (id de sección) en la sección. Desayuno: jugo de naranja
   y Jugos. Cena (pública y ejecutiva): Gaseosa personal y Bebidas frías, en

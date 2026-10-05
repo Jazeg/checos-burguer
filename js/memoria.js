@@ -32,13 +32,15 @@ function escribirMemoria(clave, datos) {
 /* solo id, cantidad y elección: los precios se recalculan con data.js */
 const lineasParaGuardar = () => [...pedido.values()].map(({ id, cant, tamano, opciones, cremas }) => ({ id, cant, tamano, opciones, cremas }));
 
-/* descarta lo que ya no está en la carta, o cuyo tamaño, opción o crema cambió */
+/* descarta lo que ya no está en la carta, cuyo tamaño, opción o crema
+   cambió, o al que le falta una opción que ahora es obligatoria */
 function lineasValidas(lineas) {
   return (Array.isArray(lineas) ? lineas : []).filter(l => {
     const p = PLATOS[l?.id];
     if (!p || !(l.cant > 0)) return false;
     if (l.tamano && !p.tamanos?.some(t => t.nombre === l.tamano)) return false;
     if (Object.entries(l.opciones || {}).some(([g, v]) => !p.opciones?.find(o => o.nombre === g)?.valores.includes(v))) return false;
+    if ((p.opciones || []).some(g => !l.opciones?.[g.nombre])) return false;
     return Object.keys(l.cremas || {}).every(c => p.cremas?.includes(c));
   });
 }

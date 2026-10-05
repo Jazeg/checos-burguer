@@ -31,7 +31,7 @@ test('Recomendaciones limitadas a la carta visible, incluso con historial y carr
   assert.equal(run("recomendarListaPorGustos('normal', 'no').some(p => p.id.startsWith('am'))"), false);
 });
 test('Catálogo con identificadores únicos y recursos existentes', () => {
-  /* Café y café con leche son los mismos productos en ambas cartas. */
+  /* Las bebidas calientes son los mismos productos en ambas cartas. */
   const ids = run('[...new Set([...CARTA, ...CARTA_DESAYUNO].flatMap(s => s.platos))].map(p => p.id)');
   assert.equal(ids.length, new Set(ids).size);
   assert.equal(run('[...CARTA, ...CARTA_DESAYUNO].flatMap(s => s.platos).every(p => PLATOS[p.id].precio === p.precio)'), true);
@@ -39,10 +39,11 @@ test('Catálogo con identificadores únicos y recursos existentes', () => {
   for (const img of imgs) assert.ok(fs.existsSync(path.join(__dirname, '..', img)), img);
 });
 
-test('Las infusiones del desayuno son tres productos independientes', () => {
-  assert.equal(run('CARTA_DESAYUNO.find(s => s.id === "bebidas-calientes").platos.map(p => p.nombre).join()'), 'Café,Café con leche,Té,Anís,Manzanilla');
-  assert.equal(run('CARTA.find(s => s.id === "bebidas-calientes").platos.at(-1).nombre'), 'Té, anís, manzanilla');
-  for (const id of ['am-infusion-te', 'am-infusion-anis', 'am-infusion-manzanilla']) {
+test('Las infusiones son tres productos independientes, iguales en ambas cartas', () => {
+  for (const carta of ['CARTA', 'CARTA_DESAYUNO']) {
+    assert.equal(run(`${carta}.find(s => s.id === "bebidas-calientes").platos.map(p => p.nombre).join()`), 'Café,Café con leche,Té,Anís,Manzanilla');
+  }
+  for (const id of ['bebidas-calientes-3', 'bebidas-calientes-4', 'bebidas-calientes-5']) {
     assert.equal(run(`PLATOS["${id}"].precio`), 2.5);
     assert.equal(run(`PLATOS["${id}"].tipo`), 'bebida');
   }
@@ -191,6 +192,17 @@ test('Cena: sugiere gaseosa personal y lleva a bebidas, salvo en combos', () => 
   assert.equal(run('PLATOS["bebidas-4"].nombre'), 'Gaseosa personal');
 });
 
+test('Cena: papas y ensalada obligatorias según la sección', () => {
+  const grupos = id => run(`(PLATOS["${id}"].opciones || []).map(g => g.nombre + ":" + g.valores.join("/")).join()`);
+  for (const id of ['hamburguesas-1', 'sandwiches-6', 'sandwiches-10', 'hamburguesas-8']) {
+    assert.equal(grupos(id), 'Papas:Papas fritas/Papas al hilo,Ensalada:Con ensalada/Sin ensalada', id);
+  }
+  for (const id of ['salchipapas-1', 'broaster-1']) assert.equal(grupos(id), 'Ensalada:Con ensalada/Sin ensalada', id);
+  for (const id of ['club-sandwiches-1', 'enchiladas-1', 'alitas-1', 'combos-1', 'bebidas-4']) assert.equal(grupos(id), '', id);
+  assert.equal(run('PLATOS["am-hamburguesa-carne"].opciones.map(g => g.nombre).join()'), 'Papas,Acompañante');
+  assert.equal(run('detalleLinea(nuevaLinea("hamburguesas-1", { opciones: { Papas: "Papas al hilo", Ensalada: "Sin ensalada" } }))'), 'Papas al hilo · Sin ensalada · Sin cremas');
+});
+
 test('Memoria: borrador, último pedido y líneas que ya no existen', () => {
   const datos = new Map();
   const almacen = { getItem: k => datos.has(k) ? datos.get(k) : null, setItem: (k, v) => datos.set(k, String(v)), removeItem: k => datos.delete(k) };
@@ -199,12 +211,13 @@ test('Memoria: borrador, último pedido y líneas que ya no existen', () => {
   const ex = code => vm.runInContext(code, m);
   assert.equal(ex('claveLinea("hamburguesas-1", { tamano: null })'), ex('claveLinea("hamburguesas-1")'));
   assert.equal(ex(`lineasValidas([
-    { id: "hamburguesas-1", cant: 2, cremas: { Mayonesa: 2 } },
+    { id: "hamburguesas-1", cant: 2, opciones: { Papas: "Papas al hilo", Ensalada: "Con ensalada" }, cremas: { Mayonesa: 2 } },
     { id: "no-existe", cant: 1 },
+    { id: "hamburguesas-1", cant: 1, cremas: { Mayonesa: 1 } },
     { id: "hamburguesas-1", cant: 1, cremas: { Wasabi: 1 } },
     { id: "jugos-1", cant: 0 }
   ]).length`), 1);
-  ex('pedido.set(claveLinea("hamburguesas-1", { cremas: { Mayonesa: 2 } }), nuevaLinea("hamburguesas-1", { cremas: { Mayonesa: 2 } }, 3)); pedido.set(claveLinea("bebidas-4"), nuevaLinea("bebidas-4", {}, 2))');
+  ex('const e = { opciones: { Papas: "Papas al hilo", Ensalada: "Con ensalada" }, cremas: { Mayonesa: 2 } }; pedido.set(claveLinea("hamburguesas-1", e), nuevaLinea("hamburguesas-1", e, 3)); pedido.set(claveLinea("bebidas-4"), nuevaLinea("bebidas-4", {}, 2))');
   ex('guardarBorrador(); pedido.clear(); restaurarBorrador()');
   assert.equal(ex('unidadesPedido()'), 5);
   assert.equal(ex('totalPedido()'), 3 * 8.5 + 2 * 2);
@@ -217,7 +230,7 @@ test('Memoria: borrador, último pedido y líneas que ya no existen', () => {
   /* "Pedir de nuevo" suma, no reemplaza */
   assert.equal(ex('sumarLineas(ultimoPedido().lineas)'), 2);
   assert.equal(ex('unidadesPedido()'), 10);
-  datos.set('checos_borrador_v1_pub', JSON.stringify({ lineas: [{ id: "hamburguesas-1", cant: 1 }], guardado: Date.now() - 13 * 36e5 }));
+  datos.set('checos_borrador_v1_pub', JSON.stringify({ lineas: [{ id: "hamburguesas-1", cant: 1, opciones: { Papas: "Papas al hilo", Ensalada: "Con ensalada" } }], guardado: Date.now() - 13 * 36e5 }));
   ex('pedido.clear(); restaurarBorrador()');
   assert.equal(ex('pedido.size'), 0, 'un borrador de más de 12 horas no se restaura');
   datos.set('checos_pedidos_v1_pub', '{roto');

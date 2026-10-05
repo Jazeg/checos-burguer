@@ -19,12 +19,18 @@ const CREMAS = {
 };
 const CREMA_EXTRA = 0.5;
 const MAX_PORCIONES_CREMA = 5;
+/* Opciones obligatorias de la ficha: la sección las define con su campo
+   "opciones" y un plato puede pisarlas. Club sándwiches no elige: van
+   siempre con papas fritas. */
+const OPCION_PAPAS = { nombre: "Papas", valores: ["Papas fritas", "Papas al hilo"] };
+const OPCION_ENSALADA = { nombre: "Ensalada", valores: ["Con ensalada", "Sin ensalada"] };
 const HERO = { imagen: "assets/cena/hamburguesas/Hamburguesa de casa.webp", alt: "Hamburguesa de casa de Checo’s" };
 
 const CARTA = [
   {
     "id": "hamburguesas",
     "cremas": "noche",
+    "opciones": [OPCION_PAPAS, OPCION_ENSALADA],
     "sugerencia": "bebidas-4",
     "acompanamientos": "bebidas",
     "nombre": "Hamburguesas",
@@ -289,6 +295,7 @@ const CARTA = [
   {
     "id": "broaster",
     "cremas": "noche",
+    "opciones": [OPCION_ENSALADA],
     "sugerencia": "bebidas-4",
     "acompanamientos": "bebidas",
     "nombre": "Broaster",
@@ -340,6 +347,7 @@ const CARTA = [
   {
     "id": "salchipapas",
     "cremas": "noche",
+    "opciones": [OPCION_ENSALADA],
     "sugerencia": "bebidas-4",
     "acompanamientos": "bebidas",
     "nombre": "Salchipapas",
@@ -465,7 +473,7 @@ const CARTA = [
     "acompanamientos": "bebidas",
     "nombre": "Club sándwiches",
     "tipo": "comida",
-    "nota": "",
+    "nota": "Con papas fritas.",
     "platos": [
       {
         "id": "club-sandwiches-1",
@@ -996,20 +1004,40 @@ const CARTA = [
         "nombre": "Café con leche",
         "precio": 3.5,
         "desc": "",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/comun/bebidas-calientes/cafe-leche.webp",
         "fuente": "PLATOS.pdf · página 4",
         "tipo": "bebida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "bebidas-calientes-3",
-        "nombre": "Té, anís, manzanilla",
+        "nombre": "Té",
         "precio": 2.5,
         "desc": "Vaso de 250 ml.",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/comun/bebidas-calientes/infusion-te.webp",
         "fuente": "PLATOS.pdf · página 4",
         "tipo": "bebida",
-        "imagenReferencial": true
+        "imagenReferencial": false
+      },
+      {
+        "id": "bebidas-calientes-4",
+        "nombre": "Anís",
+        "precio": 2.5,
+        "desc": "Vaso de 250 ml.",
+        "imagen": "assets/comun/bebidas-calientes/infusion-anis.webp",
+        "fuente": "PLATOS.pdf · página 4",
+        "tipo": "bebida",
+        "imagenReferencial": false
+      },
+      {
+        "id": "bebidas-calientes-5",
+        "nombre": "Manzanilla",
+        "precio": 2.5,
+        "desc": "Vaso de 250 ml.",
+        "imagen": "assets/comun/bebidas-calientes/infusion-manzanilla.webp",
+        "fuente": "PLATOS.pdf · página 4",
+        "tipo": "bebida",
+        "imagenReferencial": false
       }
     ]
   },
