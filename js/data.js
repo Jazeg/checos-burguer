@@ -3,7 +3,7 @@
    Fotos de la carta de hamburguesas en assets/cena/<id de sección>/; el resto usa el recurso tipográfico. */
 const NEGOCIO = {
  nombre: "Checo’s Burger", bajada: "El poderoso sanguchón",
- direccion: "Dirección por confirmar", telefonoVisible: "947 788 574", whatsapp: "51947788574",
+ direccion: "Dirección por confirmar", telefonoVisible: "936 538 325", whatsapp: "51936538325",
  delivery: { centro: "Por confirmar", otras: "Por confirmar", tiempo: "Tiempo por confirmar" }
 };
 /* Cremas: el cliente elige todas las que quiera, aunque pida una sola

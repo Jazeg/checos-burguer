@@ -12,7 +12,7 @@ Fuente: PLATOS.pdf, seis páginas aportadas por el cliente. Revisión visual, no
 - No hay desayunos identificados en el PDF. Los tres panes/desayunos siguen siendo una propuesta. Café, jugos y jugos con leche se comparten en ambos turnos como configuración provisional; precio e ID son únicos.
 - No se deducen ingredientes de «royal», «cubana», «hawaiana», «especial» ni rendimientos, pesos, alérgenos, popularidad o descuentos.
 - Las fotos heredadas son referenciales y se identifican como tales. Productos sin foto usan un recurso tipográfico neutro. No es el logo oficial vectorizado: es una adaptación tipográfica de la marca.
-- WhatsApp temporal 947 788 574, conservado por indicación expresa del usuario. Dirección, tarifas y tiempos de delivery pendientes; se retiraron los valores inventados.
+- WhatsApp 936 538 325. Dirección, tarifas y tiempos de delivery pendientes; se retiraron los valores inventados.
 - Historial/contacto usan claves nuevas `checos_*` para no mezclar preferencias ni datos de la demo anterior.
 
 ## Horarios y apariencia

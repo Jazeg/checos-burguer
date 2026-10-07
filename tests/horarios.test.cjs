@@ -58,7 +58,7 @@ test('Precios transcritos y total del pedido', () => {
   run('pedido.clear(); pedido.set(claveLinea("hamburguesas-1"), nuevaLinea("hamburguesas-1", {}, 2)); pedido.set(claveLinea("extras-2"), nuevaLinea("extras-2"))');
   assert.equal(run('totalPedido()'), 17.5);
   assert.match(run('textoComanda("Prueba")'), /Checo’s Burger/);
-  assert.match(run('enlaceWhatsApp("Prueba")'), /wa.me\/51947788574/);
+  assert.match(run('enlaceWhatsApp("Prueba")'), /wa.me\/51936538325/);
   run('pedido.clear()');
 });
 test('Los combos pendientes no se publican', () => {
