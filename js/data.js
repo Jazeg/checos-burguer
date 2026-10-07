@@ -1179,7 +1179,37 @@ const CARTA = [
       },
       {
         "id": "extras-10",
-        "nombre": "Hamburguesa, filete, chorizo o deshilachado",
+        "nombre": "Hamburguesa",
+        "precio": 4,
+        "desc": "",
+        "imagen": "assets/comun/carta-checos.svg",
+        "fuente": "PLATOS.pdf · página 4",
+        "tipo": "extra",
+        "imagenReferencial": true
+      },
+      {
+        "id": "extras-13",
+        "nombre": "Filete",
+        "precio": 4,
+        "desc": "",
+        "imagen": "assets/comun/carta-checos.svg",
+        "fuente": "PLATOS.pdf · página 4",
+        "tipo": "extra",
+        "imagenReferencial": true
+      },
+      {
+        "id": "extras-14",
+        "nombre": "Chorizo",
+        "precio": 4,
+        "desc": "",
+        "imagen": "assets/comun/carta-checos.svg",
+        "fuente": "PLATOS.pdf · página 4",
+        "tipo": "extra",
+        "imagenReferencial": true
+      },
+      {
+        "id": "extras-15",
+        "nombre": "Deshilachado",
         "precio": 4,
         "desc": "",
         "imagen": "assets/comun/carta-checos.svg",
