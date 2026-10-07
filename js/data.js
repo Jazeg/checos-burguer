@@ -446,9 +446,29 @@ const CARTA = [
       },
       {
         "id": "salchipapas-11",
-        "nombre": "Salchibroaster",
+        "nombre": "Salchibroaster pecho",
         "precio": 13,
-        "desc": "Pecho, pierna o encuentro.",
+        "desc": "",
+        "imagen": "assets/comun/carta-checos.svg",
+        "fuente": "PLATOS.pdf · página 2",
+        "tipo": "comida",
+        "imagenReferencial": true
+      },
+      {
+        "id": "salchipapas-12",
+        "nombre": "Salchibroaster pierna",
+        "precio": 13,
+        "desc": "",
+        "imagen": "assets/comun/carta-checos.svg",
+        "fuente": "PLATOS.pdf · página 2",
+        "tipo": "comida",
+        "imagenReferencial": true
+      },
+      {
+        "id": "salchipapas-13",
+        "nombre": "Salchibroaster encuentro",
+        "precio": 13,
+        "desc": "",
         "imagen": "assets/comun/carta-checos.svg",
         "fuente": "PLATOS.pdf · página 2",
         "tipo": "comida",
