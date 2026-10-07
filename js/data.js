@@ -1139,7 +1139,27 @@ const CARTA = [
       },
       {
         "id": "extras-8",
-        "nombre": "Pecho, pierna o encuentro",
+        "nombre": "Pecho",
+        "precio": 7,
+        "desc": "",
+        "imagen": "assets/comun/carta-checos.svg",
+        "fuente": "PLATOS.pdf · página 4",
+        "tipo": "extra",
+        "imagenReferencial": true
+      },
+      {
+        "id": "extras-11",
+        "nombre": "Pierna",
+        "precio": 7,
+        "desc": "",
+        "imagen": "assets/comun/carta-checos.svg",
+        "fuente": "PLATOS.pdf · página 4",
+        "tipo": "extra",
+        "imagenReferencial": true
+      },
+      {
+        "id": "extras-12",
+        "nombre": "Encuentro",
         "precio": 7,
         "desc": "",
         "imagen": "assets/comun/carta-checos.svg",

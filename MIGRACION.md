@@ -6,7 +6,7 @@ Fuente: PLATOS.pdf, seis páginas aportadas por el cliente. Revisión visual, no
 - Página 1: hamburguesas, sándwiches de pollo/chorizo y broaster. La hamburguesa de casa con tocino aparece dos veces a S/ 10: se conserva una sola entrada.
 - Página 2: salchipapas, club sándwiches y enchiladas. Se normalizaron ortografía y abreviaturas sin añadir ingredientes.
 - Página 3: alitas, jugos y jugos con leche. «Piña con berenjena» se conserva en la sección del PDF; confirmar su clasificación y preparación.
-- Página 4: bebidas y extras. Alternativas como té/anís/manzanilla o pecho/pierna/encuentro se conservan como un producto: elegir la opción por chat.
+- Página 4: bebidas y extras. Alternativas como té/anís/manzanilla se conservan como un producto: elegir la opción por chat. Pecho, pierna y encuentro se separaron en tres productos, tanto en Salchibroaster como en Extras.
 - Páginas 5–6: combos #1–#13. Precios #1–2 S/ 13.50; #3 S/ 14.50; #4–9 S/ 15.50; #10–12 S/ 15.00; #13 S/ 18.00. Ingredientes de #10 y #13 pendientes por legibilidad. Cantidades pequeñas no legibles no se inventaron. Confirmar las composiciones con el local.
 - Los platos repetidos en la página 6 no se duplicaron.
 - No hay desayunos identificados en el PDF. Los tres panes/desayunos siguen siendo una propuesta. Café, jugos y jugos con leche se comparten en ambos turnos como configuración provisional; precio e ID son únicos.
