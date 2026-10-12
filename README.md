@@ -15,9 +15,9 @@ Publicado con GitHub Pages desde la raíz de `main`, sin build: lo que está en 
 La zona del restaurante es `America/Lima`, independientemente de la zona del visitante.
 
 - Desayunos (solo catálogo corporativo): 07:00 inclusive a 11:00 exclusive.
-- Hamburguesas: 17:00 inclusive a 01:40 exclusive del día siguiente (delivery). Recojo en tienda hasta 01:00; después solo delivery.
-- Cerrado (solo carta pública): de 01:40 a 17:00. Se muestra la próxima carta, su apertura y productos para consultar sin permitir pedidos.
-- El catálogo corporativo acepta pedidos a cualquier hora. Por defecto el pedido es para hoy. La opción «¿Es para una fecha específica o un evento?», encima del total, permite elegir fecha, hora y detalle del evento; se abre sola si hoy ya terminó el turno de lo pedido. Lo programado o fuera de horario sale como pedido anticipado. El corte de recojo no se le aplica.
+- Hamburguesas: 17:00 inclusive a 01:00 exclusive del día siguiente. Delivery hasta 00:40; desde 00:20 la hoja muestra los minutos que quedan y después solo queda recojo en tienda.
+- Cerrado (solo carta pública): de 01:00 a 17:00. Se muestra la próxima carta, su apertura y productos para consultar sin permitir pedidos.
+- El catálogo corporativo acepta pedidos a cualquier hora. Por defecto el pedido es para hoy. La opción «¿Es para una fecha específica o un evento?», encima del total, permite elegir fecha, hora y detalle del evento; se abre sola si hoy ya terminó el turno de lo pedido. Lo programado o fuera de horario sale como pedido anticipado. El corte de delivery no se le aplica.
 
 Configurar intervalos en `js/horarios.js` (`TURNOS`, minutos desde medianoche). Los textos de horario se generan desde esa configuración. Catálogo, precios y datos comerciales: `js/data.js`. La migración de 110 productos, la procedencia y los datos pendientes están documentados en `MIGRACION.md`. WhatsApp: 936 538 325. El desayuno ejecutivo (`js/desayunos.js`) tiene productos y precios del cliente; su horario sigue siendo provisional.
 

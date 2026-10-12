@@ -12,7 +12,8 @@ function iniciar() {
   pintarPie();
   restaurarContacto();
   pintarAccesoPedidos();
-  pintarRecojo(true);
+  pintarTarifas();
+  pintarDelivery(true);
   pintarPedido();
 
   document.addEventListener("click", e => {
@@ -32,7 +33,7 @@ function iniciar() {
     if ("configAgregar" in b.dataset) agregarEleccion();
     if ("sinCremas" in b.dataset) agregarEleccion(true);
     if ("elegirCremas" in b.dataset) irACremas();
-    if (b.dataset.sugerencia) agregarSugerencia(b.dataset.sugerencia);
+    if (b.dataset.sugerencia) agregarSugerencia(b.dataset.sugerencia, b.dataset.sugerenciaOpcion);
     if (b.dataset.cremaMas) cambiarCrema(b.dataset.cremaMas, 1);
     if (b.dataset.cremaMenos) cambiarCrema(b.dataset.cremaMenos, -1);
     if ("repetirPedido" in b.dataset) repetirUltimo();
@@ -90,7 +91,7 @@ function iniciar() {
   $("enviar").addEventListener("click", e => {
     actualizarTurno();
     if (!pedidoDisponible()) { e.preventDefault(); return; }
-    if (modoEntrega === "Recojo en tienda" && !recojoDisponible()) { e.preventDefault(); pintarRecojo(true); return; }
+    if (modoEntrega === "Delivery" && !deliveryDisponible()) { e.preventDefault(); pintarDelivery(true); return; }
     if (SIN_HORARIO && !entregaValida()) { e.preventDefault(); $("programar").scrollIntoView({ block: "center", behavior: "smooth" }); return; }
 
     if (!detalleValido()) {
@@ -174,7 +175,7 @@ function iniciar() {
 }
 
 function actualizarTurno(forzar = false) {
-  pintarRecojo();
+  pintarDelivery();
   const siguiente = estadoHorario();
   const cambio = siguiente.activo !== estadoActual.activo;
   if (!forzar && !cambio) return;
@@ -203,7 +204,7 @@ function actualizarTurno(forzar = false) {
     ? `Puedes pedir ${turno.nombre.toLowerCase()} a cualquier hora. Fuera de ${horarioTurno(id)} queda como pedido anticipado: indícanos para cuándo lo necesitas.`
     : !estadoActual.activo
     ? `Estamos descansando. Abrimos a las ${horaTexto(TURNOS[estadoActual.siguiente].inicio)}. Puedes explorar la carta.`
-    : estadoActual.activo === id ? `Disponible ahora · ${turno.nombre} hasta las ${horaTexto(turno.fin)}.`
+    : estadoActual.activo === id ? `Disponible ahora · ${turno.nombre} ${hastaTexto(turno.fin)}${turno.deliveryHasta != null && !SIN_HORARIO ? ` · Delivery ${hastaTexto(turno.deliveryHasta)}` : ""}`
     : `Estás explorando ${turno.nombre.toLowerCase()}. Disponible de ${horarioTurno(id)}. Ahora servimos ${TURNOS[estadoActual.activo].nombre.toLowerCase()}.`;
   estadoRecom.paso = 'inicio'; estadoRecom.plato = estadoRecom.platos = null;
   pintarPistas(); pintarCarta(); pintarRecomendador(); pintarPedido(); observarCarta();

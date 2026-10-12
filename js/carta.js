@@ -54,7 +54,7 @@ function pintarCabecera() {
   $("estado-horario").textContent = estadoActual.activo ? "Abierto · " + TURNOS[estadoActual.activo].nombre : "Cerrado · abrimos " + horaTexto(TURNOS[estadoActual.siguiente].inicio);
   $("hero-imagen").src = TURNOS[turnoVisible()].imagen;
   $("hero-imagen").alt = TURNOS[turnoVisible()].alt;
-  $("dato-delivery").textContent = "Delivery · " + NEGOCIO.delivery.tiempo;
+  $("dato-delivery").textContent = "Delivery desde " + NEGOCIO.delivery.zonas[0].precio;
   $("dato-horario").textContent = horarioTurno(turnoVisible());
 }
 
@@ -62,9 +62,9 @@ function pintarPie() {
   $("footer-nombre").textContent = NEGOCIO.nombre;
   $("footer-direccion").textContent = NEGOCIO.direccion + ".";
   $("footer-telefono").textContent = "Pedidos al " + NEGOCIO.telefonoVisible + ".";
-  $("footer-horario").textContent = "Todos los días · " + Object.values(TURNOS).map(t => `${t.nombre}: ${horaTexto(t.inicio)} – ${horaTexto(t.fin)}${t.recojoHasta != null ? ` (recojo en tienda hasta ${horaTexto(t.recojoHasta)}; después, solo delivery)` : ""}${t.provisional ? " (provisional)" : ""}`).join(". ");
-  $("footer-delivery-centro").textContent = NEGOCIO.delivery.centro;
-  $("footer-delivery-otras").textContent = NEGOCIO.delivery.otras;
+  $("footer-horario").textContent = "Todos los días · " + Object.values(TURNOS).map(t => `${t.nombre}: ${horaTexto(t.inicio)} – ${horaTexto(t.fin)}${t.deliveryHasta != null && !SIN_HORARIO ? ` (delivery ${hastaTexto(t.deliveryHasta)}; después, solo en el local)` : ""}${t.provisional ? " (provisional)" : ""}`).join(". ");
+  $("footer-delivery").innerHTML = NEGOCIO.delivery.zonas.map(z => `<p class="text-sm text-canvas/70">${z.nombre}: ${z.precio}</p>`).join("")
+    + `<p class="text-sm text-canvas/70">${NEGOCIO.delivery.nota}</p>`;
 }
 
 /* ---------- navegación de secciones ---------- */
@@ -138,7 +138,11 @@ function pintarDetalleProducto(completo = false) {
   $("producto-imagen").src = imagenPlato(p); $("producto-imagen").alt = p.nombre;
   $("producto-titulo").textContent = p.nombre;
   $("producto-categoria").textContent = TURNOS[turno].carta.find(s => s.id === p.categoria).nombre;
-  $("producto-descripcion").textContent = p.desc || "Consulta los ingredientes y acompañamientos con Checo’s al pedir.";
+  /* sin descripción no va texto de relleno: la foto y el nombre bastan.
+     La nota de ingredientes solo aplica a la comida. */
+  $("producto-descripcion").textContent = p.desc;
+  $("producto-descripcion").hidden = !p.desc;
+  $("producto-nota").hidden = p.tipo !== "comida";
   $("producto-precio").textContent = precioTexto(p);
   $("producto-horario").textContent = (enHorario(p.id) ? 'Disponible ahora · ' : SIN_HORARIO ? 'Pedido anticipado · ' : 'Fuera de horario · ') + turnos.map(id => `${TURNOS[id].nombre}: ${horarioTurno(id)}`).join(' / ');
   if (personalizable(p)) {

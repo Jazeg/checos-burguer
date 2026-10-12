@@ -6,12 +6,12 @@ const path = require('node:path');
 const ctx = vm.createContext({ Intl, Date, Map, localStorage: { getItem: () => null, setItem: () => {} }, pintarPedido() {}, actualizarTurno() {} });
 for (const file of ['data', 'desayunos', 'horarios', 'carrito', 'recomendador', 'entrega']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/' + file + '.js'), 'utf8'), ctx);
 const run = code => vm.runInContext(code, ctx);
-for (const [hora, esperado] of [['00:00:00','cena'], ['00:40:00','cena'], ['01:39:59','cena'], ['01:40:00',null], ['06:59:59',null], ['07:00:00','desayuno'], ['10:59:59','desayuno'], ['11:00:00',null], ['14:59:59',null], ['15:00:00',null], ['16:59:59',null], ['17:00:00','cena'], ['23:59:59','cena']]) {
+for (const [hora, esperado] of [['00:00:00','cena'], ['00:40:00','cena'], ['00:59:59','cena'], ['01:00:00',null], ['06:59:59',null], ['07:00:00','desayuno'], ['10:59:59','desayuno'], ['11:00:00',null], ['14:59:59',null], ['15:00:00',null], ['16:59:59',null], ['17:00:00','cena'], ['23:59:59','cena']]) {
   test('Lima ' + hora, () => assert.equal(run(`estadoHorario(new Date('2026-09-30T${hora}-05:00')).activo`), esperado));
 }
 test('Es independiente de la zona horaria del visitante', () => {
-  assert.equal(run("estadoHorario(new Date('2026-10-01T06:39:59Z')).activo"), 'cena');
-  assert.equal(run("estadoHorario(new Date('2026-10-01T06:40:00Z')).activo"), null);
+  assert.equal(run("estadoHorario(new Date('2026-10-01T05:59:59Z')).activo"), 'cena');
+  assert.equal(run("estadoHorario(new Date('2026-10-01T06:00:00Z')).activo"), null);
 });
 test('Siguiente apertura durante ambos cierres', () => {
   assert.equal(run("estadoHorario(new Date('2026-09-30T04:00:00-05:00')).siguiente"), 'desayuno');
@@ -95,7 +95,7 @@ for (const corporativo of [false, true]) {
       assert.equal(exec(`disponibleAhora('hamburguesas-1', new Date('2026-10-02T${hora}-05:00'))`), corporativo || hora === '18:00:00', hora);
     }
     if (corporativo) assert.equal(exec("disponibleAhora('am-pan-huevo', new Date('2026-10-02T21:00:00-05:00'))"), true);
-    assert.equal(exec("recojoDisponible(new Date('2026-10-02T01:20:00-05:00'))"), corporativo);
+    assert.equal(exec("deliveryDisponible(new Date('2026-10-02T00:50:00-05:00'))"), corporativo);
     assert.equal(exec("estadoHorario(new Date('2026-10-02T08:00:00-05:00')).activo"), corporativo ? 'desayuno' : null);
     assert.equal(exec("estadoHorario(new Date('2026-10-02T12:00:00-05:00')).siguiente"), 'cena');
     exec("estadoActual = estadoHorario(new Date('2026-10-02T08:00:00-05:00')); turnoManual = 'desayuno'");
@@ -108,10 +108,20 @@ const publicoCtx = vm.createContext({ Intl, Date, Map });
 for (const file of ['data', 'horarios', 'carrito']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/' + file + '.js'), 'utf8'), publicoCtx);
 const publico = code => vm.runInContext(code, publicoCtx);
 
-test('Recojo en tienda hasta la 1:00 a. m.; delivery hasta la 1:40 a. m.', () => {
-  for (const [hora, esperado] of [['17:00:00', true], ['23:59:59', true], ['00:59:59', true], ['01:00:00', false], ['01:39:59', false], ['12:00:00', true]]) {
-    assert.equal(publico(`recojoDisponible(new Date('2026-09-30T${hora}-05:00'))`), esperado, hora);
+test('Atención hasta la 1:00 a. m.; delivery hasta las 12:40 a. m., con cuenta regresiva desde las 12:20', () => {
+  for (const [hora, esperado] of [['17:00:00', true], ['23:59:59', true], ['00:39:59', true], ['00:40:00', false], ['00:59:59', false], ['12:00:00', true]]) {
+    assert.equal(publico(`deliveryDisponible(new Date('2026-09-30T${hora}-05:00'))`), esperado, hora);
   }
+  for (const [hora, esperado] of [['23:00:00', 100], ['00:20:00', 20], ['00:39:00', 1], ['00:40:00', 0], ['12:00:00', null]]) {
+    assert.equal(publico(`minutosDelivery(new Date('2026-09-30T${hora}-05:00'))`), esperado, hora);
+  }
+});
+
+test('Gaseosa personal y combos eligen bebida pequeña de plástico', () => {
+  assert.equal(run('PLATOS["bebidas-4"].opciones[0].valores.join()'), 'Inca Kola,Coca-Cola,Del Valle');
+  assert.equal(run('CARTA.find(s => s.id === "combos").platos.every(p => PLATOS[p.id].opciones[0].nombre === "Bebida")'), true);
+  assert.equal(run('PLATOS["extras-4"].precio'), 2);
+  assert.equal(run('PLATOS["extras-6"].precio'), 2);
 });
 
 test('Cremas: primera porción gratis, cada porción extra suma S/ 0.50 por unidad', () => {
@@ -198,7 +208,7 @@ test('Cena: papas y ensalada obligatorias según la sección', () => {
     assert.equal(grupos(id), 'Papas:Papas fritas/Papas al hilo,Ensalada:Con ensalada/Sin ensalada', id);
   }
   for (const id of ['salchipapas-1', 'broaster-1']) assert.equal(grupos(id), 'Ensalada:Con ensalada/Sin ensalada', id);
-  for (const id of ['club-sandwiches-1', 'enchiladas-1', 'alitas-1', 'combos-1', 'bebidas-4']) assert.equal(grupos(id), '', id);
+  for (const id of ['club-sandwiches-1', 'enchiladas-1', 'alitas-1', 'bebidas-9']) assert.equal(grupos(id), '', id);
   assert.equal(run('PLATOS["am-hamburguesa-carne"].opciones.map(g => g.nombre).join()'), 'Papas,Acompañante');
   assert.equal(run('detalleLinea(nuevaLinea("hamburguesas-1", { opciones: { Papas: "Papas al hilo", Ensalada: "Sin ensalada" } }))'), 'Papas al hilo · Sin ensalada · Sin cremas');
 });
@@ -217,11 +227,11 @@ test('Memoria: borrador, último pedido y líneas que ya no existen', () => {
     { id: "hamburguesas-1", cant: 1, cremas: { Wasabi: 1 } },
     { id: "jugos-1", cant: 0 }
   ]).length`), 1);
-  ex('const e = { opciones: { Papas: "Papas al hilo", Ensalada: "Con ensalada" }, cremas: { Mayonesa: 2 } }; pedido.set(claveLinea("hamburguesas-1", e), nuevaLinea("hamburguesas-1", e, 3)); pedido.set(claveLinea("bebidas-4"), nuevaLinea("bebidas-4", {}, 2))');
+  ex('const e = { opciones: { Papas: "Papas al hilo", Ensalada: "Con ensalada" }, cremas: { Mayonesa: 2 } }; pedido.set(claveLinea("hamburguesas-1", e), nuevaLinea("hamburguesas-1", e, 3)); pedido.set(claveLinea("bebidas-9"), nuevaLinea("bebidas-9", {}, 2))');
   ex('guardarBorrador(); pedido.clear(); restaurarBorrador()');
   assert.equal(ex('unidadesPedido()'), 5);
   assert.equal(ex('totalPedido()'), 3 * 8.5 + 2 * 2);
-  assert.equal(ex('pedido.get(claveLinea("bebidas-4")).cant'), 2);
+  assert.equal(ex('pedido.get(claveLinea("bebidas-9")).cant'), 2);
   ex('guardarPedidoEnviado({ lineas: lineasParaGuardar(), total: totalPedido(), modo: "Delivery" }); pedido.clear(); guardarBorrador()');
   assert.equal(datos.has('checos_borrador_v1_pub'), false);
   assert.equal(ex('ultimoPedido().lineas.length'), 2);

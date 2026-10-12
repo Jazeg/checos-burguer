@@ -11,8 +11,9 @@ const TURNOS = {
     promo: { antes: 'ASÍ EMPIEZA', destacado: 'tu día.', texto: 'Un buen pan. Un café calientito. Un momento para ti.', enlace: 'bebidas-calientes', cta: 'Elige tu bebida' },
     carta: CARTA_DESAYUNO },
   } : {}),
-  /* El local atiende hasta recojoHasta; después solo sale delivery, hasta fin. */
-  cena: { nombre: 'Hamburguesas', inicio: 17 * 60, fin: 60 + 40, recojoHasta: 60,
+  /* El local atiende hasta fin; el delivery sale solo hasta deliveryHasta.
+     avisoDelivery minutos antes empieza la cuenta regresiva. */
+  cena: { nombre: ES_CORPORATIVO ? 'Cenas' : 'Hamburguesas', inicio: 17 * 60, fin: 60, deliveryHasta: 40, avisoDelivery: 20,
     titulo: 'A la plancha.<br><span>Hasta tarde.</span>',
     descripcion: 'Tu hamburguesa favorita, papas crocantes y todos los antojos para cerrar bien el día.',
     imagen: HERO.imagen, alt: HERO.alt,
@@ -28,6 +29,8 @@ function horaTexto(minutos) {
   const h = Math.floor(minutos / 60), m = minutos % 60;
   return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'a. m.' : 'p. m.'}`;
 }
+/* "hasta la 1:00 a. m." pero "hasta las 12:40 a. m." */
+function hastaTexto(minutos) { return `hasta ${Math.floor(minutos / 60) % 12 === 1 ? "la" : "las"} ${horaTexto(minutos)}`; }
 function horarioTurno(id) {
   const t = TURNOS[id];
   return `${horaTexto(t.inicio)} – ${horaTexto(t.fin)}`;
@@ -60,13 +63,16 @@ function disponibleAhora(id, fecha = new Date()) {
 }
 function pedidoDisponible() { return pedido.size > 0 && [...pedido.values()].every(l => disponibleAhora(l.id)); }
 function pedidoAnticipado(fecha = new Date()) { return SIN_HORARIO && [...pedido.values()].some(l => !enHorario(l.id, fecha)); }
-/* Fuera del turno no hay pedidos, así que solo limita dentro de él. El
-   ejecutivo puede programar el recojo, así que no se le limita. */
-function recojoDisponible(fecha = new Date()) {
-  if (SIN_HORARIO) return true;
+/* Minutos que quedan para pedir delivery en el turno activo: null si el
+   turno no tiene corte, 0 si ya pasó. Fuera del turno no hay pedidos, así
+   que solo limita dentro de él. El ejecutivo programa la entrega, así que
+   no se le limita. */
+function minutosDelivery(fecha = new Date()) {
+  if (SIN_HORARIO) return null;
   const { activo, minutos } = estadoHorario(fecha);
   const t = TURNOS[activo];
-  if (!t || t.recojoHasta == null) return true;
+  if (!t || t.deliveryHasta == null) return null;
   const desdeInicio = m => (m - t.inicio + 1440) % 1440;
-  return desdeInicio(minutos) < desdeInicio(t.recojoHasta);
+  return Math.max(0, desdeInicio(t.deliveryHasta) - desdeInicio(minutos));
 }
+function deliveryDisponible(fecha = new Date()) { return minutosDelivery(fecha) !== 0; }

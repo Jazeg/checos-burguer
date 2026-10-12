@@ -132,20 +132,36 @@ function elegirModo(modo) {
     o.classList.toggle("text-canvas", activo);
   });
   pintarCampoDetalle();
+  pintarTarifas();
   pintarPedido();
 }
 
-/* pasada la hora de recojo del turno solo queda delivery. Corre cada
-   segundo desde actualizarTurno, por eso solo toca el DOM si cambió. */
-let recojoAbierto = null;
-function pintarRecojo(forzar = false) {
-  const abierto = recojoDisponible();
-  if (!forzar && abierto === recojoAbierto) return;
-  recojoAbierto = abierto;
-  document.querySelector('[data-modo="Recojo en tienda"]').disabled = !abierto;
+/* pasada la hora de delivery del turno solo queda recojo en tienda; en
+   los minutos previos, cuenta regresiva en la hoja y bajo el selector de
+   turno. Corre cada segundo desde actualizarTurno, por eso solo toca el
+   DOM si cambió el minuto. */
+let deliveryPintado = null;
+function pintarDelivery(forzar = false) {
+  const quedan = minutosDelivery();
+  if (!forzar && quedan === deliveryPintado) return;
+  deliveryPintado = quedan;
   const t = TURNOS[estadoHorario().activo];
-  $("recojo-aviso").textContent = abierto ? "" : `El recojo en tienda es hasta ${horaTexto(t.recojoHasta)}. Seguimos con delivery hasta ${horaTexto(t.fin)}`;
-  if (!abierto && modoEntrega === "Recojo en tienda") elegirModo("Delivery");
+  const abierto = quedan !== 0, cuenta = abierto && quedan != null && quedan <= t.avisoDelivery;
+  document.querySelector('[data-modo="Delivery"]').disabled = !abierto;
+  const texto = !abierto
+    ? `El delivery es ${hastaTexto(t.deliveryHasta)}; seguimos atendiendo en el local ${hastaTexto(t.fin)}. Puedes recogerlo en tienda.`
+    : cuenta ? `${quedan === 1 ? "Queda 1 minuto" : `Quedan ${quedan} minutos`} para pedir delivery. Después de las ${horaTexto(t.deliveryHasta)}, solo recojo en tienda.` : "";
+  $("entrega-aviso").textContent = texto;
+  $("aviso-delivery").textContent = texto;
+  if (!abierto && modoEntrega === "Delivery") elegirModo("Recojo en tienda");
+}
+
+/* tarifas de referencia: el costo final lo confirma el vendedor por
+   WhatsApp, así que no se suman al total */
+function pintarTarifas() {
+  const { zonas, nota } = NEGOCIO.delivery;
+  $("delivery-tarifas").hidden = modoEntrega !== "Delivery";
+  $("delivery-tarifas").innerHTML = zonas.map(z => `<span>${z.nombre}: <strong>${z.precio}</strong></span>`).join("") + `<small>${nota}</small>`;
 }
 
 /* ---------- recordar dirección/nombre para la próxima vez ---------- */
@@ -155,7 +171,7 @@ function restaurarContacto() {
   if (!guardado) return;
 
   $("detalle").value = guardado.detalle || "";
-  elegirModo(guardado.modo === "Recojo en tienda" ? "Recojo en tienda" : "Delivery");
+  elegirModo(guardado.modo === "Recojo en tienda" || !deliveryDisponible() ? "Recojo en tienda" : "Delivery");
   $("detalle-hint").textContent = "Usamos los datos de tu último pedido — puedes cambiarlos.";
 }
 

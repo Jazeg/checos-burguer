@@ -13,7 +13,7 @@ Fuente: PLATOS.pdf, seis páginas aportadas por el cliente. Revisión visual, no
 - No hay desayunos identificados en el PDF. Los tres panes/desayunos siguen siendo una propuesta. Café, jugos y jugos con leche se comparten en ambos turnos como configuración provisional; precio e ID son únicos.
 - No se deducen ingredientes de «royal», «cubana», «hawaiana», «especial» ni rendimientos, pesos, alérgenos, popularidad o descuentos.
 - Las fotos heredadas son referenciales y se identifican como tales. Productos sin foto usan un recurso tipográfico neutro. No es el logo oficial vectorizado: es una adaptación tipográfica de la marca.
-- WhatsApp 936 538 325. Dirección: Jr. José Osores 180, Chota 06121. Tarifas y tiempos de delivery pendientes; se retiraron los valores inventados.
+- WhatsApp 936 538 325. Dirección: Jr. José Osores 180, Chota 06121. Delivery: zona céntrica S/ 2, zona más alejada S/ 3, otras zonas se coordinan por WhatsApp. Se muestran como referencia, no se suman al total. Tiempos pendientes.
 - Historial/contacto usan claves nuevas `checos_*` para no mezclar preferencias ni datos de la demo anterior.
 
 ## Horarios y apariencia

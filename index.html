@@ -42,6 +42,7 @@
     <div class="turno-info"><p id="turno-estado" role="status" aria-live="polite"></p><button id="turno-auto" type="button" hidden>Volver al horario actual ↗</button></div>  </div>
 </section>
 <div id="aviso-turno" class="aviso-turno" role="status" aria-live="polite"></div>
+<div id="aviso-delivery" class="aviso-turno"></div>
 <div class="menu-search"><label for="buscar-carta">Encuentra tu antojo</label><input id="buscar-carta" type="search" placeholder="Busca hamburguesa, papas, combo…" autocomplete="off"><p id="busqueda-resultado" role="status" aria-live="polite"></p></div>
 <div class="menu-layout">
   <nav class="category-nav" aria-label="Secciones de la carta">
@@ -68,8 +69,7 @@
     </div>
     <div>
       <p class="footer-titulo mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-mustard">Delivery</p>
-      <p class="text-sm text-canvas/70">Centro: <span id="footer-delivery-centro"></span></p>
-      <p class="text-sm text-canvas/70">Otras zonas: <span id="footer-delivery-otras"></span></p>
+      <div id="footer-delivery"></div>
     </div>
   </div>
   <div class="mx-auto max-w-6xl px-5 pb-8 sm:px-6">
@@ -132,7 +132,8 @@
       <button type="button" data-modo="Delivery" aria-pressed="true" class="min-h-11 flex-1 rounded-full border-2 border-ink bg-ink px-2 py-2 font-mono text-xs uppercase tracking-wider text-canvas">Delivery</button>
       <button type="button" data-modo="Recojo en tienda" aria-pressed="false" class="min-h-11 flex-1 rounded-full border-2 border-ink px-2 py-2 font-mono text-xs uppercase tracking-wider">Recojo en tienda</button>
     </div>
-    <p id="recojo-aviso" class="recojo-aviso" role="status"></p>
+    <p id="entrega-aviso" class="entrega-aviso" role="status"></p>
+    <p id="delivery-tarifas" class="delivery-tarifas"></p>
 
     <label id="detalle-label" for="detalle" class="mb-1.5 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Dirección o referencia</label>
     <input id="detalle" placeholder="Ej.: Jr. Comercio 123, puerta verde" autocomplete="street-address" required aria-required="true" aria-describedby="detalle-error"
@@ -179,7 +180,7 @@
     <div class="detail-copy"><p id="producto-categoria" class="eyebrow"></p><h2 id="producto-titulo"></h2>
       <p id="producto-descripcion"></p><div class="detail-line"><span>Precio por unidad</span><strong id="producto-precio"></strong></div>
       <div class="detail-line"><span>Disponibilidad</span><span id="producto-horario"></span></div>
-      <p class="detail-note">Consulta ingredientes e indicaciones especiales en el chat.</p>
+      <p id="producto-nota" class="detail-note">Consulta ingredientes e indicaciones especiales en el chat.</p>
       <div id="producto-opciones" class="opciones"></div><div id="producto-control"></div><p id="producto-confirmacion" role="status" aria-live="polite"></p>
       <button type="button" id="producto-pedido" class="detail-order">Revisar mi pedido →</button>
     </div>

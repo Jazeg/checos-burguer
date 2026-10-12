@@ -87,8 +87,12 @@ Extras, Combos.
 ## Horarios predeterminados (America/Lima, cierre exclusivo)
 - Desayunos: 07:00–11:00
 - Almuerzos: 11:00–15:00
-- Hamburguesas: 17:00–01:40 delivery. Local y recojo en tienda hasta 01:00
-  (recojoHasta en TURNOS); después solo delivery.
+- Hamburguesas: 17:00–01:00 en el local y recojo en tienda. Delivery hasta
+  00:40 (deliveryHasta en TURNOS); desde 00:20 (avisoDelivery) cuenta
+  regresiva en la hoja y bajo el selector de turno.
+- Tarifas de delivery en NEGOCIO.delivery (céntrica S/ 2, más alejada S/ 3,
+  otras zonas por WhatsApp): solo referencia en la hoja y el pie, no se
+  suman al total.
 
 ## Correr
 Local: python3 -m http.server 8093
@@ -110,7 +114,7 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
   Catálogo corporativo (catalogo-corporativo/, enlace o QR propio): desayuno
   ejecutivo y hamburguesas, cantidad escrita a mano (pedidos de 100 o más).
 - El ejecutivo pide a cualquier hora (SIN_HORARIO en horarios.js) y sin el
-  corte de recojo. Por defecto el pedido es para hoy y no se muestra
+  corte de delivery. Por defecto el pedido es para hoy y no se muestra
   fecha. Encima del total, "¿Es para una fecha específica o un evento?"
   abre fecha (hoy + 6 en fichas, u otra fecha), hora opcional y evento
   opcional; solo entonces la comanda lleva "Para:" y "Evento:". Se abre solo,
@@ -137,11 +141,18 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
   pisarlas): Hamburguesas, con todos sus subgrupos, elige Papas (Papas fritas
   o Papas al hilo) y Ensalada (Con ensalada o Sin ensalada). Salchipapas y
   Broaster eligen solo Ensalada. Club sándwiches no elige: van con papas
-  fritas. Sin elegir todas, la ficha no deja agregar.
+  fritas. Gaseosa personal y Combos eligen Bebida (OPCION_GASEOSA: Inca
+  Kola, Coca-Cola o Del Valle, pequeña de plástico; la de vidrio es solo
+  para consumir en el local). Sin elegir todas, la ficha no deja agregar.
 - Sugerencias en la ficha: campo "sugerencia" (id de plato) y
   "acompanamientos" (id de sección) en la sección. Desayuno: jugo de naranja
   y Jugos. Cena (pública y ejecutiva): Gaseosa personal y Bebidas frías, en
-  todo lo que lleva cremas salvo combos, que ya incluyen gaseosa.
+  todo lo que lleva cremas salvo combos, que ya incluyen gaseosa. Si la
+  sugerencia tiene opción, cada valor es su propio botón.
+- Ficha sin descripción: no lleva texto de relleno. La nota de ingredientes
+  solo sale en la comida.
+- Catálogo corporativo: el turno cena se llama "Cenas", con "Hamburguesas"
+  debajo en el selector.
 - Desayuno: todos los jugos (los de la noche incluidos) en vaso 250 ml S/ 3
   o medio litro S/ 6. Los de la noche se reutilizan con id am-<id>.
 - Cada línea del pedido es plato + elección; otra elección, otra línea.

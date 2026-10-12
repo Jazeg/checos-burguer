@@ -42,15 +42,21 @@ function formularioEleccion(p) {
   return grupos.join("") + bloqueSugerencia(p);
 }
 
-/* p.ej. en los sándwiches del desayuno: "Vaso 250 ml de jugo de naranja" */
+/* p.ej. en los sándwiches del desayuno: "Vaso 250 ml de jugo de naranja".
+   Si la sugerencia tiene una opción (la gaseosa: Inca Kola, Coca-Cola o
+   Del Valle), cada valor es su propio botón: un clic y queda elegida. */
 function bloqueSugerencia(p) {
   const s = PLATOS[p.sugerencia];
   if (!s) return "";
-  const tamano = s.tamanos?.[0];
+  const tamano = s.tamanos?.[0], opcion = s.opciones?.[0];
   const todos = p.acompanamientos ? `<button type="button" data-ver-seccion="${p.acompanamientos}" class="sugerencia-todos">Ver todos los acompañamientos ↗</button>` : "";
+  const botones = !disponibleAhora(s.id) ? ""
+    : opcion ? `<div class="sugerencia-opciones">${opcion.valores.map(v =>
+        `<button type="button" data-sugerencia="${s.id}" data-sugerencia-opcion="${attr(v)}" class="agregar">${v}</button>`).join("")}</div>`
+    : `<button type="button" data-sugerencia="${s.id}" class="agregar">Agregar</button>`;
   return `<div class="sugerencia"><p><span>¿Lo acompañas?</span> ${tamano ? tamano.nombre + " de jugo de " + s.nombre.toLowerCase() : s.nombre}
       · <strong>${soles(tamano ? tamano.precio : s.precio)}</strong> <em data-sugerencia-cant></em></p>
-    ${disponibleAhora(s.id) ? `<button type="button" data-sugerencia="${s.id}" class="agregar">Agregar</button>` : ""}${todos}</div>`;
+    ${botones}${todos}</div>`;
 }
 
 function controlEleccion(p) {
@@ -106,7 +112,7 @@ function refrescarEleccion(p = PLATOS[productoActivo]) {
   });
   const sugerida = PLATOS[p.sugerencia], marca = $("producto-opciones").querySelector("[data-sugerencia-cant]");
   if (sugerida && marca) {
-    const n = pedido.get(claveLinea(sugerida.id, { tamano: sugerida.tamanos?.[0].nombre }))?.cant || 0;
+    const n = cantidadPlato(sugerida.id);
     marca.textContent = n ? `${n} en tu pedido` : "";
   }
 }
@@ -209,9 +215,11 @@ function agregarEleccion(sinCremas = false) {
   avisar(`Agregado correctamente · ${cant} × ${p.nombre}`);
 }
 
-function agregarSugerencia(id) {
+function agregarSugerencia(id, opcion) {
   const s = PLATOS[id];
-  if (s) agregarAlPedido(id, { tamano: s.tamanos?.[0].nombre }, 1);
+  if (!s) return;
+  const opciones = opcion && s.opciones ? { [s.opciones[0].nombre]: opcion } : {};
+  agregarAlPedido(id, { tamano: s.tamanos?.[0].nombre, opciones }, 1);
 }
 
 function cantidadEleccion(input, confirmar) {

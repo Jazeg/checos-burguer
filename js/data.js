@@ -4,7 +4,12 @@
 const NEGOCIO = {
  nombre: "Checo’s Burger", bajada: "El poderoso sanguchón",
  direccion: "Jr. José Osores 180, Chota 06121", telefonoVisible: "936 538 325", whatsapp: "51936538325",
- delivery: { centro: "Por confirmar", otras: "Por confirmar", tiempo: "Tiempo por confirmar" }
+ /* Tarifas de referencia: no se suman al total, el vendedor confirma el
+    costo final por WhatsApp. */
+ delivery: {
+  zonas: [{ nombre: "Zona céntrica", precio: "S/ 2.00" }, { nombre: "Zona más alejada", precio: "S/ 3.00" }],
+  nota: "Otras zonas: se coordina por WhatsApp. El costo final del delivery te lo confirmamos en el chat."
+ }
 };
 /* Cremas: el cliente elige todas las que quiera, aunque pida una sola
    unidad. La primera porción de cada crema es gratis; cada porción extra de
@@ -24,6 +29,10 @@ const MAX_PORCIONES_CREMA = 5;
    siempre con papas fritas. */
 const OPCION_PAPAS = { nombre: "Papas", valores: ["Papas fritas", "Papas al hilo"] };
 const OPCION_ENSALADA = { nombre: "Ensalada", valores: ["Con ensalada", "Sin ensalada"] };
+/* La gaseosa personal de vidrio es solo para consumir en el local. En los
+   pedidos (delivery o recojo) va pequeña de plástico, a elegir. La usan la
+   Gaseosa personal y todos los combos. */
+const OPCION_GASEOSA = { nombre: "Bebida", valores: ["Inca Kola", "Coca-Cola", "Del Valle"] };
 const HERO = { imagen: "assets/cena/hamburguesas/Hamburguesa de casa.webp", alt: "Hamburguesa de casa de Checo’s" };
 
 const CARTA = [
@@ -935,7 +944,8 @@ const CARTA = [
         "id": "bebidas-4",
         "nombre": "Gaseosa personal",
         "precio": 2,
-        "desc": "",
+        "desc": "Para pedidos va en botella pequeña de plástico: Inca Kola, Coca-Cola o Del Valle. La de vidrio es solo para consumir en el local.",
+        "opciones": [OPCION_GASEOSA],
         "imagen": "assets/comun/bebidas/Inka Kola Personal de Vidrio.webp",
         "fuente": "PLATOS.pdf · página 4",
         "tipo": "bebida",
@@ -1100,7 +1110,7 @@ const CARTA = [
       {
         "id": "extras-4",
         "nombre": "Queso cheddar",
-        "precio": 1.5,
+        "precio": 2,
         "desc": "",
         "imagen": "assets/comun/carta-checos.svg",
         "fuente": "PLATOS.pdf · página 4",
@@ -1120,7 +1130,7 @@ const CARTA = [
       {
         "id": "extras-6",
         "nombre": "Tocino",
-        "precio": 2.5,
+        "precio": 2,
         "desc": "",
         "imagen": "assets/comun/carta-checos.svg",
         "fuente": "PLATOS.pdf · página 4",
@@ -1222,9 +1232,10 @@ const CARTA = [
   {
     "id": "combos",
     "cremas": "noche",
+    "opciones": [OPCION_GASEOSA],
     "nombre": "Combos",
     "tipo": "comida",
-    "nota": "Todos incluyen gaseosa.",
+    "nota": "Todos incluyen bebida pequeña de plástico: Inca Kola, Coca-Cola o Del Valle.",
     "platos": [
       {
         "id": "combos-1",
