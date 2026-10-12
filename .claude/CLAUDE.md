@@ -98,6 +98,11 @@ Extras, Combos.
 Local: python3 -m http.server 8093
 Publicación: GitHub Pages desde la raíz de main. Rutas siempre relativas
 (assets/..., nunca /assets/...) y con mayúsculas exactas: Pages distingue.
+CSS y JS se enlazan con ?v=AAAAMMDD en index.html y en
+catalogo-corporativo/index.html. Al publicar cambios en css/ o js/, sube la
+versión en ambos (todas las etiquetas a la vez): si no, el navegador mezcla
+HTML nuevo con JS viejo en caché y la página se rompe.
+QR de cada carta en qr/ (qr-carta y qr-corporativo, .png y .svg).
 
 ## Visual
 Antes de tocar CSS, lee ~/.claude/skills/mockup/estilos/checos-burger.md.
