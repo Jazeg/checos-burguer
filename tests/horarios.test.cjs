@@ -158,12 +158,19 @@ test('Desayuno ejecutivo: precios, opciones, cremas y jugos en dos tamaños', ()
   assert.equal(run('CARTA_DESAYUNO.some(s => s.id === PLATOS["am-sandwich-deshilachado"].acompanamientos)'), true);
   const jugosNoche = run('[...CARTA.find(s => s.id === "jugos").platos, ...CARTA.find(s => s.id === "jugos-leche").platos].map(p => p.id)');
   for (const id of [...jugosNoche.map(id => 'am-' + id), 'am-jugos-naranja']) {
+    const medioLitro = id === 'am-jugos-naranja' ? 6 : run(`PLATOS["${id.slice(3)}"].precio`);
     assert.equal(run(`precioLinea(nuevaLinea("${id}", { tamano: "Vaso 250 ml" }))`), 3, id);
-    assert.equal(run(`precioLinea(nuevaLinea("${id}", { tamano: "Medio litro" }))`), 6, id);
+    assert.equal(run(`precioLinea(nuevaLinea("${id}", { tamano: "Medio litro (500 ml)" }))`), medioLitro, id);
   }
+  assert.equal(run('precioLinea(nuevaLinea("am-jugos-4", { tamano: "Medio litro (500 ml)" }))'), 6.5);
+  assert.equal(run('precioLinea(nuevaLinea("am-jugos-leche-10", { tamano: "Medio litro (500 ml)" }))'), 9);
+  assert.equal(run('PLATOS["am-jugos-leche-10"].precio'), 3);
   assert.equal(run('PLATOS["jugos-leche-10"].precio'), 9);
   assert.equal(run('PLATOS["am-jugos-leche-10"].nombre === PLATOS["jugos-leche-10"].nombre'), true);
   assert.equal(run("enHorario('am-jugos-1', new Date('2026-09-30T08:00:00-05:00'))"), true);
+  assert.equal(run('PLATOS["jugos-1"].desc'), 'Medio litro (500 ml).');
+  assert.equal(run('PLATOS["jugos-leche-12"].desc'), 'Medio litro (500 ml).');
+  assert.equal(run('PLATOS["am-jugos-1"].desc + PLATOS["am-jugos-leche-12"].desc'), '');
   assert.equal(run("enHorario('am-jugos-1', new Date('2026-09-30T18:00:00-05:00'))"), false);
   assert.equal(run('precioLinea(nuevaLinea("am-hamburguesa-carne", { opciones: { Papas: "Papas al hilo", "Acompañante": "Queso" }, cremas: { "Ají": 2 } }))'), 8.2);
 });

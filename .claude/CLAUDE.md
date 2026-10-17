@@ -158,8 +158,13 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
   solo sale en la comida.
 - Catálogo corporativo: el turno cena se llama "Cenas", con "Hamburguesas"
   debajo en el selector.
-- Desayuno: todos los jugos (los de la noche incluidos) en vaso 250 ml S/ 3
-  o medio litro S/ 6. Los de la noche se reutilizan con id am-<id>.
+- Desayuno: todos los jugos (los de la noche incluidos) se eligen en vaso
+  250 ml a S/ 3 o medio litro (500 ml) al mismo precio que en la noche
+  (Naranja, que no está en la noche, S/ 6). Los de la noche se reutilizan
+  con id am-<id>.
+- Noche: Jugos y Jugos con leche son de medio litro; cada uno lleva desc
+  "Medio litro (500 ml).". En el desayuno (am-<id>) esa desc se vacía,
+  porque ahí se elige el tamaño.
 - Cada línea del pedido es plato + elección; otra elección, otra línea.
 - La hoja pide, además de dirección (delivery) o nombre (recojo), un
   número de contacto obligatorio: celular de 9 dígitos que empieza en 9,

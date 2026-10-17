@@ -1,9 +1,10 @@
 /* Desayuno ejecutivo: se carga únicamente en el catálogo corporativo.
-   En el desayuno todos los jugos van en dos tamaños (TAMANOS_JUGO_AM). Los
-   de la noche se reutilizan con id propio (am-<id>) para que su precio de
-   la mañana no se cruce con el de la noche; nombre y foto siguen saliendo
-   de CARTA. */
-const TAMANOS_JUGO_AM = [{ nombre: "Vaso 250 ml", precio: 3 }, { nombre: "Medio litro", precio: 6 }];
+   En el desayuno todos los jugos van en dos tamaños: vaso de 250 ml a
+   S/ 3 o medio litro (500 ml). Los de la noche se reutilizan con id propio
+   (am-<id>) para que el vaso no se cruce con la noche; nombre, foto y
+   precio del medio litro siguen saliendo de CARTA. */
+const VASO_JUGO_AM = { nombre: "Vaso 250 ml", precio: 3 };
+const tamanosJugoAm = medioLitro => [VASO_JUGO_AM, { nombre: "Medio litro (500 ml)", precio: medioLitro }];
 const FOTOS_BEBIDAS_AM = {
   "am-jugos-6": "assets/desayuno/productos/jugos-mango.jpg",
   "am-jugos-leche-8": "assets/desayuno/productos/jugos-leche-pina.jpg"
@@ -14,9 +15,11 @@ const OPCIONES_HAMBURGUESA_AM = [
 ];
 const platoAm = (id, nombre, precio, extra = {}) =>
   ({ id: "am-" + id, nombre, precio, desc: "", imagen: `assets/desayuno/productos/${id}.jpg`, tipo: "comida", imagenReferencial: true, ...extra });
-const jugoAm = p => ({ ...p, id: "am-" + p.id, precio: TAMANOS_JUGO_AM[0].precio, tamanos: TAMANOS_JUGO_AM });
+/* el medio litro cuesta lo mismo que en la noche. Sin la desc de la
+   noche ("Medio litro"): aquí se elige el tamaño. */
+const jugoAm = p => ({ ...p, id: "am-" + p.id, desc: "", precio: VASO_JUGO_AM.precio, tamanos: tamanosJugoAm(p.precio) });
 const seccionNoche = id => CARTA.find(s => s.id === id);
-const NOTA_JUGOS_AM = "Vaso de 250 ml a S/ 3 o medio litro a S/ 6.";
+const NOTA_JUGOS_AM = "Vaso de 250 ml a S/ 3 o medio litro (500 ml).";
 
 const CARTA_DESAYUNO = [
   {
@@ -49,7 +52,7 @@ const CARTA_DESAYUNO = [
   {
     id: "jugos-am", nombre: "Jugos", tipo: "bebida", nota: NOTA_JUGOS_AM,
     platos: [
-      platoAm("jugos-naranja", "Naranja", TAMANOS_JUGO_AM[0].precio, { tipo: "bebida", tamanos: TAMANOS_JUGO_AM }),
+      platoAm("jugos-naranja", "Naranja", VASO_JUGO_AM.precio, { tipo: "bebida", tamanos: tamanosJugoAm(6) }),
       ...seccionNoche("jugos").platos.map(jugoAm)
     ]
   },
