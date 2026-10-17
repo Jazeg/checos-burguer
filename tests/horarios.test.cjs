@@ -62,9 +62,9 @@ test('Precios transcritos y total del pedido', () => {
   run('pedido.clear()');
 });
 test('Los combos pendientes no se publican', () => {
-  assert.equal(run('COMBOS_PENDIENTES.map(p => p.id).join()'), 'combos-4,combos-9,combos-10,combos-13');
+  assert.equal(run('COMBOS_PENDIENTES.map(p => p.id).join()'), 'combos-4,combos-9,combos-10');
   assert.equal(run('COMBOS_PENDIENTES.some(p => PLATOS[p.id])'), false);
-  assert.equal(run('CARTA.find(s => s.id === "combos").platos.length'), 9);
+  assert.equal(run('CARTA.find(s => s.id === "combos").platos.length'), 10);
 });
 
 test('Las bebidas compartidas están disponibles en ambos turnos', () => {

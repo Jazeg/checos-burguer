@@ -80,7 +80,7 @@ Extras, Combos.
 - Los ids de plato no cambian aunque cambie su sección (los de Filete,
   Deshilachado y Chorizo siguen siendo sandwiches-N).
 - Los ítems marcados [PENDIENTE] no se publican: van en COMBOS_PENDIENTES,
-  fuera de CARTA, hasta que el cliente los confirme. Hoy: combos 4, 9, 10 y 13.
+  fuera de CARTA, hasta que el cliente los confirme. Hoy: combos 4, 9 y 10.
 - Jugos, Jugos con leche, Bebidas frías y Bebidas calientes se comparten con
   desayunos y almuerzos: se editan una sola vez en CARTA.
 

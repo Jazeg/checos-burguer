@@ -781,7 +781,7 @@ const CARTA = [
     "id": "jugos-leche",
     "nombre": "Jugos con leche",
     "tipo": "bebida",
-    "nota": "Opciones transcritas de la sección del PDF; consulta la preparación al pedir.",
+    "nota": "",
     "platos": [
       {
         "id": "jugos-leche-1",
@@ -1327,6 +1327,16 @@ const CARTA = [
         "fuente": "PLATOS.pdf · página 5–6",
         "tipo": "comida",
         "imagenReferencial": false
+      },
+      {
+        "id": "combos-13",
+        "nombre": "Combo 13",
+        "precio": 18,
+        "desc": "Filete + chorizo + carne + huevo + queso + jamón + tocino + cremas + papas al hilo + ensalada + gaseosa.",
+        "imagen": "assets/cena/combos/Combo 13 Especial combinado.webp",
+        "fuente": "Cliente, 17/10/2026",
+        "tipo": "comida",
+        "imagenReferencial": false
       }
     ]
   }
@@ -1361,16 +1371,6 @@ const COMBOS_PENDIENTES = [
     "precio": 15,
     "desc": "Lectura provisional: 2 chorizos + 2 quesos + 1 huevo + ... + tocino + gaseosa.",
     "imagen": "assets/cena/combos/Combo 10 Especial de chorizo.webp",
-    "fuente": "PLATOS.pdf · página 5–6",
-    "tipo": "comida",
-    "imagenReferencial": false
-  },
-  {
-    "id": "combos-13",
-    "nombre": "Combo 13",
-    "precio": 18,
-    "desc": "Lectura provisional: hamburguesa de casa + filete + chorizo + queso + tocino + ... + ensalada + huevo + gaseosa.",
-    "imagen": "assets/cena/combos/Combo 13 Especial combinado.webp",
     "fuente": "PLATOS.pdf · página 5–6",
     "tipo": "comida",
     "imagenReferencial": false
