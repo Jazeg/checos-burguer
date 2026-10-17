@@ -124,18 +124,19 @@ test('Gaseosa personal y combos eligen bebida pequeña de plástico', () => {
   assert.equal(run('PLATOS["extras-6"].precio'), 2);
 });
 
-test('Cremas: primera porción gratis, cada porción extra suma S/ 0.50 por unidad', () => {
+test('Cremas: primera porción gratis, cada porción extra suma S/ 0.20 por unidad', () => {
   assert.equal(run('PLATOS["hamburguesas-1"].cremas.length'), 8);
   assert.equal(run('PLATOS["combos-1"].cremas.includes("Salsa wolf")'), true);
   assert.equal(run('PLATOS["jugos-1"].cremas'), null);
   assert.equal(run('PLATOS["extras-2"].cremas'), null);
   assert.equal(run('precioLinea(nuevaLinea("hamburguesas-1", { cremas: { Mayonesa: 1, Ketchup: 1, Mostaza: 1, "Ají": 1 } }))'), 8);
-  assert.equal(run('precioLinea(nuevaLinea("hamburguesas-1", { cremas: { Mayonesa: 2, "Ají": 2 } }))'), 9);
-  assert.equal(run('precioLinea(nuevaLinea("hamburguesas-1", { cremas: { Mayonesa: 1, "Ají": 3 } }))'), 9);
-  assert.equal(run('precioLinea(nuevaLinea("hamburguesas-1", { cremas: { Ketchup: 5 } }))'), 10);
+  assert.equal(run('precioLinea(nuevaLinea("hamburguesas-1", { cremas: { Mayonesa: 2, "Ají": 2 } }))'), 8.4);
+  assert.equal(run('precioLinea(nuevaLinea("hamburguesas-1", { cremas: { Mayonesa: 1, "Ají": 3 } }))'), 8.4);
+  assert.equal(run('precioLinea(nuevaLinea("hamburguesas-1", { cremas: { Ketchup: 5 } }))'), 8.8);
   run('pedido.clear(); pedido.set("x", nuevaLinea("hamburguesas-1", { cremas: { Mayonesa: 2 } }, 3))');
-  assert.equal(run('totalPedido()'), 25.5);
-  assert.match(run('textoComanda("")'), /3 × Hamburguesa de casa — S\/ 25\.50\n   Cremas: Mayonesa ×2/);
+  assert.equal(run('totalPedido()'), 24.6);
+  assert.match(run('textoComanda("")'), /3 × Hamburguesa de casa — S\/ 24\.60\n   Cremas: Mayonesa ×2/);
+  assert.match(run('textoComanda("Jr. Comercio 123", null, "987 654 321")'), /Dirección: Jr\. Comercio 123\nCelular: 987 654 321$/);
   run('pedido.clear()');
 });
 
@@ -164,7 +165,7 @@ test('Desayuno ejecutivo: precios, opciones, cremas y jugos en dos tamaños', ()
   assert.equal(run('PLATOS["am-jugos-leche-10"].nombre === PLATOS["jugos-leche-10"].nombre'), true);
   assert.equal(run("enHorario('am-jugos-1', new Date('2026-09-30T08:00:00-05:00'))"), true);
   assert.equal(run("enHorario('am-jugos-1', new Date('2026-09-30T18:00:00-05:00'))"), false);
-  assert.equal(run('precioLinea(nuevaLinea("am-hamburguesa-carne", { opciones: { Papas: "Papas al hilo", "Acompañante": "Queso" }, cremas: { "Ají": 2 } }))'), 8.5);
+  assert.equal(run('precioLinea(nuevaLinea("am-hamburguesa-carne", { opciones: { Papas: "Papas al hilo", "Acompañante": "Queso" }, cremas: { "Ají": 2 } }))'), 8.2);
 });
 
 test('Ejecutivo: pedido anticipado fuera de horario y fecha en la comanda', () => {
@@ -204,11 +205,11 @@ test('Cena: sugiere gaseosa personal y lleva a bebidas, salvo en combos', () => 
 
 test('Cena: papas y ensalada obligatorias según la sección', () => {
   const grupos = id => run(`(PLATOS["${id}"].opciones || []).map(g => g.nombre + ":" + g.valores.join("/")).join()`);
-  for (const id of ['hamburguesas-1', 'sandwiches-6', 'sandwiches-10', 'hamburguesas-8']) {
+  for (const id of ['hamburguesas-1', 'sandwiches-6', 'sandwiches-10', 'hamburguesas-8', 'enchiladas-1', 'enchiladas-10']) {
     assert.equal(grupos(id), 'Papas:Papas fritas/Papas al hilo,Ensalada:Con ensalada/Sin ensalada', id);
   }
   for (const id of ['salchipapas-1', 'broaster-1']) assert.equal(grupos(id), 'Ensalada:Con ensalada/Sin ensalada', id);
-  for (const id of ['club-sandwiches-1', 'enchiladas-1', 'alitas-1', 'bebidas-9']) assert.equal(grupos(id), '', id);
+  for (const id of ['club-sandwiches-1', 'alitas-1', 'bebidas-9']) assert.equal(grupos(id), '', id);
   assert.equal(run('PLATOS["am-hamburguesa-carne"].opciones.map(g => g.nombre).join()'), 'Papas,Acompañante');
   assert.equal(run('detalleLinea(nuevaLinea("hamburguesas-1", { opciones: { Papas: "Papas al hilo", Ensalada: "Sin ensalada" } }))'), 'Papas al hilo · Sin ensalada · Sin cremas');
 });
@@ -230,7 +231,7 @@ test('Memoria: borrador, último pedido y líneas que ya no existen', () => {
   ex('const e = { opciones: { Papas: "Papas al hilo", Ensalada: "Con ensalada" }, cremas: { Mayonesa: 2 } }; pedido.set(claveLinea("hamburguesas-1", e), nuevaLinea("hamburguesas-1", e, 3)); pedido.set(claveLinea("bebidas-9"), nuevaLinea("bebidas-9", {}, 2))');
   ex('guardarBorrador(); pedido.clear(); restaurarBorrador()');
   assert.equal(ex('unidadesPedido()'), 5);
-  assert.equal(ex('totalPedido()'), 3 * 8.5 + 2 * 2);
+  assert.equal(ex('totalPedido()'), 28.6);
   assert.equal(ex('pedido.get(claveLinea("bebidas-9")).cant'), 2);
   ex('guardarPedidoEnviado({ lineas: lineasParaGuardar(), total: totalPedido(), modo: "Delivery" }); pedido.clear(); guardarBorrador()');
   assert.equal(datos.has('checos_borrador_v1_pub'), false);

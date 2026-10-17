@@ -136,7 +136,7 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
   de la ficha, nunca con confirm() del navegador.
 - Cremas: todas las que el cliente quiera aunque pida una unidad, con un
   contador por crema. La primera porción de cada una es gratis; cada porción
-  extra de esa crema suma S/ 0.50 por unidad (CREMA_EXTRA, tope
+  extra de esa crema suma S/ 0.20 por unidad (CREMA_EXTRA, tope
   MAX_PORCIONES_CREMA).
   Noche: mayonesa, ketchup, mostaza, ají, salsa tártara, guacatay, salsa wolf
   y aceituna, en hamburguesas, broaster, salchipapas, club sándwiches,
@@ -144,8 +144,8 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
   bebidas ni extras. Se activan con el campo `cremas` de la sección.
 - Opciones obligatorias (campo `opciones` de la sección; un plato puede
   pisarlas): Hamburguesas, con todos sus subgrupos, elige Papas (Papas fritas
-  o Papas al hilo) y Ensalada (Con ensalada o Sin ensalada). Salchipapas y
-  Broaster eligen solo Ensalada. Club sándwiches no elige: van con papas
+  o Papas al hilo) y Ensalada (Con ensalada o Sin ensalada); Enchiladas con
+  queso elige lo mismo. Salchipapas y Broaster eligen solo Ensalada. Club sándwiches no elige: van con papas
   fritas. Gaseosa personal y Combos eligen Bebida (OPCION_GASEOSA: Inca
   Kola, Coca-Cola o Del Valle, pequeña de plástico; la de vidrio es solo
   para consumir en el local). Sin elegir todas, la ficha no deja agregar.
@@ -161,6 +161,10 @@ Si ese archivo no existe todavía, avísame en vez de improvisar.
 - Desayuno: todos los jugos (los de la noche incluidos) en vaso 250 ml S/ 3
   o medio litro S/ 6. Los de la noche se reutilizan con id am-<id>.
 - Cada línea del pedido es plato + elección; otra elección, otra línea.
+- La hoja pide, además de dirección (delivery) o nombre (recojo), un
+  número de contacto obligatorio: celular de 9 dígitos que empieza en 9,
+  con o sin +51. Sale en la comanda como "Celular: 987 654 321" y se
+  recuerda junto con la dirección para el próximo pedido.
 - Memoria en el dispositivo (localStorage, público y ejecutivo por separado):
   el carrito en curso se guarda en cada cambio y se restaura al volver
   (12 h; en el ejecutivo también lo programado); la sección donde estaba

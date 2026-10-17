@@ -22,7 +22,7 @@ const CREMAS = {
   noche: ["Mayonesa", "Ketchup", "Mostaza", "Ají", "Salsa tártara", "Guacatay", "Salsa wolf", "Aceituna"],
   desayuno: ["Mostaza", "Ají"]
 };
-const CREMA_EXTRA = 0.5;
+const CREMA_EXTRA = 0.2;
 const MAX_PORCIONES_CREMA = 5;
 /* Opciones obligatorias de la ficha: la sección las define con su campo
    "opciones" y un plato puede pisarlas. Club sándwiches no elige: van
@@ -539,6 +539,7 @@ const CARTA = [
   {
     "id": "enchiladas",
     "cremas": "noche",
+    "opciones": [OPCION_PAPAS, OPCION_ENSALADA],
     "sugerencia": "bebidas-4",
     "acompanamientos": "bebidas",
     "nombre": "Enchiladas con queso",

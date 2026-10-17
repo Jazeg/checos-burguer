@@ -17,8 +17,8 @@
      un script bloqueante que compilaba el CSS en el navegador, asi que con
      un QR y senal mala la carta aparecia sin estilos. Para regenerarlo tras
      tocar clases, ver la cabecera de tailwind.config.js. -->
-<link rel="stylesheet" href="css/tailwind.css?v=20261011">
-<link rel="stylesheet" href="css/styles.css?v=20261011">
+<link rel="stylesheet" href="css/tailwind.css?v=20261017">
+<link rel="stylesheet" href="css/styles.css?v=20261017">
 </head>
 <body class="font-body text-ink">
 <div class="site-shell" id="site-shell">
@@ -144,6 +144,12 @@
     <p id="detalle-error" class="mt-1.5 min-h-[1em] font-mono text-xs font-bold text-ember" role="alert"></p>
     <p id="detalle-hint" class="min-h-[1em] font-mono text-xs text-muted"></p>
 
+    <label for="telefono" class="mt-3 mb-1.5 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Número de contacto</label>
+    <input id="telefono" type="tel" inputmode="tel" placeholder="Ej.: 987 654 321" autocomplete="tel" required aria-required="true" aria-describedby="telefono-error telefono-hint"
+      class="w-full rounded-xl border-2 border-ink bg-surface px-3.5 py-3 text-base placeholder:text-muted">
+    <p id="telefono-error" class="mt-1.5 min-h-[1em] font-mono text-xs font-bold text-ember" role="alert"></p>
+    <p id="telefono-hint" class="min-h-[1em] font-mono text-xs text-muted"></p>
+
     <div class="comanda mt-5 mb-4 rounded border-2 border-ink bg-surface px-4 py-5">
       <p class="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Así llega al WhatsApp de la cocina</p>
       <pre id="vista-comanda" class="whitespace-pre-wrap font-mono text-xs leading-relaxed text-ink">Todavía no agregas nada.</pre>
@@ -208,18 +214,18 @@
     </div>
   </div>
 </dialog>
-<script src="js/data.js?v=20261011"></script>
-<script src="js/desayunos.js?v=20261011"></script>
-<script src="js/horarios.js?v=20261011"></script>
-<script src="js/carrito.js?v=20261011"></script>
-<script src="js/recomendador.js?v=20261011"></script>
-<script src="js/carta.js?v=20261011"></script>
-<script src="js/personalizar.js?v=20261011"></script>
-<script src="js/hoja.js?v=20261011"></script>
-<script src="js/entrega.js?v=20261011"></script>
-<script src="js/recomendador-vista.js?v=20261011"></script>
-<script src="js/memoria.js?v=20261011"></script>
-<script src="js/historial.js?v=20261011"></script>
-<script src="js/app.js?v=20261011"></script>
+<script src="js/data.js?v=20261017"></script>
+<script src="js/desayunos.js?v=20261017"></script>
+<script src="js/horarios.js?v=20261017"></script>
+<script src="js/carrito.js?v=20261017"></script>
+<script src="js/recomendador.js?v=20261017"></script>
+<script src="js/carta.js?v=20261017"></script>
+<script src="js/personalizar.js?v=20261017"></script>
+<script src="js/hoja.js?v=20261017"></script>
+<script src="js/entrega.js?v=20261017"></script>
+<script src="js/recomendador-vista.js?v=20261017"></script>
+<script src="js/memoria.js?v=20261017"></script>
+<script src="js/historial.js?v=20261017"></script>
+<script src="js/app.js?v=20261017"></script>
 </body>
 </html>

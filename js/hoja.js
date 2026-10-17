@@ -3,16 +3,18 @@
    y apertura/cierre de la hoja. Depende de carrito.js y carta.js.
    ============================================================ */
 
-/* ---------- validación del detalle de entrega ---------- */
-let detalleTocado = false;
+/* ---------- validación del detalle de entrega y el celular ---------- */
+let detalleTocado = false, telefonoTocado = false;
 
 /* el campo cambia de significado según el modo: en delivery pide dónde
    llevarlo, en recojo a nombre de quién. Label visible y placeholder van
    siempre juntos — el placeholder solo, sin label, dejaba el campo sin
    explicación una vez escrito. */
 const TEXTOS_DETALLE = {
-  "Delivery": { label: "Dirección o referencia", ph: "Ej.: Jr. Comercio 123, puerta verde", autocomplete: "street-address" },
-  "Recojo en tienda": { label: "¿A nombre de quién?", ph: "Ej.: Rosa Quispe", autocomplete: "name" }
+  "Delivery": { label: "Dirección o referencia", ph: "Ej.: Jr. Comercio 123, puerta verde", autocomplete: "street-address",
+    telefono: "Te llamamos si el repartidor no encuentra la dirección." },
+  "Recojo en tienda": { label: "¿A nombre de quién?", ph: "Ej.: Rosa Quispe", autocomplete: "name",
+    telefono: "Te avisamos a este número cuando esté listo." }
 };
 
 function pintarCampoDetalle() {
@@ -20,6 +22,7 @@ function pintarCampoDetalle() {
   $("detalle-label").textContent = t.label;
   $("detalle").placeholder = t.ph;
   $("detalle").autocomplete = t.autocomplete;
+  $("telefono-hint").textContent = t.telefono;
 }
 
 function detalleValido() {
@@ -32,14 +35,27 @@ function mensajeValidacionDetalle() {
     : "Dinos a nombre de quién lo dejamos.";
 }
 
-function pintarValidacionDetalle() {
-  const mostrarError = detalleTocado && !detalleValido();
-  const input = $("detalle");
+/* celular peruano: 9 dígitos que empiezan en 9, con o sin +51 y con los
+   espacios que el cliente quiera. Devuelve "987 654 321" o "" si no vale. */
+function telefonoContacto() {
+  const digitos = $("telefono").value.replace(/\D/g, "");
+  const numero = digitos.length === 11 && digitos.startsWith("51") ? digitos.slice(2) : digitos;
+  return /^9\d{8}$/.test(numero) ? numero.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3") : "";
+}
+
+function pintarError(id, mostrarError, mensaje) {
+  const input = $(id);
   input.classList.toggle("border-ember", mostrarError);
   input.classList.toggle("border-ink", !mostrarError);
   input.setAttribute("aria-invalid", mostrarError ? "true" : "false");
-  $("detalle-error").textContent = mostrarError ? mensajeValidacionDetalle() : "";
-  $("detalle-hint").classList.toggle("hidden", mostrarError);
+  $(id + "-error").textContent = mostrarError ? mensaje : "";
+  $(id + "-hint").classList.toggle("hidden", mostrarError);
+}
+
+function pintarValidacionDetalle() {
+  pintarError("detalle", detalleTocado && !detalleValido(), mensajeValidacionDetalle());
+  pintarError("telefono", telefonoTocado && !telefonoContacto(),
+    $("telefono").value.trim() ? "Revisa el número: son 9 dígitos y empieza en 9." : "Déjanos un celular para coordinar la entrega.");
 }
 
 /* ---------- hoja de pedido ---------- */
@@ -95,14 +111,15 @@ function pintarPedido() {
   pintarDetalleProducto();
   const detalle = $("detalle").value.trim();
   const fecha = SIN_HORARIO ? (pintarEntrega(), datosEntrega()) : null;
-  $("vista-comanda").textContent = textoComanda(detalle, fecha);
+  const telefono = telefonoContacto();
+  $("vista-comanda").textContent = textoComanda(detalle, fecha, telefono);
 
   const enviar = $("enviar");
   const disponibles = pedidoDisponible();
   $("pedido-aviso").textContent = pedido.size && !disponibles
     ? 'Hay productos fuera de horario. Retíralos con × para enviar tu pedido. Conservamos tu selección.' : '';
   enviar.setAttribute("aria-disabled", disponibles ? "false" : "true");
-  enviar.href = disponibles ? enlaceWhatsApp(detalle, fecha) : "#";
+  enviar.href = disponibles ? enlaceWhatsApp(detalle, fecha, telefono) : "#";
   pintarValidacionDetalle();
 
   document.querySelectorAll("[data-control]").forEach(cont => {
@@ -164,19 +181,20 @@ function pintarTarifas() {
   $("delivery-tarifas").innerHTML = zonas.map(z => `<span>${z.nombre}: <strong>${z.precio}</strong></span>`).join("") + `<small>${nota}</small>`;
 }
 
-/* ---------- recordar dirección/nombre para la próxima vez ---------- */
+/* ---------- recordar dirección/nombre y celular para la próxima vez ---------- */
 function restaurarContacto() {
   let guardado;
   try { guardado = JSON.parse(localStorage.getItem("checos_contacto_v1")); } catch { guardado = null; }
   if (!guardado) return;
 
   $("detalle").value = guardado.detalle || "";
+  $("telefono").value = guardado.telefono || "";
   elegirModo(guardado.modo === "Recojo en tienda" || !deliveryDisponible() ? "Recojo en tienda" : "Delivery");
   $("detalle-hint").textContent = "Usamos los datos de tu último pedido — puedes cambiarlos.";
 }
 
-function guardarContacto(detalle) {
-  try { localStorage.setItem("checos_contacto_v1", JSON.stringify({ modo: modoEntrega, detalle })); } catch { /* El pedido funciona sin almacenamiento. */ }
+function guardarContacto(detalle, telefono) {
+  try { localStorage.setItem("checos_contacto_v1", JSON.stringify({ modo: modoEntrega, detalle, telefono })); } catch { /* El pedido funciona sin almacenamiento. */ }
 }
 
 /* ---------- interacciones ---------- */

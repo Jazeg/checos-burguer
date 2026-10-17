@@ -10,6 +10,7 @@ function iniciar() {
   restaurarBorrador();
   actualizarTurno(true);
   pintarPie();
+  pintarCampoDetalle();
   restaurarContacto();
   pintarAccesoPedidos();
   pintarTarifas();
@@ -94,16 +95,16 @@ function iniciar() {
     if (modoEntrega === "Delivery" && !deliveryDisponible()) { e.preventDefault(); pintarDelivery(true); return; }
     if (SIN_HORARIO && !entregaValida()) { e.preventDefault(); $("programar").scrollIntoView({ block: "center", behavior: "smooth" }); return; }
 
-    if (!detalleValido()) {
+    if (!detalleValido() || !telefonoContacto()) {
       e.preventDefault();
-      detalleTocado = true;
+      detalleTocado = telefonoTocado = true;
       pintarValidacionDetalle();
-      $("detalle").focus();
+      $(detalleValido() ? "telefono" : "detalle").focus();
       return;
     }
 
     const detalle = $("detalle").value.trim();
-    guardarContacto(detalle);
+    guardarContacto(detalle, telefonoContacto());
     registrarPedidoEnHistorial([...pedido.values()].map(l => l.id));
     cerrarPedidoEnviado();
   });
@@ -112,6 +113,8 @@ function iniciar() {
   $("detalle").addEventListener("input", pintarPedido);
   $("programar-panel")?.addEventListener("input", e => cambiarEntrega(e.target));
   $("detalle").addEventListener("blur", () => { detalleTocado = true; pintarValidacionDetalle(); });
+  $("telefono").addEventListener("input", pintarPedido);
+  $("telefono").addEventListener("blur", () => { telefonoTocado = true; pintarValidacionDetalle(); });
 
   document.querySelectorAll("[data-modo]").forEach(b => b.addEventListener("click", () => elegirModo(b.dataset.modo)));
 
@@ -129,9 +132,9 @@ function iniciar() {
     medirTeclado();
   }
 
-  $("detalle").addEventListener("focus", () => {
-    setTimeout(() => $("detalle").scrollIntoView({ block: "center", behavior: "smooth" }), 250);
-  });
+  ["detalle", "telefono"].forEach(id => $(id).addEventListener("focus", () => {
+    setTimeout(() => $(id).scrollIntoView({ block: "center", behavior: "smooth" }), 250);
+  }));
 
   $("pestana-pedido").addEventListener("click", () => abrirHoja(true));
   $("pestana-pedido").addEventListener("keydown", e => {

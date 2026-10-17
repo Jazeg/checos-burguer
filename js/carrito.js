@@ -46,13 +46,16 @@ function nuevaLinea(id, { tamano = null, opciones = {}, cremas = {} } = {}, cant
 function precioLinea(l) {
   const p = PLATOS[l.id];
   const base = l.tamano ? p.tamanos.find(t => t.nombre === l.tamano).precio : p.precio;
-  return base + Object.values(l.cremas).reduce((extra, n) => extra + Math.max(0, n - 1), 0) * CREMA_EXTRA;
+  return centimos(base + Object.values(l.cremas).reduce((extra, n) => extra + Math.max(0, n - 1), 0) * CREMA_EXTRA);
 }
+
+/* 0.20 no es exacto en coma flotante: 8.2 × 3 daría 24.599999… */
+const centimos = n => Math.round(n * 100) / 100;
 
 function totalPedido() {
   let t = 0;
   pedido.forEach(l => t += precioLinea(l) * l.cant);
-  return t;
+  return centimos(t);
 }
 
 function unidadesPedido() {
@@ -115,7 +118,7 @@ function detalleLinea(l) {
 }
 
 /* entrega (solo ejecutivo, si se programó): { texto, evento } de entrega.js */
-function textoComanda(detalle, entrega = null) {
+function textoComanda(detalle, entrega = null, telefono = "") {
   if (!pedido.size) return "Todavía no agregas nada.";
   const lineas = [`*${pedidoAnticipado() || entrega ? "Pedido anticipado" : "Pedido"} — ${NEGOCIO.nombre}*`, ...(ES_CORPORATIVO ? ["Catálogo corporativo"] : []), ""];
   pedido.forEach(l => {
@@ -126,9 +129,10 @@ function textoComanda(detalle, entrega = null) {
   lineas.push("", `Total: ${soles(totalPedido())}`, `Entrega: ${modoEntrega}`);
   if (entrega) lineas.push(`Para: ${entrega.texto}`, ...(entrega.evento ? [`Evento: ${entrega.evento}`] : []));
   if (detalle) lineas.push(`${modoEntrega === "Delivery" ? "Dirección" : "Nombre"}: ${detalle}`);
+  if (telefono) lineas.push(`Celular: ${telefono}`);
   return lineas.join("\n");
 }
 
-function enlaceWhatsApp(detalle, entrega = null) {
-  return `https://wa.me/${NEGOCIO.whatsapp}?text=${encodeURIComponent(textoComanda(detalle, entrega))}`;
+function enlaceWhatsApp(detalle, entrega = null, telefono = "") {
+  return `https://wa.me/${NEGOCIO.whatsapp}?text=${encodeURIComponent(textoComanda(detalle, entrega, telefono))}`;
 }
