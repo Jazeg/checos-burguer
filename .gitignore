@@ -10,8 +10,10 @@ desktop.ini
 *.swo
 *~
 
-# Claude Code: configuración local de cada persona
-.claude/settings.local.json
+# Documentación interna: se queda solo en local, no se publica
+.claude/
+README.md
+MIGRACION.md
 
 # Dependencias y logs, por si algún día se usa npm
 node_modules/
