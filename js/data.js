@@ -63,10 +63,10 @@ const CARTA = [
         "precio": 9,
         "desc": "Carne, huevo y queso.",
         "subgrupo": "Hamburguesa de casa",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Ham. De casa royal.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "hamburguesas-3",
@@ -85,10 +85,10 @@ const CARTA = [
         "precio": 10,
         "desc": "Carne, huevo y tocino.",
         "subgrupo": "Hamburguesa de casa",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa de casa con tocino.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "hamburguesas-7",
@@ -151,10 +151,10 @@ const CARTA = [
         "precio": 9,
         "desc": "Filete, queso y piña.",
         "subgrupo": "Filete de pollo",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Filete hawaiano.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "sandwiches-5",
@@ -162,10 +162,10 @@ const CARTA = [
         "precio": 9,
         "desc": "Filete, huevo y plátano frito.",
         "subgrupo": "Filete de pollo",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Filete cubano.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "sandwiches-3",
@@ -173,10 +173,10 @@ const CARTA = [
         "precio": 10,
         "desc": "Filete, huevo y tocino.",
         "subgrupo": "Filete de pollo",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Filete con tocino..webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "sandwiches-6",
@@ -239,10 +239,10 @@ const CARTA = [
         "precio": 9,
         "desc": "Chorizo, huevo y queso.",
         "subgrupo": "Chorizo",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Chorizo royal.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "sandwiches-12",
@@ -250,10 +250,10 @@ const CARTA = [
         "precio": 9,
         "desc": "Chorizo, queso y piña.",
         "subgrupo": "Chorizo",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Chorizo hawaiano.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "sandwiches-13",
@@ -261,10 +261,10 @@ const CARTA = [
         "precio": 9,
         "desc": "Chorizo, huevo y plátano frito.",
         "subgrupo": "Chorizo",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Chorizo cubano.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "hamburguesas-8",
@@ -272,10 +272,10 @@ const CARTA = [
         "precio": 11,
         "desc": "Pollo crocante y huevo.",
         "subgrupo": "Pollo crispy",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa de pollo crispy.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "hamburguesas-9",
@@ -283,10 +283,10 @@ const CARTA = [
         "precio": 13,
         "desc": "Pollo crocante, huevo y tocino.",
         "subgrupo": "Pollo crispy",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa de pollo chispy con tocino.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "hamburguesas-10",
@@ -294,10 +294,10 @@ const CARTA = [
         "precio": 13,
         "desc": "Pollo crocante, huevo y queso amarillo.",
         "subgrupo": "Pollo crispy",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/hamburguesas/Hamburguesa de pollo Crispy con cheddar.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       }
     ]
   },
@@ -316,10 +316,10 @@ const CARTA = [
         "nombre": "Alita broaster",
         "precio": 8,
         "desc": "",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/broaster/Alita broster.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "broaster-2",
@@ -336,10 +336,10 @@ const CARTA = [
         "nombre": "Pecho broaster",
         "precio": 11,
         "desc": "",
-        "imagen": "assets/comun/carta-checos.svg",
+        "imagen": "assets/cena/broaster/Pecho broster.webp",
         "fuente": "PLATOS.pdf · página 1",
         "tipo": "comida",
-        "imagenReferencial": true
+        "imagenReferencial": false
       },
       {
         "id": "broaster-4",
